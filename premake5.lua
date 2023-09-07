@@ -1,14 +1,42 @@
 workspace "Orchis"
-    configurations { "Debug", "Release" }
-    architecture "x64"
-    startproject "Sandbox"
-
-    defines
-    {
-        "ORCHIS_PLATFORM_WINDOWS"
-    }
+configurations { "Debug", "Release", "Dist" }
+architecture "x64"
+startproject "Sandbox"
 
     outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
+
+    IncludeDir = {}
+    IncludeDir["Vulkan"] = "C:/VulkanSDK/1.3.250.1/Include"
+    IncludeDir["spdlog"] = "Core/vendor/spdlog/include"
+    IncludeDir["glm"] = "Core/vendor/glm"
+    IncludeDir["stb"] = "Core/vendor/stb"
+    
+    VulkanLibDir = "C:/VulkanSDK/1.3.250.1/Lib"
+
+    filter "system:windows"
+        defines
+        {
+            "OC_PLATFORM_WINDOWS"
+        }
+    
+    filter "configurations:Debug"
+        defines
+        {
+            "OC_DEBUG_BUILD"
+        }
+        
+    filter "configurations:Release"
+        defines
+        {
+            "OC_RELEASE_BUILD"
+        }
+        
+    filter "configurations:Dist"
+        defines
+        {
+            "OC_DIST_BUILD"
+        }
+        
 
 project "Core"
     kind "StaticLib"
@@ -21,15 +49,43 @@ project "Core"
     {
         "Core/Core/**.cpp",
         "Core/Core/**.h",
+        "Core/Debug/**.cpp",
+        "Core/Debug/**.h",
         "Core/Include/PCH/OrchisPCH.cpp",
         "Core/Include/PCH/OrchisPCH.h",
-        "Core/Include/Export/Orchis.h"
+        "Core/Include/Export/Orchis.h",
+        "Core/Platform/Vulkan/*.cpp",
+        "Core/Platform/Vulkan/*.h",
+        "Core/Renderer/*.cpp",
+        "Core/Renderer/*.h",
+        "Core/Assets/Textures/**.png",
+        "Core/Assets/Textures/**.jpg",
+        "Core/Assets/Shaders/**.vert",
+        "Core/Assets/Shaders/**.frag",
+        "Core/Assets/Shaders/**.bat",
+        "Core/Assets/Shaders/bin/**.spv",
+        "Core/vendor/stb/**.h"
     }
 
     includedirs 
     {
         "Core/Include/PCH",
-        "Core/Core"
+        "Core",
+        "Core/Core",
+        "%{IncludeDir.Vulkan}",
+        "%{IncludeDir.spdlog}",
+        "%{IncludeDir.glm}",
+        "%{IncludeDir.stb}"
+    }
+
+    libdirs
+    {
+        "%{VulkanLibDir}"
+    }
+
+    links
+    {
+        "vulkan-1.lib"
     }
 
     pchheader "OrchisPCH.h"
@@ -53,10 +109,16 @@ project "Sandbox"
 	staticruntime "on"
     location "Sandbox"
 
+    targetdir ("bin/" .. outputdir .. "/%{prj.name}")
+	objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
+
     includedirs
     {
         "Core/Include/Export",
-        "Core/Core"
+        "Core",
+        "Core/Core",
+        "%{IncludeDir.spdlog}",
+        "%{IncludeDir.glm}"
     }
     
     files 

@@ -3,6 +3,11 @@
 #include "KeyCodes.h"
 
 namespace Orchis {
+	class Window;
+	struct CursorPos
+	{
+		long x, y;
+	};
 
 	class ORCHIS_API Input
 	{
@@ -11,10 +16,17 @@ namespace Orchis {
 		static bool KeyReleased(Key key);
 		static bool IsKeyDown(Key key);
 
+		//implemented in platform specific files
+		static CursorPos GetCursorPos();
+		static void CenterCursor();
+		static void ClipCursor();
+		static void ToggleCursorVisibility();
 	private:
-		static char m_InputBuffer[96];
+		static std::array<char, 96> s_InputBuffer;
+		static bool s_IsCursorVisible;
+		static bool s_IsCursorClipped;
 		friend class EventDispatcher;
-		friend class Application;
+		friend class Window;
 
 		static void RegisterKeyDown(Key key);
 		static void RegisterKeyUp(Key key);

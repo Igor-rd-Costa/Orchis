@@ -4,7 +4,14 @@
 #include "KeyCodes.h"
 #include "EventDispatcher.h"
 #include  <string>
+
 namespace Orchis {
+
+	struct {
+		const char* Extensions[2] = { "VK_KHR_surface", "VK_KHR_win32_surface" };
+	} vk;
+
+	
 
 	WindowsWindow::WindowsWindow(std::string_view name)
 		: m_Width(1600), m_Height(900)
@@ -35,6 +42,8 @@ namespace Orchis {
 		m_HandleDeviceContext = GetDC(m_WindowHandle);
 
 		ShowWindow(m_WindowHandle, SW_NORMAL);
+		GetWindowRect(m_WindowHandle, &m_WindowRect);
+		Update();
 	}
 
 	WindowsWindow::~WindowsWindow()
@@ -44,12 +53,21 @@ namespace Orchis {
 
 	void WindowsWindow::Update()
 	{
+		UpdateInputState();
 		static MSG msg;
 		while (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
 		{
 			TranslateMessage(&msg);
 			DispatchMessage(&msg);
 		}
+	}
+
+	const char** Window::GetRequiredVKExtensions(uint32_t* outExtensionCount)
+	{
+		if (outExtensionCount)
+			*outExtensionCount = 2;
+
+		return vk.Extensions;
 	}
 
 	LRESULT CALLBACK WindowsWindow::WinProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)

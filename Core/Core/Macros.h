@@ -1,11 +1,16 @@
 #pragma once
 #include <memory>
 
-#ifdef ORCHIS_PLATFORM_WINDOWS
-	#ifdef ORCHIS_BUILD_DYNAMIC
+#ifdef OC_PLATFORM_WINDOWS
+	#ifdef OC_BUILD_DYNAMIC
 		#define ORCHIS_API //__declspec(dllexport)
 	#else
 		#define ORCHIS_API //__declspec(dllimport)
+	#endif
+	#if OC_DEBUG_BUILD || OC_RELEASE_BUILD
+		#define OC_ASSERT(x) { if (!(x)) __debugbreak(); }
+	#else
+		#define OC_ASSERT(x)
 	#endif
 #else
 #error "Orchis only supports Windows."

@@ -3,7 +3,7 @@
 #include <Windows.h>
 
 namespace Orchis {
-	
+
 	static LARGE_INTEGER frequency;
 	Timer::Timer(const char* name)
 		: m_Name(name)
@@ -16,7 +16,7 @@ namespace Orchis {
 
 	Timer::~Timer()
 	{
-		std::cout << "[" << m_Name << " Timer]" << GetTime(TIME_FORMAT_SECONDS) << "s\n";
+		std::cout << "[" << m_Name << " Timer]Ended after " << GetTime(TIME_FORMAT_SECONDS) << "s.\n";
 	}
 
 	double Timer::GetTime(TimeFormat format)

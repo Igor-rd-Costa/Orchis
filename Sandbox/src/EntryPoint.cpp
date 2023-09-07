@@ -1,9 +1,11 @@
-#include "Application.h"
+#include "Sandbox.h"
+
 
 int main()
 {
-	Orchis::Application* app = new Orchis::Application();
-	app->Run();
+	Orchis::Sandbox* app = new Orchis::Sandbox();
+	
+	app->Run(); 
 
 	delete app;
 }

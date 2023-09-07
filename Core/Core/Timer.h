@@ -3,12 +3,12 @@
 
 namespace Orchis {
 	
-	enum ORCHIS_API TimeFormat
+	enum TimeFormat
 	{
 		TIME_FORMAT_SECONDS, TIME_FORMAT_MILISECONDS
 	};
 
-	class ORCHIS_API Timer
+	class Timer
 	{
 	public:	
 		Timer(const char* name = "Unnamed");

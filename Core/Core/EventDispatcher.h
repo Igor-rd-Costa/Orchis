@@ -39,13 +39,13 @@ namespace Orchis {
 				{
 					MouseButtonDownEvent* eventPtr = reinterpret_cast<MouseButtonDownEvent*>(&event);
 					Input::RegisterKeyDown(eventPtr->GetButton());
-					s_MouseButtonDownCallback(reinterpret_cast<MouseButtonDownEvent*>(&event));
+					s_MouseButtonDownCallback(eventPtr);
 				} break;
 				case EventType::MOUSE_BUTTON_UP_EVENT:
 				{
 					MouseButtonUpEvent* eventPtr = reinterpret_cast<MouseButtonUpEvent*>(&event);
 					Input::RegisterKeyUp(eventPtr->GetButton());
-					s_MouseButtonUpCallback(reinterpret_cast<MouseButtonUpEvent*>(&event));
+					s_MouseButtonUpCallback(eventPtr);
 				} break;
 				case EventType::MOUSE_MOVE_EVENT:
 				{
@@ -59,25 +59,25 @@ namespace Orchis {
 				{
 					KeyDownEvent* eventPtr = reinterpret_cast<KeyDownEvent*>(&event);
 					Input::RegisterKeyDown(eventPtr->GetKey());
-					s_KeyDownCallback(reinterpret_cast<KeyDownEvent*>(&event));
+					s_KeyDownCallback(eventPtr);
 				} break;
 				case EventType::KEY_UP_EVENT:
 				{
 					KeyUpEvent* eventPtr = reinterpret_cast<KeyUpEvent*>(&event);
 					Input::RegisterKeyUp(eventPtr->GetKey());
-					s_KeyUpCallback(reinterpret_cast<KeyUpEvent*>(&event));
+					s_KeyUpCallback(eventPtr);
 				} break;
 				case EventType::WINDOW_RESIZE_EVENT:
 				{
 					s_WindowResizeCallback(reinterpret_cast<WindowResizeEvent*>(&event));
 				} break;
-				case EventType::WINDOW_CLOSE_EVENT:
-				{
-					s_WindowCloseCallback(reinterpret_cast<WindowCloseEvent*>(&event));
-				} break;
 				case EventType::WINDOW_MINIMIZE_EVENT:
 				{
 					s_WindowMinimizeCallback(reinterpret_cast<WindowMinimizeEvent*>(&event));
+				} break;
+				case EventType::WINDOW_CLOSE_EVENT:
+				{
+					s_WindowCloseCallback(reinterpret_cast<WindowCloseEvent*>(&event));
 				} break;
 			}
 		}
