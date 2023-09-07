@@ -36,11 +36,8 @@ namespace Orchis {
 			GetModuleHandle(NULL),
 			NULL
 		);
-
-		SetWindowLongPtr(m_WindowHandle, 0, reinterpret_cast<LONG_PTR>(this));
-
+		SetWindowLongPtr(m_WindowHandle, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(this));
 		m_HandleDeviceContext = GetDC(m_WindowHandle);
-
 		ShowWindow(m_WindowHandle, SW_NORMAL);
 		GetWindowRect(m_WindowHandle, &m_WindowRect);
 		Update();
@@ -49,6 +46,11 @@ namespace Orchis {
 	WindowsWindow::~WindowsWindow()
 	{
 		DestroyWindow(m_WindowHandle);
+	}
+
+	void WindowsWindow::UpdateRect()
+	{
+		GetWindowRect(m_WindowHandle, &m_WindowRect);
 	}
 
 	void WindowsWindow::Update()
@@ -72,7 +74,7 @@ namespace Orchis {
 
 	LRESULT CALLBACK WindowsWindow::WinProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	{
-		WindowsWindow* window = reinterpret_cast<WindowsWindow*>(GetWindowLongPtr(hWnd, 0));
+		WindowsWindow* window = reinterpret_cast<WindowsWindow*>(GetWindowLongPtr(hWnd, GWLP_USERDATA));
 		switch (uMsg)
 		{
 		case WM_MOUSEMOVE:
@@ -147,9 +149,14 @@ namespace Orchis {
 		} break;
 		case WM_SIZE:
 		{
+			window->UpdateRect();
 			EventDispatcher::Dispatch<WindowResizeEvent>({ (float)LOWORD(lParam), (float)HIWORD(lParam) });
 			if (wParam == SIZE_MINIMIZED)
 				EventDispatcher::Dispatch<WindowMinimizeEvent>(WindowMinimizeEvent());
+		} break;
+		case WM_MOVE:
+		{
+			window->UpdateRect();
 		} break;
 		case WM_CLOSE:
 		{

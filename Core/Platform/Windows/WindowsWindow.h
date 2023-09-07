@@ -15,6 +15,7 @@ namespace Orchis {
 		virtual uint32_t GetWidth() const override { return m_Width; };
 		virtual uint32_t GetHeight() const override { return m_Height; };
 		virtual std::pair<long, long> GetCenter() const override { return { ((m_WindowRect.left + m_WindowRect.right) / 2), ((m_WindowRect.bottom + m_WindowRect.top) / 2) }; }
+		inline void UpdateRect();
 
 		virtual void Update() override;
 		virtual void* GetHandle() override {
