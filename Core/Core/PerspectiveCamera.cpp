@@ -7,7 +7,7 @@ namespace Orchis {
 
 	PerspectiveCamera::PerspectiveCamera(glm::vec3 position, float fieldOfView, float speed)
 		: m_Position(position), m_CameraFront({ 0.0f, 1.0f, 0.0f }), m_FieldOfView(fieldOfView), 
-		m_CameraSpeed(speed), m_CameraUp({ 0.0f, 0.0f, 1.0f }), m_Yaw(0.0f), m_Pitch(0.0f), m_Sensitivity(0.2f),
+		m_CameraSpeed(speed), m_CameraUp({ 0.0f, 0.0f, 1.0f }), m_Yaw(0.0f), m_Pitch(0.0f), m_Sensitivity(0.3f),
 		m_ProjMatrix(glm::perspective(glm::radians(fieldOfView), (float)Application::GetWindow()->GetWidth() / (float)Application::GetWindow()->GetHeight(), 0.1f, 100.0f)), 
 		m_ViewMatrix(glm::mat4(1.0f)), m_ViewProj(m_ProjMatrix * m_ViewMatrix)
 	{

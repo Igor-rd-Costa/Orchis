@@ -72,4 +72,9 @@ namespace Orchis {
 		memcpy((char*)m_BufferData[VulkanAPI::s_CurrentFrame].WritePtr + m_Uniforms[name].Offset, &data, m_Uniforms[name].Size);
 	}
 
+	void VulkanUniformBuffer::SetUniformFloat(const std::string& name, float data)
+	{
+		memcpy((char*)m_BufferData[VulkanAPI::s_CurrentFrame].WritePtr + m_Uniforms[name].Offset, &data, m_Uniforms[name].Size);
+	}
+
 }

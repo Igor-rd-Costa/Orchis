@@ -2,6 +2,8 @@
 #include "VulkanVertexBuffer.h"
 #include "VulkanAPI.h"
 #include "VulkanStagingBuffer.h"
+#include "VulkanRenderCommand.h"
+
 namespace Orchis {
 
 	VulkanVertexBuffer::VulkanVertexBuffer(void* data, size_t size)
@@ -15,10 +17,9 @@ namespace Orchis {
 
 	}
 
-	void VulkanVertexBuffer::Bind()
+	void VulkanVertexBuffer::Bind(size_t offset)
 	{
-		static VkDeviceSize offset = 0;
-		vkCmdBindVertexBuffers(VulkanAPI::GetCommandBuffer(), 0, 1, &m_Buffer, &offset);
+		vkCmdBindVertexBuffers(VulkanRenderCommand::GetCommandBuffer(), 0, 1, &m_Buffer, reinterpret_cast<VkDeviceSize*>(&offset));
 	}
 
 }

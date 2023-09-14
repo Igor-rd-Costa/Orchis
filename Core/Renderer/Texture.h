@@ -10,9 +10,9 @@ namespace Orchis {
 		Texture() = default;
 		virtual ~Texture() = default;
 
-		virtual uint32_t GetBinding() const = 0;
 		virtual void Load(const char* path) = 0;
+		virtual void Bind() const = 0;
 
-		static Ref<Texture> Create(const char* path, uint32_t binding, ShaderStageFlags stageFlags);
+		static Texture* Create(const std::string& path, uint32_t index);
 	};
 }

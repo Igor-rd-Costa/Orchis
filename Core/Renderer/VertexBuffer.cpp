@@ -4,8 +4,8 @@
 
 namespace Orchis {
 
-	Ref<VertexBuffer> VertexBuffer::Create(void* data, size_t size)
+	VertexBuffer* VertexBuffer::Create(void* data, size_t size)
 	{
-		return CreateRef<VulkanVertexBuffer>(data, size);
+		return new VulkanVertexBuffer(data, size);
 	}
 }

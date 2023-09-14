@@ -14,8 +14,9 @@ namespace Orchis {
 		IndexBuffer() = default;
 		virtual ~IndexBuffer() = default;
 		
-		virtual void Bind() = 0;
+		virtual void Bind(size_t offset) const = 0;
+		virtual uint32_t GetIndexCount() const = 0;
 
-		static Ref<IndexBuffer> Create(void* data, size_t size, IndexType type);
+		static IndexBuffer* Create(void* data, size_t size, IndexType type);
 	};
 }

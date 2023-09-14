@@ -6,9 +6,9 @@ namespace Orchis {
 
 	struct DefaultVertex
 	{
-		glm::vec3 Position;
-		glm::vec3 Normals;
-		glm::vec2 TexCoord;
+		glm::vec3 Position = {0.0f, 0.0f, 0.0f};
+		glm::vec3 Normals = { 0.0f, 0.0f, 0.0f };
+		glm::vec2 TexCoord = { 0.0f, 0.0f };
 	};
 
 	class VertexBuffer
@@ -17,9 +17,9 @@ namespace Orchis {
 		VertexBuffer() = default;
 		virtual ~VertexBuffer() = default;
 
-		virtual void Bind() = 0;
+		virtual void Bind(size_t offset = 0) = 0;
 		
 
-		static Ref<VertexBuffer> Create(void* data, size_t size);
+		static VertexBuffer* Create(void* data, size_t size);
 	};
 }

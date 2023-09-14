@@ -23,6 +23,7 @@ namespace Orchis {
 	
 		virtual void SetUniformMat4(const std::string& name, const glm::mat4& data) override;
 		virtual void SetUniformFloat3(const std::string& name, const glm::vec3& data) override;
+		virtual void SetUniformFloat(const std::string& name, float data) override;
 
 		const std::vector<VulkanUniformBufferData>& GetBuffers() { return m_BufferData; }
 		size_t GetSize() const { return m_Size; }

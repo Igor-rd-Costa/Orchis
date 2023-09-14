@@ -10,8 +10,16 @@ startproject "Sandbox"
     IncludeDir["spdlog"] = "Core/vendor/spdlog/include"
     IncludeDir["glm"] = "Core/vendor/glm"
     IncludeDir["stb"] = "Core/vendor/stb"
+    IncludeDir["assimp"] = "Core/vendor/assimp/include"
     
     VulkanLibDir = "C:/VulkanSDK/1.3.250.1/Lib"
+    AssimpLibDir = "Core/vendor/assimp/lib/Release"
+    ZlibDir = "Core/vendor/assimp/contrib/zlib/Release"
+
+    defines
+    {
+        "OC_BUILD_STATIC"
+    }
 
     filter "system:windows"
         defines
@@ -75,17 +83,22 @@ project "Core"
         "%{IncludeDir.Vulkan}",
         "%{IncludeDir.spdlog}",
         "%{IncludeDir.glm}",
-        "%{IncludeDir.stb}"
+        "%{IncludeDir.stb}",
+        "%{IncludeDir.assimp}"
     }
 
     libdirs
     {
-        "%{VulkanLibDir}"
+        "%{VulkanLibDir}",
+        "%{AssimpLibDir}",
+        "%{ZlibDir}"
     }
 
     links
     {
-        "vulkan-1.lib"
+        "vulkan-1.lib",
+        "assimp-vc143-mt.lib",
+        "zlibstatic.lib"
     }
 
     pchheader "OrchisPCH.h"
@@ -93,7 +106,7 @@ project "Core"
 
     targetdir ("bin/" .. outputdir .. "/%{prj.name}")
 	objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
-
+    
     filter "system:windows"
         systemversion "latest"
         files
@@ -118,7 +131,8 @@ project "Sandbox"
         "Core",
         "Core/Core",
         "%{IncludeDir.spdlog}",
-        "%{IncludeDir.glm}"
+        "%{IncludeDir.glm}",
+        "%{IncludeDir.assimp}"
     }
     
     files 

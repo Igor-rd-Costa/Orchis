@@ -15,6 +15,7 @@ namespace Orchis
 		const glm::mat4& GetViewMatrix() { return m_ViewMatrix; }
 		const glm::mat4& GetProjMatrix() { return m_ProjMatrix; }
 		const glm::mat4& GetTransform() { return m_ViewProj; }
+		const glm::vec3& GetPosition() { return m_Position; }
 		
 		glm::vec3 m_Position;
 		glm::vec3 m_CameraFront;

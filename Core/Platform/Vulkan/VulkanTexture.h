@@ -7,20 +7,21 @@ namespace Orchis {
 	class VulkanTexture : public Texture
 	{
 	public:
-		VulkanTexture(const char* path, uint32_t binding, ShaderStageFlags stageFlags);
+		VulkanTexture(const std::string& path, uint32_t index);
 		~VulkanTexture();
 
-		VkDescriptorImageInfo GetDescriptorInfo();
+		VkDescriptorImageInfo GetDescriptorInfo() const;
 
 		virtual void Load(const char* path) override;
+		virtual void Bind() const override;
 
-		virtual uint32_t GetBinding() const override { return m_Binding; }
+		uint32_t GetIndex() const { return m_Index; }
 		VkShaderStageFlags GetStageFlags() const { return m_StageFlags; }
 	private:
 		void DestroyTexture();
 		uint32_t m_Width, m_Heigth;
 		int m_ChannelCount;
-		uint32_t m_Binding;
+		uint32_t m_Index;
 		VkShaderStageFlags m_StageFlags;
 		VkImage m_Image;
 		VkDeviceMemory m_ImageMemory;

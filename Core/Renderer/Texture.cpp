@@ -4,9 +4,9 @@
 
 namespace Orchis {
 
-    Ref<Texture> Texture::Create(const char* path, uint32_t binding, ShaderStageFlags stageFlags)
+    Texture* Texture::Create(const std::string& path, uint32_t index)
     {
-        return CreateRef<VulkanTexture>(path, binding, stageFlags);
+        return new VulkanTexture(path, index);
     }
 
 }

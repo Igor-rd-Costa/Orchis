@@ -11,6 +11,6 @@ namespace Orchis {
 		VulkanVertexBuffer(void* data, size_t size);
 		~VulkanVertexBuffer();
 
-		virtual void Bind() override;
+		virtual void Bind(size_t offset = 0) override;
 	};
 }

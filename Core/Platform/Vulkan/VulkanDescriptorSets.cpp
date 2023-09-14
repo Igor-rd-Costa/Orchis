@@ -3,6 +3,8 @@
 #include "VulkanUniformBuffer.h"
 #include "VulkanTexture.h"
 #include "VulkanAPI.h"
+#include "VulkanRenderCommand.h"
+#include "ImageSamplerManager.h"
 
 namespace Orchis {
 
@@ -87,40 +89,42 @@ namespace Orchis {
 	}
 
 
-	VkDescriptorSetLayout VulkanDescriptorSetManager::CreateImageSamplersDescriptorSetLayout(uint32_t textureCount, Texture** pTextures)
+	VkDescriptorSetLayout VulkanDescriptorSetManager::CreateImageSamplersDescriptorSetLayout()
 	{
-		std::vector<VkDescriptorSetLayoutBinding> bindings(textureCount);
-		for (uint32_t i = 0; i < textureCount; i++)
-		{
-			VulkanTexture* texture = reinterpret_cast<VulkanTexture*>(pTextures[i]);
-			bindings[i].binding = texture->GetBinding();
-			bindings[i].descriptorCount = 1;
-			bindings[i].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-			bindings[i].pImmutableSamplers = nullptr;
-			bindings[i].stageFlags = texture->GetStageFlags();
-		}
+		VkDescriptorSetLayoutBinding binding{};
+		binding.binding = 0;
+		binding.descriptorCount = 32;
+		binding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+		binding.pImmutableSamplers = nullptr;
+		binding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
+		
+		VkDescriptorBindingFlags bindingFlag = VK_DESCRIPTOR_BINDING_UPDATE_AFTER_BIND_BIT | VK_DESCRIPTOR_BINDING_PARTIALLY_BOUND_BIT;
+
+		VkDescriptorSetLayoutBindingFlagsCreateInfo bindingFlagsCreateInfo{};
+		bindingFlagsCreateInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_BINDING_FLAGS_CREATE_INFO;
+		bindingFlagsCreateInfo.bindingCount = 1;
+		bindingFlagsCreateInfo.pBindingFlags = &bindingFlag;
+
 		VkDescriptorSetLayoutCreateInfo layoutInfo{};
 		layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
-		layoutInfo.bindingCount = textureCount;
-		layoutInfo.flags = 0;
-		layoutInfo.pBindings = bindings.data();
-		layoutInfo.pNext = nullptr;
+		layoutInfo.bindingCount = 1;
+		layoutInfo.flags = VK_DESCRIPTOR_SET_LAYOUT_CREATE_UPDATE_AFTER_BIND_POOL_BIT;
+		layoutInfo.pBindings = &binding;
+		layoutInfo.pNext = &bindingFlagsCreateInfo;
 
 		VkResult result = vkCreateDescriptorSetLayout(VulkanAPI::GetDevice(), &layoutInfo, nullptr, &s_ImageSamplersDescriptorSetLayout);
 		OC_ASSERT(result == VK_SUCCESS);
 
-		std::vector<VkDescriptorPoolSize> poolSizes(textureCount);
-		for (uint32_t i = 0; i < poolSizes.size(); i++)
-		{
-			poolSizes[i].type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-			poolSizes[i].descriptorCount = VulkanAPI::s_MaxFramesInFlight;
-		}
+		VkDescriptorPoolSize poolSize;
+			poolSize.type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+			poolSize.descriptorCount = 32 * VulkanAPI::s_MaxFramesInFlight;
 
 		VkDescriptorPoolCreateInfo poolCreateInfo{};
 		poolCreateInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
-		poolCreateInfo.poolSizeCount = static_cast<uint32_t>(poolSizes.size());
-		poolCreateInfo.pPoolSizes = poolSizes.data();
+		poolCreateInfo.poolSizeCount = 1;
+		poolCreateInfo.pPoolSizes = &poolSize;
 		poolCreateInfo.maxSets = VulkanAPI::s_MaxFramesInFlight;
+		poolCreateInfo.flags = VK_DESCRIPTOR_POOL_CREATE_UPDATE_AFTER_BIND_BIT;
 
 		vkCreateDescriptorPool(VulkanAPI::GetDevice(), &poolCreateInfo, nullptr, &s_ImageSamplersPool);
 
@@ -137,25 +141,24 @@ namespace Orchis {
 
 		vkAllocateDescriptorSets(VulkanAPI::GetDevice(), &allocInfo, s_ImageSamplersDescriptorSets.data());
 
-		for (uint32_t i = 0; i < VulkanAPI::s_MaxFramesInFlight; i++)
+		/*for (uint32_t i = 0; i < VulkanAPI::s_MaxFramesInFlight; i++)
 		{
-			std::vector<VkDescriptorImageInfo> imageInfos(textureCount);
-			std::vector<VkWriteDescriptorSet> descriptorWrites(textureCount);
-			for (uint32_t j = 0; j < descriptorWrites.size(); j++)
-			{
-				imageInfos[j] = reinterpret_cast<VulkanTexture*>(pTextures[j])->GetDescriptorInfo();
+				VkDescriptorImageInfo imageInfo{};
+				imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+				imageInfo.imageView = VK_NULL_HANDLE;
+				imageInfo.sampler = ImageSamplerManager::GetSampler();
 
-				descriptorWrites[j].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-				descriptorWrites[j].dstSet = s_ImageSamplersDescriptorSets[i];
-				descriptorWrites[j].dstBinding = reinterpret_cast<VulkanTexture*>(pTextures[j])->GetBinding();
-				descriptorWrites[j].dstArrayElement = 0;
-				descriptorWrites[j].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-				descriptorWrites[j].descriptorCount = 1;
-				descriptorWrites[j].pImageInfo = &imageInfos[j];
-			}
+				VkWriteDescriptorSet descriptorWrite{};
+				descriptorWrite.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+				descriptorWrite.dstSet = s_ImageSamplersDescriptorSets[i];
+				descriptorWrite.dstBinding = 0;
+				descriptorWrite.dstArrayElement = 0;
+				descriptorWrite.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+				descriptorWrite.descriptorCount = 1;
+				descriptorWrite.pImageInfo = &imageInfo;
 
-			vkUpdateDescriptorSets(VulkanAPI::GetDevice(), static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
-		}
+			vkUpdateDescriptorSets(VulkanAPI::GetDevice(), 1, &descriptorWrite, 0, nullptr);
+		}*/
 
 		return s_ImageSamplersDescriptorSetLayout;
 	}
@@ -165,18 +168,18 @@ namespace Orchis {
 		vkDestroyDescriptorSetLayout(VulkanAPI::GetDevice(), s_UniformBuffersDescriptorSetLayout, nullptr);
 	}
 
-	void VulkanDescriptorSetManager::UpdateImageSampler(Texture* texture)
+	void VulkanDescriptorSetManager::UpdateImageSampler(const Texture* texture)
 	{
 		vkDeviceWaitIdle(VulkanAPI::GetDevice());
 		for (uint32_t i = 0; i < VulkanAPI::s_MaxFramesInFlight; i++)
 		{
-			VkDescriptorImageInfo imageInfo = reinterpret_cast<VulkanTexture*>(texture)->GetDescriptorInfo();
+			VkDescriptorImageInfo imageInfo = reinterpret_cast<const VulkanTexture*>(texture)->GetDescriptorInfo();
 
 			VkWriteDescriptorSet descriptorWrite{};
 			descriptorWrite.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
 			descriptorWrite.dstSet = s_ImageSamplersDescriptorSets[i];
-			descriptorWrite.dstBinding = reinterpret_cast<VulkanTexture*>(texture)->GetBinding();
-			descriptorWrite.dstArrayElement = 0;
+			descriptorWrite.dstBinding = 0;
+			descriptorWrite.dstArrayElement = reinterpret_cast<const VulkanTexture*>(texture)->GetIndex();
 			descriptorWrite.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
 			descriptorWrite.descriptorCount = 1;
 			descriptorWrite.pImageInfo = &imageInfo;		
@@ -202,7 +205,7 @@ namespace Orchis {
 
 	void VulkanDescriptorSetManager::BindDescriptorSets()
 	{
-		vkCmdBindDescriptorSets(VulkanAPI::GetCommandBuffer(), VK_PIPELINE_BIND_POINT_GRAPHICS, VulkanGraphicsPipeline::GetBoundPipelineLayout(), 0, 1, VulkanDescriptorSetManager::GetUniformBuffersDescriptorSet(VulkanAPI::s_CurrentFrame), 0, nullptr);
-		vkCmdBindDescriptorSets(VulkanAPI::GetCommandBuffer(), VK_PIPELINE_BIND_POINT_GRAPHICS, VulkanGraphicsPipeline::GetBoundPipelineLayout(), 1, 1, VulkanDescriptorSetManager::GetImageSamplersDescriptorSet(VulkanAPI::s_CurrentFrame), 0, nullptr);
+		vkCmdBindDescriptorSets(VulkanRenderCommand::GetCommandBuffer(), VK_PIPELINE_BIND_POINT_GRAPHICS, VulkanGraphicsPipeline::GetBoundPipelineLayout(), 0, 1, VulkanDescriptorSetManager::GetUniformBuffersDescriptorSet(VulkanAPI::s_CurrentFrame), 0, nullptr);
+		vkCmdBindDescriptorSets(VulkanRenderCommand::GetCommandBuffer(), VK_PIPELINE_BIND_POINT_GRAPHICS, VulkanGraphicsPipeline::GetBoundPipelineLayout(), 1, 1, VulkanDescriptorSetManager::GetImageSamplersDescriptorSet(VulkanAPI::s_CurrentFrame), 0, nullptr);
 	}
 }

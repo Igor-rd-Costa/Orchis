@@ -37,12 +37,10 @@ namespace Orchis {
 		};
 	public:		
 		virtual void Init() override;
-		virtual void Shutdown() override;
+		virtual void ShutDown() override;
 
-		virtual void DrawCube() override;
-
-		virtual void StartFrame() override;
-		virtual void SwapBuffers() override;
+		static void BeginFrame();
+		static void SwapBuffers();
 
 		inline static VkDevice GetDevice() { return s_Device; }
 		inline static VkPhysicalDevice GetPhysicalDevice() { return s_PhysDevice; }
@@ -63,6 +61,7 @@ namespace Orchis {
 		static Logger s_Logger;
 		static const uint32_t s_MaxFramesInFlight = 2;
 		static uint32_t s_CurrentFrame;
+		static uint32_t s_ImageIndex;
 	private:
 
 
@@ -89,7 +88,6 @@ namespace Orchis {
 		bool CheckDeviceExtensionSupport(VkPhysicalDevice device);
 		bool IsDeviceSuitable(VkPhysicalDevice device);
 	private:
-		static uint32_t s_ImageIndex;
 		static VkInstance s_Instance;
 		static VkPhysicalDevice s_PhysDevice;
 		static VkDevice s_Device;

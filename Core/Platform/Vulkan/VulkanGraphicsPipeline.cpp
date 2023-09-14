@@ -99,7 +99,7 @@ namespace Orchis {
 		rasterizationStateInfo.rasterizerDiscardEnable = VK_FALSE;
 		rasterizationStateInfo.polygonMode = VK_POLYGON_MODE_FILL;
 		rasterizationStateInfo.lineWidth = 1.0f;
-		rasterizationStateInfo.cullMode = VK_CULL_MODE_BACK_BIT;
+		rasterizationStateInfo.cullMode = VK_CULL_MODE_NONE;//VK_CULL_MODE_BACK_BIT;
 		rasterizationStateInfo.frontFace = VK_FRONT_FACE_COUNTER_CLOCKWISE;
 		rasterizationStateInfo.depthBiasEnable = VK_FALSE;
 
@@ -135,13 +135,24 @@ namespace Orchis {
 		
 		std::array<VkDescriptorSetLayout, 2> descriptorSetLayouts = {
 			VulkanDescriptorSetManager::CreateUniformBuffersDescriptorSetLayout(createInfo->UniformBufferCount, createInfo->pUniformBuffers),
-			VulkanDescriptorSetManager::CreateImageSamplersDescriptorSetLayout(createInfo->TexturesCount, createInfo->pTextures)
+			VulkanDescriptorSetManager::CreateImageSamplersDescriptorSetLayout()
 		};
+
+		std::array<VkPushConstantRange, 2> pushConstants{};
+		pushConstants[0].stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
+		pushConstants[0].size = sizeof(glm::mat4);
+		pushConstants[0].offset = 0;
+		pushConstants[1].stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
+		pushConstants[1].size = sizeof(glm::vec4) + sizeof(uint32_t);
+		pushConstants[1].offset = sizeof(glm::mat4);
+
 
 		VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
 		pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
 		pipelineLayoutInfo.setLayoutCount = static_cast<uint32_t>(descriptorSetLayouts.size());
 		pipelineLayoutInfo.pSetLayouts = descriptorSetLayouts.data();
+		pipelineLayoutInfo.pushConstantRangeCount = static_cast<uint32_t>(pushConstants.size());
+		pipelineLayoutInfo.pPushConstantRanges = pushConstants.data();
 
 		VkResult result = vkCreatePipelineLayout(VulkanAPI::GetDevice(), &pipelineLayoutInfo, nullptr, &m_Layout);
 		OC_ASSERT(result == VK_SUCCESS);

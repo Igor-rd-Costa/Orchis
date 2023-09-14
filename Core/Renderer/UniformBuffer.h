@@ -28,6 +28,7 @@ namespace Orchis {
 		virtual void Update(void* data, size_t size) = 0;
 		virtual void SetUniformMat4(const std::string& name, const glm::mat4& data) = 0;
 		virtual void SetUniformFloat3(const std::string& name, const glm::vec3& data) = 0;
+		virtual void SetUniformFloat(const std::string& name, float data) = 0;
 
 		static Ref<UniformBuffer> Create(size_t size, uint32_t binding, ShaderStageFlags stageFlags, const std::vector<UniformInfo>& uniformInfo);
 	};

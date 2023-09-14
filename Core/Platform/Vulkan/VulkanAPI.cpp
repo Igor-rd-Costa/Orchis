@@ -7,6 +7,7 @@
 #include "VulkanStagingBuffer.h"
 #include "VulkanDescriptorSets.h"
 #include "ImageSamplerManager.h"
+#include "VulkanRenderCommand.h"
 
 namespace Orchis {
 
@@ -54,7 +55,7 @@ namespace Orchis {
 		VulkanStagingBuffer::Init(128'000'000);
 	}
 
-	void VulkanAPI::Shutdown()
+	void VulkanAPI::ShutDown()
 	{
 		vkDeviceWaitIdle(s_Device);
 
@@ -80,12 +81,7 @@ namespace Orchis {
 		vkDestroyInstance(s_Instance, nullptr);
 	}
 
-	void VulkanAPI::DrawCube()
-	{
-		vkCmdDrawIndexed(s_CommandBuffers[s_CurrentFrame], 36, 1, 0, 0, 0);
-	}
-
-	void VulkanAPI::StartFrame()
+	void VulkanAPI::BeginFrame()
 	{
 		vkWaitForFences(s_Device, 1, &s_InFlightFences[s_CurrentFrame], VK_TRUE, UINT64_MAX);
 
@@ -99,19 +95,11 @@ namespace Orchis {
 		else OC_ASSERT(result == VK_SUCCESS || result == VK_SUBOPTIMAL_KHR);
 
 		vkResetFences(s_Device, 1, &s_InFlightFences[s_CurrentFrame]);
-
-		vkResetCommandBuffer(s_CommandBuffers[s_CurrentFrame], 0);
-		RecordCommandBuffer(s_CommandBuffers[s_CurrentFrame], VulkanAPI::s_ImageIndex);
-
-		VulkanDescriptorSetManager::BindDescriptorSets();
 	}
 
 	void VulkanAPI::SwapBuffers()
 	{
 		static VkResult result = VK_SUCCESS;
-		vkCmdEndRenderPass(s_CommandBuffers[s_CurrentFrame]);
-		result = vkEndCommandBuffer(s_CommandBuffers[s_CurrentFrame]);
-		OC_ASSERT(result == VK_SUCCESS);
 
 		VkPipelineStageFlags waitStages[] = { VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
 		VkSubmitInfo submitInfo{};
@@ -120,7 +108,7 @@ namespace Orchis {
 		submitInfo.pWaitSemaphores = &s_ImageAvailableSemaphores[s_CurrentFrame];
 		submitInfo.pWaitDstStageMask = waitStages;
 		submitInfo.commandBufferCount = 1;
-		submitInfo.pCommandBuffers = &s_CommandBuffers[s_CurrentFrame];
+		submitInfo.pCommandBuffers = &VulkanRenderCommand::GetCommandBuffer();
 		submitInfo.signalSemaphoreCount = 1;
 		submitInfo.pSignalSemaphores = &s_RenderFinishedSemaphores[s_CurrentFrame];
 
@@ -153,7 +141,7 @@ namespace Orchis {
 		appInfo.applicationVersion = VK_MAKE_VERSION(1, 0, 0);
 		appInfo.pEngineName = "Orchis";
 		appInfo.engineVersion = VK_MAKE_VERSION(1, 0, 0);
-		appInfo.apiVersion = VK_API_VERSION_1_0;
+		appInfo.apiVersion = VK_API_VERSION_1_2;
 		appInfo.pNext = nullptr;
 
 		uint32_t extensionCount;
@@ -188,7 +176,6 @@ namespace Orchis {
 		else
 			s_Logger.Error("Failed to initialize validation layers. Initializing Vulkan without validation layers.");
 #endif
-
 		VkInstanceCreateInfo createInfo{};
 		createInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
 		createInfo.pApplicationInfo = &appInfo;
@@ -219,6 +206,15 @@ namespace Orchis {
 		}
 
 		OC_ASSERT(s_PhysDevice != VK_NULL_HANDLE);
+
+		VkPhysicalDeviceDescriptorIndexingProperties indexingProperties{};
+		indexingProperties.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DESCRIPTOR_INDEXING_PROPERTIES;
+		VkPhysicalDeviceProperties2 properties;
+		properties.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2;
+		properties.pNext = &indexingProperties;
+		vkGetPhysicalDeviceProperties2(s_PhysDevice, &properties);
+
+		int a = 5;
 	}
 
 	void VulkanAPI::CreateLogicalDevice()
@@ -242,6 +238,11 @@ namespace Orchis {
 		VkPhysicalDeviceFeatures deviceFeatures{};
 		deviceFeatures.samplerAnisotropy = VK_TRUE;
 
+		VkPhysicalDeviceDescriptorIndexingFeatures descriptorIndexingFeatures{};
+		descriptorIndexingFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DESCRIPTOR_INDEXING_FEATURES;
+		descriptorIndexingFeatures.descriptorBindingSampledImageUpdateAfterBind = VK_TRUE;
+		descriptorIndexingFeatures.descriptorBindingPartiallyBound = VK_TRUE;
+
 		VkDeviceCreateInfo createInfo{};
 		createInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
 		createInfo.queueCreateInfoCount = static_cast<uint32_t>(queueCreateInfos.size());
@@ -250,6 +251,7 @@ namespace Orchis {
 		createInfo.enabledExtensionCount = static_cast<uint32_t>(deviceExtensions.size());
 		createInfo.ppEnabledExtensionNames = deviceExtensions.data();
 		createInfo.enabledLayerCount = 0;
+		createInfo.pNext = &descriptorIndexingFeatures;
 
 #if OC_DEBUG_BUILD || OC_RELEASE_BUILD
 		createInfo.enabledLayerCount = static_cast<uint32_t>(validationLayers.size());
@@ -314,8 +316,7 @@ namespace Orchis {
 
 		VkPhysicalDeviceFeatures supportedFeatures;
 		vkGetPhysicalDeviceFeatures(device, &supportedFeatures);
-
-
+		
 		bool swapchainAdequate = false;
 		if (supportsExtensions)
 		{
@@ -520,7 +521,6 @@ namespace Orchis {
 		VkAccessFlags dstAccess;
 		VkPipelineStageFlags srcStage;
 		VkPipelineStageFlags dstStage;
-		VkImageAspectFlags aspectFlags;
 
 		VkImageMemoryBarrier barrier{};
 		if (newLayout == VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL)

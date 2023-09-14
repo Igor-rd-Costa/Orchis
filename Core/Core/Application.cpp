@@ -28,7 +28,6 @@ namespace Orchis {
 
 	void Application::Run()
 	{
-
 		s_Window->Update();
 		while (s_IsRunning)
 		{
@@ -36,8 +35,10 @@ namespace Orchis {
 			OnUpdate();
 			s_Window->Update();
 		}
-
-		Renderer::Shutdown();
 	}
 	
+	Application::~Application()
+	{
+		Renderer::Shutdown();
+	}
 }

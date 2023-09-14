@@ -32,8 +32,6 @@ namespace Orchis {
 		VertexLayoutMode VertexInputLayoutMode = VERTEX_LAYOUT_MODE_DEFAUT;
 		uint32_t VertexAttribPointerCount = 0;
 		VertexAttribPointer* pVertexAttribPointers = nullptr;
-		uint32_t TexturesCount = 0;
-		Texture** pTextures = nullptr;
 	};
 
 	class GraphicsPipeline

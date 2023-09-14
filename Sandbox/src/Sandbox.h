@@ -11,9 +11,8 @@ namespace Orchis {
 		~Sandbox();
 	private:
 		bool m_IsPaused = false;
-		bool m_TextureSwitch = false;
 		Scope<PerspectiveCamera> m_Camera;
-		//Ref<Texture> m_Texture;
+		Scene m_Scene;
 	};
 
 

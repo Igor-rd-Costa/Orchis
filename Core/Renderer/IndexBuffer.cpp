@@ -4,9 +4,9 @@
 
 namespace Orchis {
 
-	Ref<IndexBuffer> IndexBuffer::Create(void* data, size_t size, IndexType type)
+	IndexBuffer* IndexBuffer::Create(void* data, size_t size, IndexType type)
 	{
-		return CreateRef<VulkanIndexBuffer>(data, size, type);
+		return new VulkanIndexBuffer(data, size, type);
 	}
 
 }

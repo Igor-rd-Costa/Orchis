@@ -3,15 +3,17 @@
 #include "VulkanAPI.h"
 #include "VulkanStagingBuffer.h"
 #include "ImageSamplerManager.h"
+#define STB_IMAGE_STATIC
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb/stb_image.h>
 #include "VulkanDescriptorSets.h"
+
 namespace Orchis {
 
-	VulkanTexture::VulkanTexture(const char* path, uint32_t binding, ShaderStageFlags stageFlags)
-		: m_Binding(binding), m_StageFlags(VulkanAPI::ShaderStageFlagsToVkShaderStageFlags(stageFlags))
+	VulkanTexture::VulkanTexture(const std::string& path, uint32_t index)
+		: m_Index(index), m_StageFlags(VK_SHADER_STAGE_FRAGMENT_BIT)
 	{
-		stbi_uc* pixels = stbi_load(path, reinterpret_cast<int*>(&m_Width), reinterpret_cast<int*>(&m_Heigth), &m_ChannelCount, STBI_rgb_alpha);
+		stbi_uc* pixels = stbi_load(path.c_str(), reinterpret_cast<int*>(&m_Width), reinterpret_cast<int*>(&m_Heigth), &m_ChannelCount, STBI_rgb_alpha);
 		if (!pixels)
 			OC_ASSERT(false);
 
@@ -36,7 +38,7 @@ namespace Orchis {
 		DestroyTexture();
 	}
 
-	VkDescriptorImageInfo VulkanTexture::GetDescriptorInfo()
+	VkDescriptorImageInfo VulkanTexture::GetDescriptorInfo() const
 	{
 		VkDescriptorImageInfo imageInfo{};
 		imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
@@ -68,6 +70,11 @@ namespace Orchis {
 		m_ImageView = CreateImageView(m_Image, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT);
 		stbi_image_free(pixels);
 
+		VulkanDescriptorSetManager::UpdateImageSampler(this);
+	}
+
+	void VulkanTexture::Bind() const
+	{
 		VulkanDescriptorSetManager::UpdateImageSampler(this);
 	}
 
