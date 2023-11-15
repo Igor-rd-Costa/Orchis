@@ -6,7 +6,6 @@
 *.vcxproj
 *.vcxproj.filters
 *.vcxproj.user
-*.csproj
 
 /OrchisEditor/obj/
 /OrchisEditor/bin/
