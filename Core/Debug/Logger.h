@@ -23,9 +23,9 @@ namespace Orchis {
 		Logger(const std::string& name, LogLevel level = LOG_LEVEL_TRACE);
 		~Logger() = default;
 
-		void Trace(std::string_view msg);
-		void Info(std::string_view msg);
-		void Warning(std::string_view msg);
+		void Trace(const std::string& msg);
+		void Info(const std::string& msg);
+		void Warning(const std::string& msg);
 		void Error(const std::string& msg);
 	};
 }

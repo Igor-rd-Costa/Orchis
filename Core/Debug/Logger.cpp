@@ -26,17 +26,17 @@ namespace Orchis {
 
 	}
 
-	void Logger::Trace(std::string_view msg)
+	void Logger::Trace(const std::string& msg)
 	{
 		spdlog::get(m_Name)->trace(msg);
 	}
 
-	void Logger::Info(std::string_view msg)
+	void Logger::Info(const std::string& msg)
 	{
 		spdlog::get(m_Name)->info(msg);
 	}
 
-	void Logger::Warning(std::string_view msg)
+	void Logger::Warning(const std::string& msg)
 	{
 		spdlog::get(m_Name)->warn(msg);
 	}
