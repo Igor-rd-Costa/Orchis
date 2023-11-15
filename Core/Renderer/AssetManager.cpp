@@ -1,4 +1,3 @@
-#include "OrchisPCH.h"
 #include "AssetManager.h"
 #include "Renderer/Flags.h"
 

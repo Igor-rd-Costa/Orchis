@@ -4,52 +4,51 @@
 namespace Orchis {
 
 	Sandbox::Sandbox()
-	{
-		m_Camera = CreateScope<PerspectiveCamera>(glm::vec3(0.0f, -5.0f, 0.0f), 45.0f, 3.0f);
-		
+	{		
 		Input::ToggleCursorVisibility();
 		Input::ClipCursor();
+		Renderer::SetActiveCamera(new Orchis::PerspectiveCamera({ 0.0f, 0.0f, 0.0f }, 45.0f, 5.0f));
 
-		m_Scene.AddMesh("../Core/Assets/Models/Shiba.FBX", {  2.0f,  0.0f,  0.0f });
-		m_Scene.AddMesh("../Core/Assets/Models/Shiba.FBX", {  4.0f,  1.0f,  0.0f });
-		m_Scene.AddMesh("../Core/Assets/Models/Shiba.FBX", {  2.0f,  2.0f, -1.0f });
-		m_Scene.AddMesh("../Core/Assets/Models/Shiba.FBX", { -2.0f,  1.0f,  0.0f });
-		m_Scene.AddMesh("../Core/Assets/Models/Shiba.FBX", {  2.0f, -4.0f,  1.0f });
-		m_Scene.AddMesh("../Core/Assets/Models/Shiba.FBX", {  2.0f, -1.0f,  1.0f });
+		SceneManager::CreateScene("NewScene");
+		Scene* scene = SceneManager::GetScene();
+		scene->AddMesh("Assets/Models/Shiba.FBX", { 0.0f,  6.0f,  0.0f });
 
-
-		for (Mesh* mesh : m_Scene.m_Meshes)
+		for (Mesh& mesh : scene->m_Meshes)
 		{
-			for (SubMesh& subMesh : mesh->m_SubMeshes)
+			for (SubMesh& subMesh : mesh.m_SubMeshes)
 			{
-				subMesh.SetTexture("../Core/Assets/Textures/default_Base_Color.png");
+				subMesh.SetTexture("Assets/Textures/default_Base_Color.png");
 				subMesh.Rotate(-90.0f, { 1.0f, 0.0f, 0.0f });
-				subMesh.Rotate(-90.0f, { 0.0f, 1.0f, 0.0f });
+				subMesh.Rotate(-40.0f, { 0.0f, 1.0f, 0.0f });
 			}
 		}
 	}
 
-	void Sandbox::OnUpdate()
+	void Sandbox::Run()
 	{
-		if (Input::KeyPressed(Key::KEY_ESCAPE))
-		{	
-			Input::ClipCursor();
-			Input::CenterCursor();
-			Input::ToggleCursorVisibility();
-			m_IsPaused = !m_IsPaused;	
-		}
-		if (!m_IsPaused)
+		while (Application::s_IsRunning)
 		{
-			Renderer::BeginScene(&m_Scene);
-			
+			Application::Update();
+			if (Input::KeyPressed(Key::KEY_ESCAPE))
+			{	
+				Input::ClipCursor();
+				Input::CenterCursor();
+				Input::ToggleCursorVisibility();
+				m_IsPaused = !m_IsPaused;
+			}
+			if (!m_IsPaused)	
+			{
+				Renderer::BeginScene();
 				
-			Renderer::EndScene();
+					
+				Renderer::EndScene();
+			}
 		}
 	}
 
 	Sandbox::~Sandbox()
 	{
-
+		Orchis::Application::Shutdown();
 	}
 	
 	

@@ -1,4 +1,3 @@
-#include "OrchisPCH.h"
 #include "IndexBuffer.h"
 #include "Platform/Vulkan/VulkanIndexBuffer.h"
 

@@ -1,9 +1,9 @@
-#include "OrchisPCH.h"
 #include "WindowsWindow.h"
 #include <windowsx.h>
 #include "KeyCodes.h"
 #include "EventDispatcher.h"
 #include  <string>
+
 
 namespace Orchis {
 
@@ -11,29 +11,39 @@ namespace Orchis {
 		const char* Extensions[2] = { "VK_KHR_surface", "VK_KHR_win32_surface" };
 	} vk;
 
-	
-
-	WindowsWindow::WindowsWindow(std::string_view name)
+	WindowsWindow::WindowsWindow(void* parentHandle)
 		: m_Width(1600), m_Height(900)
 	{
-		std::wstring wName = StringToWideString(name);
+		uint32_t windowFlags = 0;
 		WNDCLASS windowClass{};
-		windowClass.lpszClassName = wName.data();
+		windowClass.lpszClassName = L"OrchisWindows";
+
 		windowClass.lpfnWndProc = WinProc;
 		windowClass.hInstance = GetModuleHandle(NULL);
-
 		RegisterClass(&windowClass);
 
-		m_WindowHandle = CreateWindowEx(
+		int flags = 0;
+
+		if (parentHandle)
+		{
+			flags |= WS_CHILD | WS_BORDER;
+			m_IsChild = true;
+		}
+		else
+		{
+			flags |= WS_OVERLAPPEDWINDOW;
+		}
+
+		this->m_WindowHandle = CreateWindowEx(
 			CS_OWNDC,
-			wName.data(),
-			wName.data(),
-			WS_OVERLAPPEDWINDOW,
-			75, 75,
+			L"OrchisWindows",
+			L"Window",
+			flags,
+			0, 0,
 			m_Width, m_Height,
+			(HWND)parentHandle,
 			NULL,
-			NULL,
-			GetModuleHandle(NULL),
+			GetModuleHandleA(NULL),
 			NULL
 		);
 		SetWindowLongPtr(m_WindowHandle, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(this));
@@ -55,12 +65,15 @@ namespace Orchis {
 
 	void WindowsWindow::Update()
 	{
-		UpdateInputState();
 		static MSG msg;
-		while (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
+		UpdateInputState();
+		if (!m_IsChild)
 		{
-			TranslateMessage(&msg);
-			DispatchMessage(&msg);
+			while (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
+			{
+				TranslateMessage(&msg);
+				DispatchMessage(&msg);
+			}
 		}
 	}
 
@@ -74,7 +87,7 @@ namespace Orchis {
 
 	LRESULT CALLBACK WindowsWindow::WinProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	{
-		WindowsWindow* window = reinterpret_cast<WindowsWindow*>(GetWindowLongPtr(hWnd, GWLP_USERDATA));
+
 		switch (uMsg)
 		{
 		case WM_MOUSEMOVE:
@@ -149,14 +162,19 @@ namespace Orchis {
 		} break;
 		case WM_SIZE:
 		{
-			window->UpdateRect();
+			WindowsWindow* window = reinterpret_cast<WindowsWindow*>(GetWindowLongPtr(hWnd, GWLP_USERDATA));
+			if (window)
+				window->UpdateRect();
+
 			EventDispatcher::Dispatch<WindowResizeEvent>({ (float)LOWORD(lParam), (float)HIWORD(lParam) });
 			if (wParam == SIZE_MINIMIZED)
 				EventDispatcher::Dispatch<WindowMinimizeEvent>(WindowMinimizeEvent());
 		} break;
 		case WM_MOVE:
 		{
-			window->UpdateRect();
+			WindowsWindow* window = reinterpret_cast<WindowsWindow*>(GetWindowLongPtr(hWnd, GWLP_USERDATA));
+			if (window)
+				window->UpdateRect();
 		} break;
 		case WM_CLOSE:
 		{

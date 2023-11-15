@@ -1,4 +1,3 @@
-#include "OrchisPCH.h"
 #include "VulkanDescriptorSets.h"
 #include "VulkanUniformBuffer.h"
 #include "VulkanTexture.h"
@@ -186,6 +185,7 @@ namespace Orchis {
 			
 			vkUpdateDescriptorSets(VulkanAPI::GetDevice(), 1, &descriptorWrite, 0, nullptr);
 		}
+		
 	}
 
 	void VulkanDescriptorSetManager::DeleteUniformBuffersDescriptorPool()

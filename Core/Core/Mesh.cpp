@@ -1,4 +1,3 @@
-#include "OrchisPCH.h"
 #include <glm/gtc/matrix_transform.hpp>
 #include <assimp/cimport.h>
 #include <assimp/Importer.hpp>
@@ -11,7 +10,7 @@
 namespace Orchis {
 	
 	Mesh::Mesh(const char* filePath, const glm::vec3& position)
-		: m_VertexBuffer(nullptr), m_IndexBuffer(nullptr)
+		: m_MeshPath(filePath), m_VertexBuffer(nullptr), m_IndexBuffer(nullptr)
 	{
 		Assimp::Importer importer;
 		DefaultVertex* vertices = nullptr;
@@ -140,7 +139,6 @@ namespace Orchis {
 
 	Mesh::~Mesh()
 	{
-		std::cout << "Destructor!\n";
 	}
 
 	void SubMesh::Move(const glm::vec3& positionOffset)

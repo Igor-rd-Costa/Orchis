@@ -1,4 +1,3 @@
-#include "OrchisPCH.h"
 #include "Renderer.h"
 #include "Platform/Vulkan/VulkanAPI.h"
 #include "VertexBuffer.h"
@@ -7,14 +6,17 @@
 #include "Application.h"
 #include "RenderCommand.h"
 #include "AssetManager.h"
+
 namespace Orchis {
 
-	RendererAPI* Renderer::s_RenderAPI = new VulkanAPI;
 	RenderData* Renderer::s_Data = new RenderData;
+	PerspectiveCamera* Renderer::s_ActiveCamera = nullptr;
+	std::thread Renderer::s_RenderThread;
+	std::string Renderer::DefaultVertexPath = "Assets/Shaders/bin/vert.spv";
+	std::string Renderer::DefaultFragmentPath = "Assets/Shaders/bin/frag.spv";
 
 	void Renderer::Init()
 	{
-		s_RenderAPI->Init();
 		RenderCommand::Init();
 		RenderCommand::SetClearColor(0.3f, 0.3f, 0.3f, 1.0f);
 		s_Data->TransformsUB = UniformBuffer::Create(sizeof(glm::mat4)*2, 0, SHADER_STAGE_VERTEX, {
@@ -41,8 +43,8 @@ namespace Orchis {
 		UniformBuffer* buffers[] = { s_Data->TransformsUB.get(), s_Data->MaterialUniformBuffer.get(), s_Data->LightUniformBuffer.get() };
 		
 		GraphicsPipelineCreateInfo info{};
-		info.VertexShader = "../Core/Assets/Shaders/bin/vert.spv";
-		info.FragmentShader = "../Core/Assets/Shaders/bin/frag.spv";
+		info.VertexShader = Renderer::DefaultVertexPath.c_str();
+		info.FragmentShader = Renderer::DefaultFragmentPath.c_str();
 		info.UniformBufferCount = 3;
 		info.pUniformBuffers = buffers;
 
@@ -52,32 +54,41 @@ namespace Orchis {
 		s_Data->TransformsUB->SetUniformMat4("Model", glm::mat4(1.0f));
 		s_Data->MaterialUniformBuffer->Update(&s_Data->material, sizeof(s_Data->material));
 		s_Data->LightUniformBuffer->Update(&s_Data->light, sizeof(s_Data->light));
+
+
 	}
 
 	void Renderer::Shutdown()
 	{
 		delete s_Data;
+		SceneManager::ShutDown();
 		AssetManager::ShutDown();
 		RenderCommand::ShutDown();
-		s_RenderAPI->ShutDown();
-
 	}
 
-	void Renderer::BeginScene(Scene* scene)
+	void Renderer::BeginScene()
 	{
-		RenderCommand::BeginFrame(scene);
-		scene->GetCamera()->Update();
-		s_Data->TransformsUB->SetUniformMat4("ViewProj", scene->GetCamera()->GetTransform());
-
-		for (const Mesh* mesh : scene->m_Meshes)
+		RenderCommand::BeginFrame();
+		if (s_ActiveCamera && SceneManager::GetScene())
 		{
-			RenderCommand::DrawIndexed(mesh);
+			s_ActiveCamera->Update();
+			s_Data->TransformsUB->SetUniformMat4("ViewProj", s_ActiveCamera->GetTransform());
+		}
+		for (const Mesh& mesh : SceneManager::GetScene()->m_Meshes)
+		{
+			RenderCommand::DrawIndexed(&mesh);
 		}
 	}
 
 	void Renderer::EndScene()
 	{
 		RenderCommand::SwapBuffers();
+	}
+
+	void Renderer::SetDefaultShaderPaths(const char* vertexPath, const char* fragPath)
+	{
+		Renderer::DefaultVertexPath = vertexPath;
+		Renderer::DefaultFragmentPath = fragPath;
 	}
 
 }

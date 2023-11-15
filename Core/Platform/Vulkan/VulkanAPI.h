@@ -35,9 +35,9 @@ namespace Orchis {
 				return GraphicsFamily.has_value() && PresentFamily.has_value();
 			}
 		};
-	public:		
-		virtual void Init() override;
-		virtual void ShutDown() override;
+	public:
+		VulkanAPI(void* windowHandle);
+		~VulkanAPI();
 
 		static void BeginFrame();
 		static void SwapBuffers();
@@ -74,7 +74,7 @@ namespace Orchis {
 	private:
 		void CreateInstance();
 		// Implemented in platform specific files
-		void CreateSurface(); 
+		void CreateSurface(void* windowHandle);
 		void PickPhysicalDevice();
 		void CreateLogicalDevice();
 

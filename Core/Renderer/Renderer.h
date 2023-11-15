@@ -1,14 +1,16 @@
 #pragma once
 #include "Macros.h"
+#include <thread>
+#include <glm/glm.hpp>
 #include "Renderer/RendererAPI.h"
 #include "VertexBuffer.h"
 #include "IndexBuffer.h"
 #include "UniformBuffer.h"
 #include "Texture.h"
 #include "Core/PerspectiveCamera.h"
-#include <glm/glm.hpp>
 #include "Mesh.h"
 #include "Scene.h"
+#include "SceneManager.h"
 
 namespace Orchis {
 
@@ -38,9 +40,7 @@ namespace Orchis {
 		Light light;
 	};
 
-
-
-	class ORCHIS_API Renderer
+	class Renderer
 	{
 	public:
 		Renderer() = delete;
@@ -51,11 +51,20 @@ namespace Orchis {
 		static void Init();
 		static void Shutdown();
 
-		static void BeginScene(Scene* scene);
+		static void BeginScene();
 		static void EndScene();
+			
+		static void SetDefaultShaderPaths(const char* vertexPath, const char* fragPath);
 
+		static void SetActiveCamera(PerspectiveCamera* camera) { s_ActiveCamera = camera; }
+		static const PerspectiveCamera* GetActiveCamera() { return s_ActiveCamera; }
 	private:
-		static RendererAPI* s_RenderAPI;
+		static std::thread s_RenderThread;
 		static RenderData* s_Data;
+		static PerspectiveCamera* s_ActiveCamera;
+
+
+		static std::string DefaultVertexPath;
+		static std::string DefaultFragmentPath;
 	};
 }

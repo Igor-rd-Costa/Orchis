@@ -4,15 +4,17 @@
 
 namespace Orchis {
 
-	class ORCHIS_API RendererAPI
+	class RendererAPI
 	{
 	public:
+		RendererAPI() = default;
+		virtual ~RendererAPI() = default;
+
 		enum API
 		{
 			NONE, VULKAN
 		};
-		virtual void Init() = 0;
-		virtual void ShutDown() = 0;
+
 	private:
 		static API s_API;
 	};

@@ -3,7 +3,7 @@
 
 namespace Orchis {
 	
-	class ORCHIS_API Log
+	class Log
 	{
 	public:
 		static void Init();
@@ -26,6 +26,6 @@ namespace Orchis {
 		void Trace(std::string_view msg);
 		void Info(std::string_view msg);
 		void Warning(std::string_view msg);
-		void Error(std::string_view msg);
+		void Error(const std::string& msg);
 	};
 }

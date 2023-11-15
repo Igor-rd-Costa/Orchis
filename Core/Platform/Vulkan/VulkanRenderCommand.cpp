@@ -1,10 +1,9 @@
-#include "OrchisPCH.h"
 #include "VulkanRenderCommand.h"
 #include "VulkanAPI.h"
 #include "VulkanDescriptorSets.h"
 #include "VulkanTexture.h"
 #include "Scene.h"
-
+#include "Renderer/Renderer.h"
 namespace Orchis {
 	VkCommandBuffer VulkanRenderCommand::s_CommandBuffer;
 
@@ -60,7 +59,7 @@ namespace Orchis {
 		OC_ASSERT(result == VK_SUCCESS);
 	}
 
-	void VulkanRenderCommand::BeginFrameImpl(Scene* scene) const
+	void VulkanRenderCommand::BeginFrameImpl() const
 	{
 		VulkanAPI::BeginFrame();
 		Begin();
@@ -95,8 +94,12 @@ namespace Orchis {
 
 		VulkanDescriptorSetManager::BindDescriptorSets();
 
-		vkCmdPushConstants(s_CommandBuffers[VulkanAPI::s_CurrentFrame], VulkanGraphicsPipeline::GetBoundPipelineLayout(),
-			SHADER_STAGE_FRAGMENT, sizeof(glm::mat4), sizeof(glm::vec3), &scene->GetCamera()->GetPosition());
+		const PerspectiveCamera* camera = Renderer::GetActiveCamera();
+		if (camera)
+		{
+			vkCmdPushConstants(s_CommandBuffers[VulkanAPI::s_CurrentFrame], VulkanGraphicsPipeline::GetBoundPipelineLayout(),
+				SHADER_STAGE_FRAGMENT, sizeof(glm::mat4), sizeof(glm::vec3), &camera->GetPosition());
+		}
 	}
 
 	void VulkanRenderCommand::SwapBuffersImpl() const

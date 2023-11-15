@@ -1,0 +1,37 @@
+﻿<UserControl x:Class="OrchisEditor.View.Editor.UserControls.Outliner"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:OrchisEditor.View.Editor.UserControls"
+             xmlns:Components="clr-namespace:OrchisEditor.View.Editor.UserControls.OutlinerComponents"
+             mc:Ignorable="d" 
+             d:DesignHeight="800" d:DesignWidth="450">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="20"/>
+            <RowDefinition Height="30"/>
+            <RowDefinition Height="20"/>
+            <RowDefinition Height="1*"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <Border Grid.RowSpan="4" BorderBrush="LightGray" BorderThickness="0.2"/>
+        <TextBlock Text="Outliner" Background="Transparent" Grid.Row="0" FontSize="12"
+        Padding="5,0,0,0" Foreground="#DDDDDD"/>
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+        </Grid>
+        <TextBox Grid.Row="2" Background="#333333" Margin="0,0,-1,0"/>
+        <StackPanel Grid.Row="3">
+            <Components:ProjectHeader x:Name="ProjectItem"  Visibility="Hidden"/>
+            <TreeView Background="Transparent" BorderThickness="0" 
+                      Name="SceneTreeView" SelectedItemChanged="SceneTreeView_SelectedItemChanged"/>
+        </StackPanel>
+    </Grid>
+</UserControl>

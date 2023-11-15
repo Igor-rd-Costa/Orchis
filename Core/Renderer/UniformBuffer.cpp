@@ -1,4 +1,3 @@
-#include "OrchisPCH.h"
 #include "UniformBuffer.h"
 #include "Platform/Vulkan/VulkanUniformBuffer.h"
 #include <glm/glm.hpp>

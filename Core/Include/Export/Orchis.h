@@ -12,5 +12,6 @@
 #include "Renderer/VertexBuffer.h"
 #include "Renderer/GraphicsPipeline.h"
 #include "Renderer/UniformBuffer.h"
+#include "Platform/Windows/WindowsWindow.h"
 
 #include "Debug/Logger.h"

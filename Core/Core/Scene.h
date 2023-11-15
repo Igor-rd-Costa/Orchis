@@ -9,13 +9,12 @@ namespace Orchis {
 	class Scene
 	{
 	public:
-		Scene();
+		Scene(std::string_view name);
 		~Scene();
 
 		void AddMesh(const char* filePath, const glm::vec3& position = { 0.0f, 0.0f, 0.0f });
-		Ref<PerspectiveCamera> GetCamera() const { return m_ActiveCamera; }
-		std::vector<Mesh*> m_Meshes;
+		std::vector<Mesh> m_Meshes;
 	private:
-		Ref<PerspectiveCamera> m_ActiveCamera;
+		std::string m_Name;
 	};
 }

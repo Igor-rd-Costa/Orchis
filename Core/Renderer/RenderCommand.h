@@ -9,7 +9,7 @@ namespace Orchis {
 		static void Init();
 		static void ShutDown();
 
-		static void BeginFrame(Scene* scene);
+		static void BeginFrame();
 		static void DrawIndexed(const Mesh* mesh);
 		static void SetClearColor(float r, float g, float b, float a);
 		static void SwapBuffers();
@@ -22,7 +22,7 @@ namespace Orchis {
 		static RenderCommand* s_Instance;
 		virtual void DrawIndexedImpl(const Mesh* mesh) = 0;
 		virtual void SetClearColorImpl(float r, float g, float b, float a) = 0;
-		virtual void BeginFrameImpl(Scene* scene) const = 0;
+		virtual void BeginFrameImpl() const = 0;
 		virtual void SwapBuffersImpl() const = 0;
 	};
 }

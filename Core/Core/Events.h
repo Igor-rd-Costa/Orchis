@@ -4,7 +4,7 @@
 
 namespace Orchis {
 
-	enum class ORCHIS_API EventType
+	enum class EventType
 	{
 		UNDEFINED_EVENT = -1, 
 		MOUSE_BUTTON_DOWN_EVENT, MOUSE_BUTTON_UP_EVENT, MOUSE_MOVE_EVENT, MOUSE_SCROLL_EVENT, 
@@ -12,7 +12,7 @@ namespace Orchis {
 		WINDOW_RESIZE_EVENT, WINDOW_CLOSE_EVENT, WINDOW_MINIMIZE_EVENT
 	};
 
-	class ORCHIS_API Event
+	class Event
 	{
 	public:
 		void Consume() { m_Consumed = true; };
@@ -26,7 +26,7 @@ namespace Orchis {
 		EventType m_Type;
 	};
 
-	class ORCHIS_API MouseButtonDownEvent : public Event
+	class MouseButtonDownEvent : public Event
 	{
 	public:
 		MouseButtonDownEvent(Key button, float posX, float posY)
@@ -42,7 +42,7 @@ namespace Orchis {
 		float m_PosX, m_PosY;
 	};
 
-	class ORCHIS_API MouseButtonUpEvent : public Event
+	class MouseButtonUpEvent : public Event
 	{
 	public:
 		MouseButtonUpEvent(Key button, float posX, float posY)
@@ -58,7 +58,7 @@ namespace Orchis {
 		float m_PosX, m_PosY;
 	};
 
-	class ORCHIS_API MouseMoveEvent : public Event
+	class MouseMoveEvent : public Event
 	{
 	public:
 		MouseMoveEvent(float posX, float posY)
@@ -73,7 +73,7 @@ namespace Orchis {
 		float m_PosX, m_PosY;
 	};
 
-	class ORCHIS_API MouseScrollEvent : public Event
+	class MouseScrollEvent : public Event
 	{
 	public:
 		MouseScrollEvent(float delta)
@@ -85,7 +85,7 @@ namespace Orchis {
 		float m_Delta;
 	};
 
-	class ORCHIS_API KeyDownEvent : public Event
+	class KeyDownEvent : public Event
 	{
 	public:
 		KeyDownEvent(Key key)
@@ -97,7 +97,7 @@ namespace Orchis {
 		Key m_Key;
 	};
 
-	class ORCHIS_API KeyUpEvent : public Event
+	class KeyUpEvent : public Event
 	{
 	public:
 		KeyUpEvent(Key key)
@@ -109,7 +109,7 @@ namespace Orchis {
 		Key m_Key;
 	};
 
-	class ORCHIS_API WindowResizeEvent : public Event
+	class WindowResizeEvent : public Event
 	{
 	public:
 		WindowResizeEvent(float width, float height)
@@ -123,7 +123,7 @@ namespace Orchis {
 		float m_Width, m_Height;
 	};
 
-	class ORCHIS_API WindowCloseEvent : public Event
+	class WindowCloseEvent : public Event
 	{
 	public:
 		WindowCloseEvent()
@@ -131,7 +131,7 @@ namespace Orchis {
 		~WindowCloseEvent() = default;
 	};
 
-	class ORCHIS_API WindowMinimizeEvent : public Event
+	class WindowMinimizeEvent : public Event
 	{
 	public:
 		WindowMinimizeEvent()

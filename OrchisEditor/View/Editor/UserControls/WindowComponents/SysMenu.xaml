@@ -1,0 +1,29 @@
+﻿<UserControl x:Class="OrchisEditor.View.Editor.UserControls.WindowComponents.SysMenu"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:OrchisEditor.View.Editor.UserControls.WindowComponents"
+             mc:Ignorable="d" 
+             d:DesignHeight="30" d:DesignWidth="90">
+    <StackPanel Orientation="Horizontal" Background="Transparent">
+        <Button Width="30" Height="30" Background="Transparent" BorderBrush="Transparent"
+                    Name="MinimizeBtn" Padding="0" Click="MinimizeBtn_Click">
+            <Button.Content>
+                <Image Source="/View/Images/MinimizeIcon.png"/>
+            </Button.Content>
+        </Button>
+        <Button Width="30" Height="30" Background="Transparent" BorderBrush="Transparent"
+                Name="MaximizeBtn" Click="MaximizeBtn_Click">
+            <Button.Content>
+                <Image Margin="-1"/>
+            </Button.Content>
+        </Button>
+        <Button Width="30" Height="30" Background="Transparent" BorderBrush="Transparent"
+        Name="CloseBtn" Click="CloseBtn_Click">
+            <Button.Content>
+                <Image/>
+            </Button.Content>
+        </Button>
+    </StackPanel>
+</UserControl>

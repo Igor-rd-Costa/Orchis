@@ -4,27 +4,39 @@
 #include "Events.h"
 #include "../Debug/Logger.h"
 #include "OrchisTime.h"
+#include "Renderer/RenderContext.h"
+#include <thread>
 
 namespace Orchis {
-	class ORCHIS_API Application
+	class Application
 	{
 	public:
-		Application();
-		virtual ~Application();
+		Application() = delete;
+		Application(const Application&) = delete;
+		Application(Application&&) = delete;
+		~Application() = delete;
 
-		void Run();
+		static void Init(void* parentWindow);
+		static void Shutdown();
+		static void Run();
+		static void Update();
 
-		virtual void OnUpdate() {};
-		
-		static inline Application& GetInstance() { return *s_Instance; }
-		static inline Window* GetWindow() { return s_Window.get(); }
+		static inline Window* GetWindow() 
+		{
+			if (s_RenderContext)
+				return s_RenderContext->GetWindow(); 
 
+			return nullptr;
+		}
+		static inline RendererAPI* GetRenderAPI() { return s_RenderContext->GetAPI(); }
+
+		static void* CreateRenderContext(void* parentWindow);
+
+		static bool s_IsRunning;
 	private:
 		static void OnWindowClose(WindowCloseEvent* event) { s_IsRunning = false; }
 	private:
+		static RenderContext* s_RenderContext;
 		static Logger s_Logger;
-		static Scope<Window> s_Window;
-		static Application* s_Instance;
-		static bool s_IsRunning;
 	};
 }

@@ -4,9 +4,10 @@
 #include  <string>
 namespace Orchis {
 
-	class ORCHIS_API Window
+	class __declspec(dllexport) Window
 	{
 	public:
+		Window() = default;
 		virtual ~Window() = default;
 
 		virtual uint32_t GetWidth() const = 0;
@@ -15,7 +16,7 @@ namespace Orchis {
 		virtual std::pair<long, long> GetCenter() const = 0;
 
 		virtual void* GetHandle() = 0;
-		static Scope<Window> Create(std::string_view name);
+		static Window* Create(void* parentHandle = nullptr);
 	protected:
 		void UpdateInputState() const { Input::UpdateState(); }
 	private:

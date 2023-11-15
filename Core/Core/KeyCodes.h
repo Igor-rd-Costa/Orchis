@@ -3,7 +3,7 @@
 
 namespace Orchis {
 
-	enum class ORCHIS_API Key
+	enum class Key
 	{
 		KEY_UNKNOWN = -1,
 		KEY_W, /* 'W' key. */

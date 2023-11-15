@@ -2,17 +2,6 @@
 #include <memory>
 
 #ifdef OC_PLATFORM_WINDOWS
-	#ifdef OC_BUILD_STATIC
-		#define ORCHIS_API
-	#else
-		#ifdef OC_BUILD_DYNAMIC
-			#define ORCHIS_API __declspec(dllexport)
-			#error Dynamic builds are not supported for now
-		#else
-			#define ORCHIS_API __declspec(dllimport)
-			#error Dynamic builds are not supported for now
-		#endif
-	#endif
 	#if OC_DEBUG_BUILD || OC_RELEASE_BUILD
 		#define OC_ASSERT(x) { if (!(x)) __debugbreak(); }
 	#else

@@ -3,16 +3,14 @@
 
 namespace Orchis {
 
-	class Sandbox : public Application
+	class Sandbox
 	{
 	public:
 		Sandbox();
-		virtual void OnUpdate() override;
+		void Run();
 		~Sandbox();
 	private:
 		bool m_IsPaused = false;
-		Scope<PerspectiveCamera> m_Camera;
-		Scene m_Scene;
 	};
 
 

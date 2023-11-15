@@ -9,7 +9,7 @@ namespace Orchis {
 	template<typename T>
 	using EventCallbackFn = void(*)(T* event);
 
-	class ORCHIS_API EventDispatcher
+	class EventDispatcher
 	{
 	public:
 		inline static void RegisterMouseButtonDownCallbackFn(EventCallbackFn<MouseButtonDownEvent> callback) { s_MouseButtonDownCallback = callback; }
@@ -26,6 +26,7 @@ namespace Orchis {
 		EventDispatcher(const EventDispatcher&) = delete;
 		EventDispatcher(EventDispatcher&&) = delete;
 		friend class WindowsWindow;
+		friend class MyWindow;
 
 		template<typename T>
 			requires std::is_same_v<T, MouseButtonDownEvent> || std::is_same_v<T, MouseButtonUpEvent> || std::is_same_v<T, MouseMoveEvent> || std::is_same_v<T, MouseScrollEvent>

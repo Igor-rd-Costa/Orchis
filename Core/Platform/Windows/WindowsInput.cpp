@@ -1,4 +1,3 @@
-#include "OrchisPCH.h"
 #include "Input.h"
 #include <Windows.h>
 #include "Window.h"
@@ -17,7 +16,7 @@ namespace Orchis {
 		if (!s_IsCursorClipped)
 		{
 			static RECT rect;
-			GetWindowRect(*reinterpret_cast<HWND*>(Application::GetWindow()->GetHandle()), &rect);
+			GetWindowRect(reinterpret_cast<HWND>(Application::GetWindow()->GetHandle()), &rect);
 			::ClipCursor(&rect);
 		}
 		else
@@ -36,7 +35,7 @@ namespace Orchis {
 	void Input::CenterCursor()
 	{
 		static RECT rect;
-		GetWindowRect(*reinterpret_cast<HWND*>(Application::GetWindow()->GetHandle()), &rect);
+		GetWindowRect(reinterpret_cast<HWND>(Application::GetWindow()->GetHandle()), &rect);
 		::SetCursorPos(((rect.left + rect.right) / 2), ((rect.top + rect.bottom) / 2));
 	}
 }

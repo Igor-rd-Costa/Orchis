@@ -2,6 +2,7 @@
 #include "Macros.h"
 #include <glm/glm.hpp>
 #include "Renderer/Flags.h"
+#include <vector>
 
 namespace Orchis {
 

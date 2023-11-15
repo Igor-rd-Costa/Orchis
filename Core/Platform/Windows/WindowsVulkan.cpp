@@ -1,4 +1,3 @@
-#include "OrchisPCH.h"
 #include "../Platform/Vulkan/VulkanAPI.h"
 #include <Windows.h>
 #include <vulkan/vulkan_win32.h>
@@ -6,11 +5,11 @@
 
 namespace Orchis {
 
-	void VulkanAPI::CreateSurface()
+	void VulkanAPI::CreateSurface(void* windowHandle)
 	{
 		VkWin32SurfaceCreateInfoKHR createInfo{};
 		createInfo.sType = VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR;
-		createInfo.hwnd = *reinterpret_cast<HWND*>(Application::GetWindow()->GetHandle());
+		createInfo.hwnd = reinterpret_cast<HWND>(windowHandle);
 		createInfo.hinstance = GetModuleHandle(NULL);
 
 		VkResult result = vkCreateWin32SurfaceKHR(s_Instance, &createInfo, nullptr, &s_Surface);

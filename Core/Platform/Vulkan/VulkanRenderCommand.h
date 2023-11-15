@@ -16,13 +16,10 @@ namespace Orchis {
 		static VkCommandBuffer s_CommandBuffer;
 		static std::array<VkClearValue, 2> s_ClearValues;
 		
-		static void StartRenderPass();
-		static void EndRenderPass();
-
 		static void Begin();
 		virtual void DrawIndexedImpl(const Mesh* mesh) override;
 		virtual void SetClearColorImpl(float r, float g, float b, float a) override;
-		virtual void BeginFrameImpl(Scene* scene) const override;
+		virtual void BeginFrameImpl() const override;
 		virtual void SwapBuffersImpl() const override;
 
 	};

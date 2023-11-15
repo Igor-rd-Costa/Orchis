@@ -1,4 +1,3 @@
-#include "OrchisPCH.h"
 #include "Logger.h"
 #include <spdlog/spdlog.h>
 #include <spdlog/sinks/stdout_color_sinks.h>
@@ -42,7 +41,7 @@ namespace Orchis {
 		spdlog::get(m_Name)->warn(msg);
 	}
 
-	void Logger::Error(std::string_view msg)
+	void Logger::Error(const std::string& msg)
 	{
 		spdlog::get(m_Name)->error(msg);
 	}

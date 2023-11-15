@@ -1,4 +1,3 @@
-#include "OrchisPCH.h"
 #include "VulkanAPI.h"
 #include "VulkanDebug.h"
 #include "Window.h"
@@ -37,11 +36,11 @@ namespace Orchis {
 	std::array<VkFence, 2> VulkanAPI::s_InFlightFences;
 	Logger VulkanAPI::s_Logger{ "Vulkan" };
 
-	void VulkanAPI::Init()
+	VulkanAPI::VulkanAPI(void* windowHandle)
 	{
 		CreateInstance();
 		OC_VK_SETUP_DEBUGGER(s_Instance);
-		CreateSurface();
+		CreateSurface(windowHandle);
 		PickPhysicalDevice();
 		CreateLogicalDevice();
 		s_Swapchain = new VulkanSwapchain();
@@ -55,7 +54,7 @@ namespace Orchis {
 		VulkanStagingBuffer::Init(128'000'000);
 	}
 
-	void VulkanAPI::ShutDown()
+	VulkanAPI::~VulkanAPI()
 	{
 		vkDeviceWaitIdle(s_Device);
 
@@ -78,7 +77,7 @@ namespace Orchis {
 		vkDestroyDevice(s_Device, nullptr);
 		OC_VK_DESTROY_DEBUGGER(s_Instance);
 		vkDestroySurfaceKHR(s_Instance, s_Surface, nullptr);
-		vkDestroyInstance(s_Instance, nullptr);
+ 		vkDestroyInstance(s_Instance, nullptr);
 	}
 
 	void VulkanAPI::BeginFrame()

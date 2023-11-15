@@ -1,4 +1,3 @@
-#include "OrchisPCH.h"
 #include "VertexBuffer.h"
 #include "Platform/Vulkan/VulkanVertexBuffer.h"
 

@@ -1,4 +1,3 @@
-#include "OrchisPCH.h"
 #include "Renderer/RendererAPI.h"
 
 namespace Orchis {

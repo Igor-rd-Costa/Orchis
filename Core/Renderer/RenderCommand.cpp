@@ -1,4 +1,3 @@
-#include "OrchisPCH.h"
 #include "RenderCommand.h"
 #include "Platform/Vulkan/VulkanRenderCommand.h"
 namespace Orchis {
@@ -15,9 +14,9 @@ namespace Orchis {
 		delete s_Instance;
 	}
 
-	void RenderCommand::BeginFrame(Scene* scene)
+	void RenderCommand::BeginFrame()
 	{
-		s_Instance->BeginFrameImpl(scene);
+		s_Instance->BeginFrameImpl();
 	}
 
 	void RenderCommand::DrawIndexed(const Mesh* mesh)

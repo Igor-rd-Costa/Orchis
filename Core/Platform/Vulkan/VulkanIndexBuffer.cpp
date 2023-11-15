@@ -1,4 +1,3 @@
-#include "OrchisPCH.h"
 #include "VulkanIndexBuffer.h"
 #include "VulkanAPI.h"
 #include "VulkanStagingBuffer.h"

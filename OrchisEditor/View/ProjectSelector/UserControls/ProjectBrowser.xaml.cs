@@ -1,0 +1,143 @@
+﻿using Microsoft.VisualBasic.FileIO;
+using OrchisEditor.Controller.Editor;
+using System;
+using System.Collections.ObjectModel;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+
+namespace OrchisEditor.View.ProjectSelector.UserControls
+{
+    public partial class ProjectBrowser : UserControl
+    {
+        public ProjectBrowser()
+        {
+            InitializeComponent();
+            BuildProjectList();
+        }
+
+        void BuildProjectList()
+        {
+            if (FileSystem.DirectoryExists("Projects"))
+            {
+                ReadOnlyCollection<string> files = FileSystem.FindInFiles("Projects", "", false, SearchOption.SearchTopLevelOnly);
+
+                foreach (string file in files) 
+                {
+                    if (file.EndsWith(".orcproj"))
+                    {
+                        ProjectList.Items.Add(MakeProjectListItem(file.Substring(file.LastIndexOf('\\') + 1), file));
+                    }
+                }
+            }
+        }
+
+        private ListBoxItem MakeProjectListItem(string name, string filePath)
+        {
+            ListBoxItem item = new()
+            {
+                Height = 60,
+                Padding = new(0),
+                HorizontalAlignment = HorizontalAlignment.Stretch,
+                HorizontalContentAlignment = HorizontalAlignment.Stretch
+            };
+            Grid grid = new()
+            {
+                Height = 58,
+                HorizontalAlignment = HorizontalAlignment.Stretch,
+                VerticalAlignment = VerticalAlignment.Stretch,
+            };
+            grid.ColumnDefinitions.Add(new ColumnDefinition());
+            grid.ColumnDefinitions.Add(new ColumnDefinition());
+            grid.ColumnDefinitions.Add(new ColumnDefinition());
+            grid.ColumnDefinitions[0].Width = new GridLength(31);
+            grid.ColumnDefinitions[1].Width = new GridLength(1, GridUnitType.Star);
+            grid.ColumnDefinitions[2].Width = new GridLength(130);
+
+            grid.RowDefinitions.Add(new RowDefinition());
+            grid.RowDefinitions.Add(new RowDefinition());
+            grid.RowDefinitions[0].Height = new(31);
+            grid.RowDefinitions[1].Height = new(27);
+
+            BitmapImage bitmapImage = new();
+            bitmapImage.BeginInit();
+            bitmapImage.UriSource = new Uri("/View/Images/ImageTest.png", UriKind.Relative);
+            bitmapImage.EndInit();
+            Image image = new()
+            {
+                Height = 22, 
+                Width = 22, 
+                Source = bitmapImage,
+                VerticalAlignment = VerticalAlignment.Bottom,
+                HorizontalAlignment= HorizontalAlignment.Right,
+
+            };
+            Grid.SetColumn(image, 0);
+            grid.Children.Add(image);
+            TextBlock projectName = new()
+            {
+                Text = name,
+                Foreground = Brushes.White,
+                VerticalAlignment = VerticalAlignment.Center,
+                Padding = new Thickness(5, 5, 0, 0),
+                TextTrimming = TextTrimming.CharacterEllipsis
+            };
+            TextBlock projectDate = new()
+            {
+                Text = "9/23/2023 11:26 AM",
+                Foreground = Brushes.White,
+                VerticalAlignment = VerticalAlignment.Center,
+                HorizontalAlignment = HorizontalAlignment.Stretch,
+                Padding = new Thickness(5, 5, 0, 0),
+            };
+            TextBlock projectPath = new()
+            {
+                Text = filePath,
+                Foreground = Brushes.White,
+                VerticalAlignment = VerticalAlignment.Center,
+                Padding = new Thickness(5, 0, 0, 0),
+                TextTrimming = TextTrimming.CharacterEllipsis
+            };
+
+            Grid.SetColumn(projectName, 1);
+            Grid.SetColumn(projectDate, 2);
+
+            Grid.SetColumn(projectPath, 1);
+            Grid.SetColumnSpan(projectPath, 2);
+            Grid.SetRow(projectPath, 1);
+
+            grid.Children.Add(projectName);
+            grid.Children.Add(projectDate);
+            grid.Children.Add(projectPath); 
+
+            item.Content = grid;
+            return item;
+        }
+
+        public void Reload()
+        {
+            ProjectList.Items.Clear();
+            BuildProjectList();
+        }
+
+        private void ProjectList_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            if (ProjectList.SelectedItem != null) 
+            {
+                string projectPath = ((TextBlock)((Grid)((ListBoxItem)ProjectList.SelectedItem).Content).Children[3]).Text;
+                foreach (Window window in Application.Current.Windows)
+                {
+                    if (window.GetType().Equals(typeof(ProjectSelectorWindow)))
+                    {
+                        if (Project.Load(projectPath))
+                        {
+                            window.DialogResult = true;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

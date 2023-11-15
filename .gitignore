@@ -6,3 +6,16 @@
 *.vcxproj
 *.vcxproj.filters
 *.vcxproj.user
+*.csproj
+
+/OrchisEditor/obj/
+/OrchisEditor/bin/
+
+/Sandbox/Debug/
+/OrchisRuntime/Debug/
+
+CMakeCache.txt
+**/CMakeFiles/
+*.dir
+cmake_install.cmake
+/x64/

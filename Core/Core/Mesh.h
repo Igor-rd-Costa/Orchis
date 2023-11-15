@@ -37,10 +37,12 @@ namespace Orchis {
 		~Mesh();
 
 		uint32_t GetIndexCount() const { return m_IndexBuffer->GetIndexCount(); };
+		const std::string& GetPath() const { return m_MeshPath; }
 		void Bind() const;
 
 		std::vector<SubMesh> m_SubMeshes;
 	private:
+		std::string m_MeshPath;
 		VertexBuffer* m_VertexBuffer;
 		IndexBuffer* m_IndexBuffer;
 	};

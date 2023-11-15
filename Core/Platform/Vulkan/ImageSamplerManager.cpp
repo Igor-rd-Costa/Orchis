@@ -1,4 +1,3 @@
-#include "OrchisPCH.h"
 #include "Macros.h"
 #include "ImageSamplerManager.h"
 #include "VulkanAPI.h"

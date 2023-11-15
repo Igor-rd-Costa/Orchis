@@ -1,4 +1,3 @@
-#include "OrchisPCH.h"
 #include "VulkanGraphicsPipeline.h"
 #include "VulkanAPI.h"
 #include "VulkanVertexBuffer.h"
@@ -15,7 +14,7 @@ namespace Orchis {
 
 		if (!file.is_open())
 		{
-			VulkanAPI::s_Logger.Error("Failed to open file.");
+			VulkanAPI::s_Logger.Error("Failed to open file " + std::string(filePath));
 			OC_ASSERT(false);
 		}
 

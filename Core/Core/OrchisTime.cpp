@@ -1,4 +1,3 @@
-#include "OrchisPCH.h"
 #include "OrchisTime.h"
 
 namespace Orchis {

@@ -12,11 +12,13 @@ namespace Orchis
 
 		void Update();
 
-		const glm::mat4& GetViewMatrix() { return m_ViewMatrix; }
-		const glm::mat4& GetProjMatrix() { return m_ProjMatrix; }
-		const glm::mat4& GetTransform() { return m_ViewProj; }
-		const glm::vec3& GetPosition() { return m_Position; }
+		const glm::mat4& GetViewMatrix() const { return m_ViewMatrix; }
+		const glm::mat4& GetProjMatrix() const { return m_ProjMatrix; }
+		const glm::mat4& GetTransform() const { return m_ViewProj; }
+		const glm::vec3& GetPosition() const { return m_Position; }
 		
+		void SetProjMatrix(float width, float height);
+
 		glm::vec3 m_Position;
 		glm::vec3 m_CameraFront;
 	private:
