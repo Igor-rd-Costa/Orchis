@@ -1,10 +1,11 @@
 #pragma once
+#include "Macros.h"
 #include <glm/glm.hpp>
 
 namespace Orchis
 {
 	
-	class PerspectiveCamera
+	class OC_API PerspectiveCamera
 	{
 	public:
 		PerspectiveCamera(glm::vec3 position, float fieldOfView, float speed);

@@ -8,7 +8,7 @@ namespace Orchis {
 		TIME_FORMAT_SECONDS, TIME_FORMAT_MILISECONDS
 	};
 
-	class Timer
+	class OC_API Timer
 	{
 	public:	
 		Timer(const char* name = "Unnamed");

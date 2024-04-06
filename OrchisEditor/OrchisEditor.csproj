@@ -1,12 +1,16 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <OutputType>WinExe</OutputType>
-    <TargetFramework>net8.0-windows</TargetFramework>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0-windows10.0.22621.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
   </PropertyGroup>
+  
+  <ItemGroup>
+    <Folder Include="View\Editor\UserControls\ToolsPanelComponents\AssetManagerComponents\ContextMenus\" />
+  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\OrchisRuntime\OrchisRuntime.vcxproj" />

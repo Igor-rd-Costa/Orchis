@@ -9,6 +9,7 @@ namespace Orchis {
 		Input::ClipCursor();
 		Renderer::SetActiveCamera(new Orchis::PerspectiveCamera({ 0.0f, 0.0f, 0.0f }, 45.0f, 5.0f));
 
+
 		SceneManager::CreateScene("NewScene");
 		Scene* scene = SceneManager::GetScene();
 		scene->AddMesh("Assets/Models/Shiba.FBX", { 0.0f,  6.0f,  0.0f });

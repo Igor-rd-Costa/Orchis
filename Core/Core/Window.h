@@ -4,7 +4,7 @@
 #include  <string>
 namespace Orchis {
 
-	class __declspec(dllexport) Window
+	class OC_API Window
 	{
 	public:
 		Window() = default;

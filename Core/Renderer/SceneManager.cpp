@@ -10,12 +10,13 @@ namespace Orchis {
 			UnloadScene();
 	}
 
-	void SceneManager::CreateScene(std::string_view name)
+	void* SceneManager::CreateScene(std::string_view name)
 	{
 		if (s_Scene)
 			UnloadScene();
 
 		s_Scene = new Scene(name);
+		return (void*)s_Scene;
 	}
 
 	void SceneManager::UnloadScene()

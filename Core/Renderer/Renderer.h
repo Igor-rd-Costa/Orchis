@@ -14,7 +14,7 @@
 
 namespace Orchis {
 
-	struct Material
+	struct OC_API Material
 	{
 		float Ambient;
 		float Diffuse;
@@ -22,7 +22,7 @@ namespace Orchis {
 		float Shininess;
 	};
 
-	struct Light
+	struct OC_API Light
 	{
 		alignas(16) glm::vec3 Position;
 		alignas(16) glm::vec3 Ambient;
@@ -30,7 +30,7 @@ namespace Orchis {
 		alignas(16) glm::vec3 Specular;
 	};
 
-	struct RenderData
+	struct OC_API RenderData
 	{
 		Ref<GraphicsPipeline> GraphicsPipeline;
 		Ref<UniformBuffer> TransformsUB;
@@ -40,7 +40,7 @@ namespace Orchis {
 		Light light;
 	};
 
-	class Renderer
+	class OC_API Renderer
 	{
 	public:
 		Renderer() = delete;
@@ -54,8 +54,6 @@ namespace Orchis {
 		static void BeginScene();
 		static void EndScene();
 			
-		static void SetDefaultShaderPaths(const char* vertexPath, const char* fragPath);
-
 		static void SetActiveCamera(PerspectiveCamera* camera) { s_ActiveCamera = camera; }
 		static const PerspectiveCamera* GetActiveCamera() { return s_ActiveCamera; }
 	private:

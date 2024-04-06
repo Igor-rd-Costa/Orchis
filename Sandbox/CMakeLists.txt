@@ -18,4 +18,4 @@ target_compile_options(Sandbox PRIVATE
 )
 set_target_properties(Sandbox PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${ORCHIS_BIN_DIR}/Sandbox/${ORCHIS_BUILD_CONFIG}-${ORCHIS_PLATFORM}-${ORCHIS_ARCHITECTURE})
 
-target_link_libraries(Sandbox PRIVATE Core)
+target_link_libraries(Sandbox PRIVATE OrchisRuntime)

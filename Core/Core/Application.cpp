@@ -1,6 +1,7 @@
 #include "Application.h"
 #include "Renderer/Renderer.h"
 #include "EventDispatcher.h"
+#include "VFS/FS.h"
 
 namespace Orchis {
 
@@ -33,6 +34,8 @@ namespace Orchis {
 	void Application::Init(void* parentWindow)
 	{
 		Log::Init();
+		FS::Init();
+
 		CreateRenderContext(parentWindow);
 		EventDispatcher::RegisterWindowCloseCallbackFn(OnWindowClose);
 	}

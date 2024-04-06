@@ -4,7 +4,7 @@
 
 namespace Orchis {
 
-	class Time {
+	class OC_API Time {
 	public:
 		Time() = delete;
 		Time(const Time&) = delete;

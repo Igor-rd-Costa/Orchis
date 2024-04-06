@@ -1,14 +1,11 @@
 ﻿using Microsoft.VisualBasic.FileIO;
 using OrchisEditor.Controller.Orchis;
+using OrchisEditor.Controller.Utils;
 using OrchisEditor.View.Editor;
-using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Numerics;
 using System.Text;
 using System.Windows;
-using System.Xml.Linq;
+
 
 namespace OrchisEditor.Controller.Editor
 {
@@ -20,7 +17,7 @@ namespace OrchisEditor.Controller.Editor
             BLANK
         }
 
-        public static void Create(ProjectTemplate template, string name, string filePath = "")
+        public static void Create(ProjectTemplate template, string name, string projectPath)
         {
             if (s_HasUnsavedChanges)
                 if (!QueryProjectSave())
@@ -30,72 +27,82 @@ namespace OrchisEditor.Controller.Editor
 
             switch(template)
             {
-                case ProjectTemplate.BLANK: CreateBlankProject(name); break;
+                case ProjectTemplate.BLANK: CreateBlankProject(name, projectPath); break;
             }
+
+            ((App)Application.Current).SetLastProjectPath(projectPath);
         }
 
         public static bool Load(string projectPath)
         {
-            Tag? project = Parser.ParseProject(projectPath);
-
             if (s_HasUnsavedChanges)
                 if (!QueryProjectSave())
                 {
                     return false;
                 }
-           
 
-            if (!project.HasValue)
+            Tag? proj = Parser.ParseFileXML(projectPath);
+            if (!proj.HasValue)
                 return false;
 
-            if (project.Value.Name != "Project")
+            Tag project = proj.Value;
+            if (project.Name != "Project")
             {
                 //TODO handle error. wrong file sintax
                 return false;
             }
-            s_Name = GetAttribute("Name", project.Value);
+            s_Name = project.GetAttribute("Name");
             if (s_Name == "")
             {
                 //TODO handle error. wrong file sintax, could not find project name
                 return false;
             }
-            s_Version = GetAttribute("Version", project.Value);
+            s_Version = project.GetAttribute("Version");
             if (s_Version == "")
             {
                 //TODO handle error. wrong file sintax, could not find version
                 return false;
             }
-            foreach (Tag sceneTag in project.Value.Childs)
+
+            Tag assets = project.Childs[0];
+            if (assets.Name != "Assets")
             {
-                if (sceneTag.Name == "Scene")
+                //TODO handle error. wrong file sintax, could not find assets.
+                return false;
+            }
+            
+            Tag scenes = project.Childs[1];
+            foreach (Tag scene in scenes.Childs)
+            {
+                if (scene.Name == "Scene")
                 {
-                    string name = GetAttribute("Name", sceneTag);
+                    string name = scene.GetAttribute("Name");
                     if (name == "")
                     {
                         //TODO handle error, could not find scene name
                         return false;
                     }
-                    string id = GetAttribute("Id", sceneTag);
+                    string id = scene.GetAttribute("Id");
                     if (id == "")
                     {
                         //TODO handle error, could not find scene id
                         return false;
                     }
-                    bool isActive = bool.Parse(GetAttribute("Active", sceneTag));
+                    bool isActive = bool.Parse(scene.GetAttribute("Active"));
                     int sceneIndex = AddScene(name, int.Parse(id), isActive);
                     if (isActive) 
                         s_ActiveScene = s_Scenes[sceneIndex];    
 
-                    foreach (Tag entityTag in sceneTag.Childs)
+                    foreach (Tag entity in scene.Childs)
                     {
-                        string entityName = GetAttribute("Name", entityTag);
+                        string entityName = entity.GetAttribute("Name");
                         if (entityName == "")
                         {
                             //TODO handle error, could not find entity name
                             return false;
                         }
                         int entityIndex = s_Scenes[sceneIndex].AddEntity(entityName);
-                        foreach (Tag componentTag in entityTag.Childs)
+                        foreach (Tag componentTag in entity.Childs)
                         {
                             //TODO add components
                         }
@@ -103,26 +110,15 @@ namespace OrchisEditor.Controller.Editor
                 }
                 else
                 {
-                    Console.Write("Unrecognized element " + sceneTag.Name + " ignored.");
+                    Console.WriteLine("Unrecognized element " + scene.Name + " ignored.");
                 }
             }
-
+            ((App)Application.Current).RegisterRecentProject(Name, projectPath);
             s_EditorCamera = OrchisInterface.OrchisCameraCreate();
             OrchisInterface.OrchisRendererSetActiveCamera(s_EditorCamera);
             s_Loaded = true;
             return true;
         }
-
-        static string GetAttribute(string name, Tag tag)
-        {
-            foreach (TagAttribute attribute in tag.Attributes) 
-            {
-                if (attribute.Name == name)
-                    return attribute.Value;
-            }
-            return "";
-        }
-
         public static string Name
         {
             get { return s_Name; }
@@ -194,32 +190,36 @@ namespace OrchisEditor.Controller.Editor
                 }
             }
             ((EditorWindow)Application.Current.MainWindow).ProjectOutliner.UpdateGUI();
+            
         }
 
 
-        private static void CreateBlankProject(string name)
+        private static void CreateBlankProject(string name, string projectPath)
         {
-
-            if (!FileSystem.DirectoryExists(s_ProjectsDirPath))
-                FileSystem.CreateDirectory(s_ProjectsDirPath);
-
-            FileStream fileStream = File.Create(s_ProjectsDirPath + name + s_ProjExtension);
+            FileSystem.CreateDirectory(projectPath + name);
+            projectPath = projectPath + name + "\\" + name + s_ProjExtension;
+            FileStream fileStream = File.Create(projectPath);
 
             byte[] buffer = new UTF8Encoding(true).GetBytes(
-                "<Project Name=\"" + name + "\" " + "Version=\"" + s_ProjVersion + "\">" +
-                "\n\t<Scene Id=\"0\" Name=\"NewScene\" Active=\"true\">\n" +
-                  "\t</Scene>\n" +
+                "<Project Name=\"" + name + "\" " + "Version=\"" + s_ProjVersion + "\">\n" +
+                "<Assets>\n" +
+                "</Assets>\n" +
+                "<Scenes>\n" +
+                "\t<Scene Id=\"0\" Name=\"NewScene\" Active=\"true\">\n" +
+                "\t</Scene>\n" +
+                "</Scenes>\n" +
                 "</Project>");
 
             fileStream.Write(buffer, 0, buffer.Length);
             fileStream.Flush();
             fileStream.Dispose();
 
-            Load(s_ProjectsDirPath + name + s_ProjExtension);
+            Load(projectPath);
         }
+
+        //TODO implement saving
         private static bool QueryProjectSave()
         {
-            //TODO implement saving
 
             return true;
         }

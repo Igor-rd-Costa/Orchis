@@ -9,19 +9,14 @@ namespace OrchisEditor.Controller
     {
         protected override HandleRef BuildWindowCore(HandleRef hwndParent)
         {
-            OrchisInterface.OrchisRendererSetDefaultShaders(
-                "../../../Assets/Shaders/bin/vert.spv",
-                "../../../Assets/Shaders/bin/frag.spv"
-                );
-
-            OrchisInterface.OrchisInit(hwndParent.Handle);
-            IntPtr windowHandle = OrchisInterface.OrchisGetMainWindowHandle();
+            OrchisInterface.Application.OrchisInit(hwndParent.Handle);
+            IntPtr windowHandle = OrchisInterface.Application.OrchisGetMainWindowHandle();
             return new HandleRef(this, windowHandle);
         }
 
         protected override void DestroyWindowCore(HandleRef hwnd)
         {
-            OrchisInterface.OrchisShutdown();
+            OrchisInterface.Application.OrchisShutdown();
         }
     }
 }

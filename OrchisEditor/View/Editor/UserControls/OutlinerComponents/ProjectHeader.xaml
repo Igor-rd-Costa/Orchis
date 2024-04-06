@@ -8,10 +8,10 @@
              d:DesignHeight="20" d:DesignWidth="450">
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="30"/>
+            <ColumnDefinition Width="20"/>
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
-        <Image Width="20" Height="20" HorizontalAlignment="Right" Grid.Column="0" />
+        <Image Width="20" Height="20" HorizontalAlignment="Right" Grid.Column="0"/>
         <TextBlock Text="{Binding ProjectName}" Grid.Column="1" TextAlignment="Left"
                    Background="Transparent" Foreground="White" Padding="5,0,0,0"/>
     </Grid>

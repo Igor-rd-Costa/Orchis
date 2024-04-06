@@ -1,7 +1,6 @@
 ﻿using Microsoft.VisualBasic.FileIO;
-using OrchisEditor.Controller.Editor;
-using System;
-using System.Collections.ObjectModel;
+using OrchisEditor.Controller.Utils;
+using OrchisEditor.View.UserControls;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -19,18 +18,12 @@ namespace OrchisEditor.View.ProjectSelector.UserControls
 
         void BuildProjectList()
         {
-            if (FileSystem.DirectoryExists("Projects"))
-            {
-                ReadOnlyCollection<string> files = FileSystem.FindInFiles("Projects", "", false, SearchOption.SearchTopLevelOnly);
-
-                foreach (string file in files) 
+                var recentProjects = ((App)Application.Current).GetRecentProjects();
+                foreach (Tag project in recentProjects)
                 {
-                    if (file.EndsWith(".orcproj"))
-                    {
-                        ProjectList.Items.Add(MakeProjectListItem(file.Substring(file.LastIndexOf('\\') + 1), file));
-                    }
+                    string path = project.GetAttribute("FilePath");
+                    ProjectList.Items.Add(MakeProjectListItem(project.Name, path));
                 }
-            }
         }
 
         private ListBoxItem MakeProjectListItem(string name, string filePath)
@@ -85,7 +78,7 @@ namespace OrchisEditor.View.ProjectSelector.UserControls
             };
             TextBlock projectDate = new()
             {
-                Text = "9/23/2023 11:26 AM",
+                Text = "9/23/2023 11:26 AM", // TODO Add date
                 Foreground = Brushes.White,
                 VerticalAlignment = VerticalAlignment.Center,
                 HorizontalAlignment = HorizontalAlignment.Stretch,
@@ -126,11 +119,22 @@ namespace OrchisEditor.View.ProjectSelector.UserControls
             if (ProjectList.SelectedItem != null) 
             {
                 string projectPath = ((TextBlock)((Grid)((ListBoxItem)ProjectList.SelectedItem).Content).Children[3]).Text;
+                if (!FileSystem.FileExists(projectPath))
+                {
+                    var errorDialog = new OrchisErrorDialog();
+                    bool? remove = errorDialog.ShowError("The project file could not be found.\nDo you wish to remove it from the list?");
+                    if (remove.HasValue && remove.Value)
+                    {
+                        ((App)Application.Current).RemoveRecentProject(projectPath);
+                        ProjectList.Items.Remove(ProjectList.SelectedItem);
+                    }
+                    return;
+                }
                 foreach (Window window in Application.Current.Windows)
                 {
                     if (window.GetType().Equals(typeof(ProjectSelectorWindow)))
                     {
-                        if (Project.Load(projectPath))
+                        if (OrchisEditor.Controller.Editor.Project.Load(projectPath))
                         {
                             window.DialogResult = true;
                             break;

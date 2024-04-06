@@ -4,4 +4,8 @@ cmake --build . --config Debug
 cmake --build . --config Release
 cd ..\..\..\
 cmake .
+md C:\Orchis\Data\Shaders
+cd Core\Shaders\
+call CompileShaders.bat
+cd ..\..\
 PAUSE

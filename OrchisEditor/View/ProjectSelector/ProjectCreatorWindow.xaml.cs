@@ -1,6 +1,6 @@
-﻿using OrchisEditor.Controller.Editor;
-using System;
-using System.IO;
+﻿using Microsoft.VisualBasic.FileIO;
+using Microsoft.Win32;
+using OrchisEditor.Controller.Editor;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -15,6 +15,8 @@ namespace OrchisEditor.View.ProjectSelector
             DataContext = this;
             InitializeComponent();
             SystemMenu.Window = this;
+            ProjectPathInput.DataContext = this;
+            ProjectPathInput.Text = ((App)Application.Current).GetLastProjectPath();
         }
 
         private void Window_MouseDown(object sender, MouseButtonEventArgs e)
@@ -80,11 +82,26 @@ namespace OrchisEditor.View.ProjectSelector
                 ListBoxItem item = (ListBoxItem)ProjectTemplates.SelectedItem;
                 if (item.Name == "BlankProject")
                 {
+                    string projectPath = ProjectPathInput.Text;
+                    if (!FileSystem.DirectoryExists(projectPath))
+                    {
+                        // TODO handle error. Invalid directory
+                        return;
+                    }
+
                     DialogResult = true;
-                    Project.Create(Project.ProjectTemplate.BLANK, ProjectName.Text);
+                    Project.Create(Project.ProjectTemplate.BLANK, ProjectName.Text, projectPath);
                     Close();
                 }
             }
+        }
+
+        private void SelectProjectPath(object sender, RoutedEventArgs e)
+        {
+            var dirDialog = new OpenFolderDialog();
+            dirDialog.Multiselect = false;
+            dirDialog.ShowDialog();
+            ProjectPathInput.Text = dirDialog.FolderName + "\\";
         }
     }
 }

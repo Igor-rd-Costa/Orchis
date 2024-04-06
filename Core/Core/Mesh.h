@@ -6,7 +6,7 @@
 
 namespace Orchis {
 
-	struct SubMesh
+	struct OC_API SubMesh
 	{
 		const glm::mat4& GetTransform() const;
 
@@ -30,7 +30,7 @@ namespace Orchis {
 		glm::mat4 Transform = glm::mat4(1.0f);
 	};
 
-	class Mesh
+	class OC_API Mesh
 	{
 	public:
 		Mesh(const char* filePath, const glm::vec3& position = { 0.0f, 0.0f, 0.0f });

@@ -6,7 +6,7 @@
 
 namespace Orchis {
 
-	class Scene
+	class OC_API Scene
 	{
 	public:
 		Scene(std::string_view name);

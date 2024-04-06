@@ -21,7 +21,8 @@ set(ORCHIS_RUNTIME_BIN_DIR ${ORCHIS_BIN_DIR}OrchisRuntime/${ORCHIS_BUILD_CONFIG}
 
 message("CMD: ${ORCHIS_RUNTIME_BIN_DIR}")
 
-add_custom_command(TARGET OrchisRuntime POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy ${ORCHIS_RUNTIME_BIN_DIR}/OrchisRuntime.dll ${CMAKE_SOURCE_DIR}/OrchisEditor/bin/${ORCHIS_BUILD_CONFIG}/net8.0-windows/) 
+add_custom_command(TARGET OrchisRuntime POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy ${ORCHIS_RUNTIME_BIN_DIR}/OrchisRuntime.dll ${CMAKE_SOURCE_DIR}/OrchisEditor/bin/${ORCHIS_BUILD_CONFIG}/net8.0-windows10.0.22621.0/) 
+add_custom_command(TARGET OrchisRuntime POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy ${ORCHIS_RUNTIME_BIN_DIR}/OrchisRuntime.dll ${ORCHIS_BIN_DIR}/Sandbox/${ORCHIS_BUILD_CONFIG}-${ORCHIS_PLATFORM}-${ORCHIS_ARCHITECTURE}/) 
 
 target_link_libraries(OrchisRuntime PRIVATE Core)
 

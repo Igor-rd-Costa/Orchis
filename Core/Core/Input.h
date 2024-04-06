@@ -9,7 +9,7 @@ namespace Orchis {
 		long x, y;
 	};
 
-	class Input
+	class OC_API Input
 	{
 	public:
 		static bool KeyPressed(Key key);

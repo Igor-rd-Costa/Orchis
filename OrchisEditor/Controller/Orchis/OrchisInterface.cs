@@ -9,6 +9,9 @@ namespace OrchisEditor.Controller.Orchis
 {
     internal class OrchisInterface
     {
+
+        internal class Application
+        {
         //Application
         [DllImport("OrchisRuntime.dll")]
         public static extern void OrchisInit(IntPtr parentWindow);
@@ -18,6 +21,7 @@ namespace OrchisEditor.Controller.Orchis
 
         [DllImport("OrchisRuntime.dll")]
         public static extern IntPtr OrchisGetMainWindowHandle();
+        }
 
 
         //Camera

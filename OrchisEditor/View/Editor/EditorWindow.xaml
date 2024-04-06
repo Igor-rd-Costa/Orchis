@@ -17,7 +17,7 @@
             <RowDefinition Height="5"/>
             <RowDefinition Height="80*"/>
             <RowDefinition Height="5"/>
-            <RowDefinition Height="20*"/>
+            <RowDefinition Height="25*"/>
             <RowDefinition Height="30"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
@@ -39,6 +39,6 @@
         <GridSplitter Grid.Row="1" Grid.Column="4" Grid.RowSpan="3" HorizontalAlignment="Stretch" Background="Transparent"/>
         <UserControls:PropertyPanel x:Name="PropertiesPanel" Grid.Column="5" Grid.Row="2" Grid.RowSpan="3"/>
         <GridSplitter Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="3" HorizontalAlignment="Stretch" Background="Transparent"/>
-        <UserControls:Logger Grid.Column="1" Grid.Row="4" Grid.ColumnSpan="3"/>
+        <UserControls:ToolsPanel Grid.Column="1" Grid.Row="4" Grid.ColumnSpan="3"/>
     </Grid>
 </Window>

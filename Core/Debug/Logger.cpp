@@ -31,6 +31,7 @@ namespace Orchis {
 		spdlog::get(m_Name)->trace(msg);
 	}
 
+	
 	void Logger::Info(const std::string& msg)
 	{
 		spdlog::get(m_Name)->info(msg);

@@ -12,8 +12,8 @@ namespace Orchis {
 	RenderData* Renderer::s_Data = new RenderData;
 	PerspectiveCamera* Renderer::s_ActiveCamera = nullptr;
 	std::thread Renderer::s_RenderThread;
-	std::string Renderer::DefaultVertexPath = "Assets/Shaders/bin/vert.spv";
-	std::string Renderer::DefaultFragmentPath = "Assets/Shaders/bin/frag.spv";
+	std::string Renderer::DefaultVertexPath = "Shaders\\vert.spv";
+	std::string Renderer::DefaultFragmentPath = "Shaders\\frag.spv";
 
 	void Renderer::Init()
 	{
@@ -83,12 +83,6 @@ namespace Orchis {
 	void Renderer::EndScene()
 	{
 		RenderCommand::SwapBuffers();
-	}
-
-	void Renderer::SetDefaultShaderPaths(const char* vertexPath, const char* fragPath)
-	{
-		Renderer::DefaultVertexPath = vertexPath;
-		Renderer::DefaultFragmentPath = fragPath;
 	}
 
 }

@@ -3,6 +3,7 @@
 #include "VulkanVertexBuffer.h"
 #include "VulkanTexture.h"
 #include "VulkanDescriptorSets.h"
+#include "VFS/FS.h"
 namespace Orchis {
 
 	VkPipeline VulkanGraphicsPipeline::s_BoundPipeline;
@@ -10,7 +11,7 @@ namespace Orchis {
 
 	std::vector<char> ReadFile(std::string_view filePath)
 	{
-		std::ifstream file(filePath.data(), std::ios::ate | std::ios::binary);
+		std::ifstream file = FS::Open(filePath.data(), std::ios::binary | std::ios::ate);
 
 		if (!file.is_open())
 		{

@@ -2,6 +2,11 @@
 #include <memory>
 
 #ifdef OC_PLATFORM_WINDOWS
+	#if OC_SHARED_BUILD
+		#define OC_API __declspec(dllexport)
+	#else
+		#define OC_API __declspec(dllimport)
+	#endif
 	#if OC_DEBUG_BUILD || OC_RELEASE_BUILD
 		#define OC_ASSERT(x) { if (!(x)) __debugbreak(); }
 	#else

@@ -11,6 +11,8 @@ file(GLOB_RECURSE FILES
 
 add_library(Core STATIC ${FILES})
 
+target_compile_definitions(Core PRIVATE OC_SHARED_BUILD)
+
 find_package(Vulkan REQUIRED)
 target_include_directories(Core PRIVATE
     "./Include/PCH/"

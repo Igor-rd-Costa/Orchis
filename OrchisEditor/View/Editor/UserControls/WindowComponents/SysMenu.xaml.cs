@@ -19,15 +19,40 @@ namespace OrchisEditor.View.Editor.UserControls.WindowComponents
     /// <summary>
     /// Interaction logic for SysMenu.xaml
     /// </summary>
+    
+    public enum SysMenuMode
+    {
+        FULL, CLOSE_ONLY
+    }
+
     public partial class SysMenu : UserControl
     {
+        public SysMenuMode m_Mode = SysMenuMode.FULL;
         public SysMenu()
         {
             DataContext = this;
             InitializeComponent();
+            if (m_Mode == SysMenuMode.CLOSE_ONLY)
+            {
+                MinimizeBtn.Visibility = Visibility.Hidden;
+                MaximizeBtn.Visibility = Visibility.Hidden;
+            }
         }
 
-
+        public void SetMode(SysMenuMode mode)
+        {
+            m_Mode = mode;
+            if (m_Mode == SysMenuMode.CLOSE_ONLY)
+            {
+                MinimizeBtn.Visibility = Visibility.Hidden;
+                MaximizeBtn.Visibility = Visibility.Hidden;
+            }
+            else
+            {
+                MinimizeBtn.Visibility = Visibility.Visible;
+                MaximizeBtn.Visibility = Visibility.Visible;
+            }
+        }
 
 
         private void MinimizeBtn_Click(object sender, RoutedEventArgs e)

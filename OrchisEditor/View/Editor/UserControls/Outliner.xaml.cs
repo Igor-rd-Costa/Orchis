@@ -17,6 +17,7 @@ namespace OrchisEditor.View.Editor.UserControls
                 ProjectItem.Visibility = Visibility.Visible;
                 ProjectItem.ProjectName = Project.Name;
                 ProjectItem.ContextMenu = new ProjectContextMenu();
+                SceneHierarchy.ContextMenu = new ProjectContextMenu();
                 for (int i = 0; i < Project.GetSceneCount(); i++) 
                 {
                     Scene scene = Project.GetScene(i);

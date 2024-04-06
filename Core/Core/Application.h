@@ -8,7 +8,7 @@
 #include <thread>
 
 namespace Orchis {
-	class Application
+	class OC_API Application
 	{
 	public:
 		Application() = delete;

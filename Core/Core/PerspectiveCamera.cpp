@@ -18,6 +18,8 @@ namespace Orchis {
 		}
 		m_ProjMatrix = glm::perspective(glm::radians(fieldOfView), width / height, 0.1f, 100.0f);
 		m_ProjMatrix[1][1] *= -1;
+
+		glm::mat4 test = glm::rotate(glm::mat4(1.0f), 0.0f, glm::vec3(1.0f, 1.0f, 1.0f));
 	}
 
 	void PerspectiveCamera::Update()

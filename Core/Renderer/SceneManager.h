@@ -1,9 +1,10 @@
 #pragma once
+#include "Macros.h"
 #include "Scene.h"
 
 namespace Orchis {
 
-	class SceneManager
+	class OC_API SceneManager
 	{
 	public:
 		SceneManager() = delete;
@@ -13,7 +14,7 @@ namespace Orchis {
 		static void ShutDown();
 		static Scene* GetScene() { return s_Scene; }
 
-		static void CreateScene(std::string_view name);
+		static void* CreateScene(std::string_view name);
 
 		//TODO implement this
 		//static void LoadScene(std::string_view filePath);
