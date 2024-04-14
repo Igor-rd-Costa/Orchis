@@ -2,9 +2,11 @@
 using OrchisEditor.Controller.Orchis;
 using OrchisEditor.Controller.Utils;
 using OrchisEditor.View.Editor;
+using OrchisEditor.View.UserControls;
 using System.IO;
 using System.Text;
 using System.Windows;
+using System.Xml.Linq;
 
 
 namespace OrchisEditor.Controller.Editor
@@ -12,6 +14,15 @@ namespace OrchisEditor.Controller.Editor
 
     internal class Project
     {
+        private static IntPtr s_EditorCamera = IntPtr.Zero;
+        public static bool s_HasUnsavedChanges = false;
+        private static string s_Name = "";
+        private static bool s_Loaded = false;
+        private const string s_ProjExtension = ".orcproj";
+        private const string s_ProjVersion = "0.0.1";
+        private static string s_ProjPath = "";
+        private static List<Action<bool>> m_OnChangeCallbacks = [];
+
         public enum ProjectTemplate
         {
             BLANK
@@ -46,7 +57,7 @@ namespace OrchisEditor.Controller.Editor
                 return false;
 
             Tag project = proj.Value;
-            if (project.Name != "Project")
+            if (project.Name != "OrchisProject")
             {
                 //TODO handle error. wrong file sintax
                 return false;
@@ -57,10 +68,15 @@ namespace OrchisEditor.Controller.Editor
                 //TODO handle error. wrong file sintax, could not find project name
                 return false;
             }
-            s_Version = project.GetAttribute("Version");
-            if (s_Version == "")
+            string version = project.GetAttribute("Version");
+            if (version == "")
             {
                 //TODO handle error. wrong file sintax, could not find version
+                return false;
+            }
+            if (version != s_ProjVersion)
+            {
+                //TODO wrong version. handle update.
                 return false;
             }
 
@@ -72,50 +88,17 @@ namespace OrchisEditor.Controller.Editor
             }
             
             Tag scenes = project.Childs[1];
-            foreach (Tag scene in scenes.Childs)
+            if (scenes.Name != "Scenes")
             {
-                if (scene.Name == "Scene")
-                {
-                    string name = scene.GetAttribute("Name");
-                    if (name == "")
-                    {
-                        //TODO handle error, could not find scene name
-                        return false;
-                    }
-                    string id = scene.GetAttribute("Id");
-                    if (id == "")
-                    {
-                        //TODO handle error, could not find scene id
-                        return false;
-                    }
-                    bool isActive = bool.Parse(scene.GetAttribute("Active"));
-                    int sceneIndex = AddScene(name, int.Parse(id), isActive);
-                    if (isActive) 
-                        s_ActiveScene = s_Scenes[sceneIndex];    
-
-                    foreach (Tag entity in scene.Childs)
-                    {
-                        string entityName = entity.GetAttribute("Name");
-                        if (entityName == "")
-                        {
-                            //TODO handle error, could not find entity name
-                            return false;
-                        }
-                        int entityIndex = s_Scenes[sceneIndex].AddEntity(entityName);
-                        foreach (Tag componentTag in entity.Childs)
-                        {
-                            //TODO add components
-                        }
-                    }
-                }
-                else
-                {
-                    Console.WriteLine("Unrecognized element " + scene.Name + " ignored.");
-                }
+                //TODO handle error. wrong file sintax, could not find assets.
+                return false;
             }
+            SceneManager.LoadScenes(scenes.Childs);
             ((App)Application.Current).RegisterRecentProject(Name, projectPath);
-            s_EditorCamera = OrchisInterface.OrchisCameraCreate();
+            s_ProjPath = projectPath.Substring(0, projectPath.LastIndexOf('\\') + 1);
+            s_EditorCamera = Engine.Camera.Create();
             OrchisInterface.OrchisRendererSetActiveCamera(s_EditorCamera);
+            Console.WriteLine($"Project \"{Name}\" Loaded!");
             s_Loaded = true;
             return true;
         }
@@ -129,87 +112,31 @@ namespace OrchisEditor.Controller.Editor
         {
             get { return  s_Loaded; }
         }
-        public static string Version { get { return s_Version; } }
-        public static int GetSceneCount() { return s_Scenes.Count; }
-        public static Scene? GetScene(string name) 
-        { 
-            foreach (Scene scene in s_Scenes)
-            {
-                if (scene.Name == name) return scene;
-            }
-            return null;
-        }
-
-        public static Scene GetScene(int index)
-        {
-            return s_Scenes[index];
-        }
-
-        public static int AddScene(string name = "NewScene", int id = 0, bool isActive = false) 
-        {
-            string sceneName = name;
-            int sceneNameExt = 2;
-
-            bool foundName = true;
-            while (foundName)
-            {
-                foundName = false;
-                foreach (Scene scene in s_Scenes)
-                {
-                    if (scene.Name == sceneName)
-                    {
-                        sceneName = name + sceneNameExt++;
-                        foundName = true;
-                        break;
-                    }
-                }
-            }
-
-            s_Scenes.Add(new(sceneName, id));
-            if (((EditorWindow)Application.Current.MainWindow).ProjectOutliner != null)
-            {
-                ((EditorWindow)Application.Current.MainWindow).ProjectOutliner.UpdateGUI();
-            }
-            s_HasUnsavedChanges = true;
-            return s_Scenes.Count - 1;
-        }
-        public static void RemoveScene(int index) 
-        { 
-            s_Scenes.RemoveAt(index);
-            s_HasUnsavedChanges = true;
-        }
-
-        public static void RemoveScene(string name)
-        {
-            for (int i = 0; i < s_Scenes.Count; i++)
-            {
-                if (s_Scenes[i].Name == name)
-                {
-                    s_Scenes.RemoveAt(i);
-                    break;
-                }
-            }
-            ((EditorWindow)Application.Current.MainWindow).ProjectOutliner.UpdateGUI();
-            
-        }
-
+        public static string Version { get { return s_ProjVersion; } }
 
         private static void CreateBlankProject(string name, string projectPath)
         {
             FileSystem.CreateDirectory(projectPath + name);
+            FileSystem.CreateDirectory(projectPath + name + "\\Assets");
+            File.Create(projectPath + name + "\\Assets\\info.oai");
             projectPath = projectPath + name + "\\" + name + s_ProjExtension;
             FileStream fileStream = File.Create(projectPath);
+            Tag newProject = new()
+            {
+                Name = "OrchisProject",
+                Attributes = [new TagAttribute("Name", name), new TagAttribute("Version", s_ProjVersion)],
+                Childs = [new Tag("Assets"),
+                    new Tag("Scenes", [], [
+                        new Tag("Scene", [
+                            new TagAttribute("Id", Guid.NewGuid().ToString().ToUpper()),
+                            new TagAttribute("Name", "NewScene"),
+                            new TagAttribute("Active", "true")], [])
+                        ])
+                ]
+            };
+            Console.WriteLine("Editor: Creating project with scene id " + newProject.Childs[1].Childs[0].GetAttribute("Id"));
 
-            byte[] buffer = new UTF8Encoding(true).GetBytes(
-                "<Project Name=\"" + name + "\" " + "Version=\"" + s_ProjVersion + "\">\n" +
-                "<Assets>\n" +
-                "</Assets>\n" +
-                "<Scenes>\n" +
-                "\t<Scene Id=\"0\" Name=\"NewScene\" Active=\"true\">\n" +
-                "\t</Scene>\n" +
-                "</Scenes>\n" +
-                "</Project>");
-
+            var buffer = new UTF8Encoding(true).GetBytes(Parser.ToXML(newProject));
             fileStream.Write(buffer, 0, buffer.Length);
             fileStream.Flush();
             fileStream.Dispose();
@@ -224,22 +151,86 @@ namespace OrchisEditor.Controller.Editor
             return true;
         }
 
-        static public Scene? ActiveScene
+        public static void Save()
         {
-            get { return s_ActiveScene; }
+            if (!s_HasUnsavedChanges)
+                return;
+
+            //TODO implement saving
+            string projFilePath = s_ProjPath + Name + s_ProjExtension;
+            if (!File.Exists(projFilePath))
+            {
+                OrchisDialog dialog = new();
+                dialog.SetDialogType(OrchisDialogType.OK);
+                dialog.ShowMessage($"Unable to find project file at {projFilePath}.", "Error");
+                // TODO add a way to locate file manually
+                return;
+            }
+            Tag project = new(
+                "OrchisProject",
+                [
+                    new TagAttribute("Name", Name), 
+                    new TagAttribute("Version", s_ProjVersion)
+                ], 
+                [
+                    new ("Assets") //TODO add assets
+                ]);
+            Tag scenes = new("Scenes");
+            foreach (Scene scene in SceneManager.Scenes)
+            {
+                scenes.Childs.Add(new(
+                    "Scene",
+                    [
+                        new("Id", scene.Id.ToString().ToUpper()),
+                        new("Name", scene.Name),
+                        new("Active", scene.Active.ToString())
+                    ], ParseSceneEntities(scene)));
+            }
+            project.Childs.Add(scenes);
+            FileStream fs = File.Open(projFilePath, FileMode.Open);
+            fs.SetLength(0);
+            fs.Write(new UTF8Encoding().GetBytes(Parser.ToXML(project)));
+            fs.Dispose();
+            s_HasUnsavedChanges = false;
+            foreach (Action<bool> changeCallback in m_OnChangeCallbacks)
+                changeCallback(s_HasUnsavedChanges);
         }
 
-        private static IntPtr s_EditorCamera = IntPtr.Zero;
-        public static bool s_HasUnsavedChanges = false;
-        private static string s_Name = "";
-        private static string s_Version = "0.0.0";
-        private static List<Scene> s_Scenes= new();
-        private static Scene? s_ActiveScene;
-        private static string s_ProjectsDirPath = "Projects/";
-        private static bool s_Loaded = false;
-        private const string s_ProjExtension = ".orcproj";
-        private const string s_ProjVersion = "0.0.1";
+        private static List<Tag> ParseSceneEntities(Scene scene)
+        {
+            List<Tag> entities = [];
+            foreach (Entity entity in scene.Entities)
+            {
+                entities.Add(new(
+                    "Entity",
+                        [
+                            new("Id", entity.Id.ToString().ToUpper()),
+                            new("Name", entity.Name)
+                        ], ParseEntityComponents(entity)));
+            }
+            return entities;
+        }
 
+        private static List<Tag> ParseEntityComponents(Entity entity)
+        {
+            //TODO add components
+            return [];
+        }
+
+        public static void RegisterChange()
+        {
+            if (!s_HasUnsavedChanges)
+            {
+                s_HasUnsavedChanges = true;
+                foreach (Action<bool> changeCallback in m_OnChangeCallbacks)
+                    changeCallback(s_HasUnsavedChanges);
+            }
+        }
+
+        public static void OnProjectChange(Action<bool> onProjectChange)
+        {
+            m_OnChangeCallbacks.Add(onProjectChange);
+        }
     }
 
 }

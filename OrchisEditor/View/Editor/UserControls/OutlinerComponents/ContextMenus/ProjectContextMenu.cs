@@ -27,7 +27,7 @@ namespace OrchisEditor.View.Editor.UserControls.OutlinerComponents.ContextMenus
         private void AddScene_PreviewLeftMouseDown(object sender, MouseEventArgs e)
         {
             if (Project.IsLoaded)
-                Project.AddScene();
+                SceneManager.AddScene(Guid.Empty);
         }
     }
 }

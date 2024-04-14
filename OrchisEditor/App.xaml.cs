@@ -13,7 +13,7 @@ namespace OrchisEditor
     /// </summary>
     public partial class App : Application
     {
-        const string m_CurrentVersion = "0.0.1";
+        private const string m_CurrentVersion = "0.0.1";
         FileStream m_MetaDataStream;
         public App()
         {
@@ -30,7 +30,7 @@ namespace OrchisEditor
                 string xml = Parser.ToXML(editorMetaData);
                 m_MetaDataStream.Write(new UTF8Encoding(true).GetBytes(xml));
                 m_MetaDataStream.Flush();
-            } 
+            }
             else {
                 m_MetaDataStream = File.Open("./OrchisEditor.meta", FileMode.Open);
                 string content = new StreamReader(m_MetaDataStream).ReadToEnd();

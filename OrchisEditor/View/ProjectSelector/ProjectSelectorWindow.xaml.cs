@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Windows;
+using Microsoft.Win32;
 using OrchisEditor.Controller.Editor;
 
 namespace OrchisEditor.View.ProjectSelector
@@ -30,9 +31,30 @@ namespace OrchisEditor.View.ProjectSelector
             }
         }
 
-        private void ReloadBtn_Click(object sender, RoutedEventArgs e)
+        private void OpenBtn_Click(object sender, RoutedEventArgs e)
         {
-            ProjectList.Reload();
+            OpenFileDialog dialog = new OpenFileDialog();
+            dialog.DefaultExt = "orcproj";
+
+            bool? isValid = false;
+            string file = "";
+            do
+            {
+                bool? status = dialog.ShowDialog();
+                if (status.HasValue && status.Value)
+                {
+                    file = dialog.FileName;
+                    Console.WriteLine("File: " + file);
+                    int index = file.LastIndexOf('.');
+                    if (file.Substring(index, file.Length - index) == ".orcproj")
+                        isValid = true;
+                }
+                else
+                {
+                    isValid = null;
+                }
+            } while (isValid.HasValue && !isValid.Value);
+            Project.Load(file);
         }
 
         private void Window_StateChanged(object sender, EventArgs e)

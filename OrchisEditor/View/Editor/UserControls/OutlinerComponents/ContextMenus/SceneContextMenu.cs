@@ -24,14 +24,19 @@ namespace OrchisEditor.View.Editor.UserControls.OutlinerComponents.ContextMenus
 
         private void AddEntity_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            Scene? scene = Project.GetScene(((OutlinerTreeItem)DataContext).ItemName);
-            scene?.AddEntity();
+            Scene? scene = SceneManager.GetScene(((OutlinerTreeItem)DataContext).Id);
+            if (scene == null)
+            {
+                Console.WriteLine("Scene is null!");
+                return;
+            }
+            scene.AddEntity(Guid.Empty);
         }
 
         private void DeleteScene_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            if (Project.IsLoaded)
-                Project.RemoveScene(((OutlinerTreeItem)DataContext).ItemName);
+            //if (Project.IsLoaded)
+            //    SceneManager.RemoveScene();  
         }
 
     }

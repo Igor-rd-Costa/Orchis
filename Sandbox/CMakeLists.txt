@@ -6,10 +6,10 @@ file (GLOB_RECURSE FILES
 add_executable(Sandbox ${FILES})
 
 target_include_directories(Sandbox PRIVATE
-    "../Core/Include/Export/"
-    "../Core/"
-    "../Core/Core/"
-    "../Core/vendor/glm/"
+    "../OrchisRuntime/Include/Export/"
+    "../OrchisRuntime/"
+    "../OrchisRuntime/Core/"
+    "../OrchisRuntime/vendor/glm/"
 )
 
 target_compile_options(Sandbox PRIVATE

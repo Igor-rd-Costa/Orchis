@@ -35,9 +35,9 @@
         <Button x:Name="CreateProjectBtn" Grid.Column="1" Grid.Row="4" Width="150" Height="50" 
                 HorizontalAlignment="Left" VerticalAlignment="Center" 
                 Margin="30,0,0,0" Content="+ New Project" FontSize="18" Click="CreateProjectBtn_Click"/>
-        <Button x:Name="ReloadBtn" Grid.Column="1" Grid.Row="4" Width="150" Height="50" 
+        <Button x:Name="OpenBtn" Grid.Column="1" Grid.Row="4" Width="150" Height="50" 
          HorizontalAlignment="Left" VerticalAlignment="Center" 
-         Margin="220,0,0,0" Content="Reload" FontSize="18" Click="ReloadBtn_Click"/>
+         Margin="220,0,0,0" Content="Open" FontSize="18" Click="OpenBtn_Click"/>
         <Image Width="480" Height="270" Grid.Row="2" Grid.Column="3" 
                Source="/View/ProjectSelector/ProjectPreviewTest.png" Stretch="Fill"/>
         <Border Width="480" Height="270" Grid.Row="2" Grid.Column="3" 

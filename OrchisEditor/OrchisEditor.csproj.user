@@ -2,24 +2,30 @@
 <Project ToolsVersion="Current" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup />
   <ItemGroup>
+    <Compile Update="View\Editor\UserControls\PropertyPanelComponents\TransformComponent.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="View\Editor\UserControls\ToolsPanelComponents\AssetManager.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Update="View\Editor\UserControls\ToolsPanelComponents\Logger.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="View\UserControls\OrchisErrorDialog.xaml.cs">
+    <Compile Update="View\UserControls\OrchisDialog.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Page Update="View\Editor\UserControls\PropertyPanelComponents\TransformComponent.xaml">
+      <SubType>Designer</SubType>
+    </Page>
     <Page Update="View\Editor\UserControls\ToolsPanelComponents\AssetManager.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Update="View\Editor\UserControls\ToolsPanelComponents\Logger.xaml">
       <SubType>Designer</SubType>
     </Page>
-    <Page Update="View\UserControls\OrchisErrorDialog.xaml">
+    <Page Update="View\UserControls\OrchisDialog.xaml">
       <SubType>Designer</SubType>
     </Page>
   </ItemGroup>

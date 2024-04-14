@@ -15,21 +15,11 @@ namespace OrchisEditor.View.Editor.UserControls
             InitializeComponent();
             m_WindowHost = new WindowHost();
 
-            if (Project.IsLoaded)
-            {
-                Scene? scene = Project.ActiveScene;
-                if (scene != null) 
-                {
-                    OrchisInterface.OrchisSceneCreate(scene.Name);
-                }
-            }
         }
 
         public void Attach()
         {
             SceneViewWrapper.Child = m_WindowHost;
         }
-
-        private IntPtr projectHandle = IntPtr.Zero;
     }
 }

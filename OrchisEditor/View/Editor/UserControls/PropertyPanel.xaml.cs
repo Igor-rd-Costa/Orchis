@@ -1,4 +1,5 @@
 ﻿using OrchisEditor.View.Editor.UserControls.OutlinerComponents;
+using OrchisEditor.View.Editor.UserControls.PropertyPanelComponents;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,37 +25,6 @@ namespace OrchisEditor.View.Editor.UserControls
         public PropertyPanel()
         {
             InitializeComponent();
-
-            Grid grid = new();
-            grid.ColumnDefinitions.Add(new ColumnDefinition());
-            grid.ColumnDefinitions.Add(new ColumnDefinition());
-            grid.ColumnDefinitions.Add(new ColumnDefinition());
-            grid.ColumnDefinitions[0].Width = new GridLength(1, GridUnitType.Star);
-            grid.ColumnDefinitions[1].Width = new GridLength(20, GridUnitType.Pixel);
-            grid.ColumnDefinitions[2].Width = new GridLength(1, GridUnitType.Star);
-
-            TextBlock textBlock = new()
-            {
-                Text = "Property",
-                Foreground = Brushes.White
-            };
-
-            TextBox textBox = new()
-            {
-                Text = "Changeble",
-                Foreground = Brushes.White,
-                Background = Brushes.Transparent
-            };
-            Grid.SetColumn(textBox, 2);
-            grid.Children.Add(textBlock);
-            grid.Children.Add(textBox);
-            TreeViewItem child = new()
-            {
-                Foreground = Brushes.White
-            };
-            child.Selected += new RoutedEventHandler(TreeViewItem_BlockSelect);
-            child.Header = grid;
-            ComponentTest.Items.Add(child);
         }
 
         public void LoadProperties(OutlinerTreeItem treeItem)
@@ -63,7 +33,7 @@ namespace OrchisEditor.View.Editor.UserControls
             bitmap.BeginInit();
             bitmap.UriSource = new Uri("/View/Images/ImageTest.png", UriKind.Relative);
             bitmap.EndInit();
-            Icon.Source = bitmap;
+            //Icon.Source = bitmap;
 
             NameField.Text = treeItem.ItemName;
             switch (treeItem.Type)

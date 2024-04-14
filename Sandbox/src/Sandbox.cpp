@@ -1,17 +1,16 @@
 #include "Sandbox.h"
 #include <array>
 
-namespace Orchis {
-
+namespace Orchis 
+{
 	Sandbox::Sandbox()
-	{		
-		Input::ToggleCursorVisibility();
-		Input::ClipCursor();
+	{
+		//Input::ToggleCursorVisibility();
+		//Input::ClipCursor();
+	
 		Renderer::SetActiveCamera(new Orchis::PerspectiveCamera({ 0.0f, 0.0f, 0.0f }, 45.0f, 5.0f));
 
-
-		SceneManager::CreateScene("NewScene");
-		Scene* scene = SceneManager::GetScene();
+		Scene* scene = SceneManager::CreateScene(true);
 		scene->AddMesh("Assets/Models/Shiba.FBX", { 0.0f,  6.0f,  0.0f });
 
 		for (Mesh& mesh : scene->m_Meshes)
@@ -23,6 +22,7 @@ namespace Orchis {
 				subMesh.Rotate(-40.0f, { 0.0f, 1.0f, 0.0f });
 			}
 		}
+		UUID uuid = UUID::Generate();
 	}
 
 	void Sandbox::Run()
@@ -39,10 +39,11 @@ namespace Orchis {
 			}
 			if (!m_IsPaused)	
 			{
-				Renderer::BeginScene();
+				Renderer::BeginFrame();
 				
 					
-				Renderer::EndScene();
+				Renderer::EndFrame();
+				m_IsPaused = true;
 			}
 		}
 	}

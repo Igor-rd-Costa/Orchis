@@ -121,8 +121,8 @@ namespace OrchisEditor.View.ProjectSelector.UserControls
                 string projectPath = ((TextBlock)((Grid)((ListBoxItem)ProjectList.SelectedItem).Content).Children[3]).Text;
                 if (!FileSystem.FileExists(projectPath))
                 {
-                    var errorDialog = new OrchisErrorDialog();
-                    bool? remove = errorDialog.ShowError("The project file could not be found.\nDo you wish to remove it from the list?");
+                    var errorDialog = new OrchisDialog();
+                    bool? remove = errorDialog.ShowMessage("The project file could not be found.\nDo you wish to remove it from the list?");
                     if (remove.HasValue && remove.Value)
                     {
                         ((App)Application.Current).RemoveRecentProject(projectPath);

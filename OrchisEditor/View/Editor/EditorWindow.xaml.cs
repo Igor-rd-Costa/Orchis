@@ -1,12 +1,18 @@
 ﻿using System;
 using System.Windows;
+using System.Windows.Input;
 using OrchisEditor.Controller.Editor;
+using OrchisEditor.Controller.Orchis;
+using OrchisEditor.View.Editor.UserControls;
 using OrchisEditor.View.ProjectSelector;
+using OrchisEditor.View.UserControls;
 
 namespace OrchisEditor.View.Editor
 {
     public partial class EditorWindow : Window
     {
+        private ProjectSelectorWindow m_ProjectSelector;
+
         public EditorWindow()
         {
             m_ProjectSelector = new ProjectSelectorWindow();
@@ -15,18 +21,40 @@ namespace OrchisEditor.View.Editor
                 Close();
             }
             InitializeComponent();
-            Title = Project.Name + " - " + Title;
+            Title = Project.Name + " - Orchis Engine";
+            Header.Text = Title;
             SystemMenu.Window = this;
             SceneRenderer.Attach();
+            Project.OnProjectChange((hasUnsavedChanges) =>
+            {
+                if (hasUnsavedChanges)
+                {
+                    Title = "*" + Title;
+                    Header.Text = Title;
+                }
+                else
+                {
+                    Title = Project.Name + " - Orchis Engine";
+                    Header.Text = Title;
+                }
+            });
         }
 
-        ProjectSelectorWindow m_ProjectSelector;
+        public static Outliner GetProjectOutliner() { return ((EditorWindow)Application.Current.MainWindow).ProjectOutliner; }
 
         private void Window_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
             if (e.GetPosition(this).Y < WindowGrid.RowDefinitions[0].Height.Value)
             {
                 DragMove();
+            }
+        }
+
+        private void Window_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
+        {
+            if (e.Key == Key.S && Keyboard.IsKeyDown(Key.LeftCtrl))
+            {
+                Project.Save();
             }
         }
     }

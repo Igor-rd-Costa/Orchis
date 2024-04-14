@@ -1,6 +1,7 @@
 ﻿using Microsoft.VisualBasic.FileIO;
 using Microsoft.Win32;
 using OrchisEditor.Controller.Editor;
+using OrchisEditor.View.UserControls;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -83,9 +84,12 @@ namespace OrchisEditor.View.ProjectSelector
                 if (item.Name == "BlankProject")
                 {
                     string projectPath = ProjectPathInput.Text;
-                    if (!FileSystem.DirectoryExists(projectPath))
+                    if (FileSystem.DirectoryExists(projectPath+ProjectName.Text))
                     {
                         // TODO handle error. Invalid directory
+                        OrchisDialog dialog = new OrchisDialog();
+                        dialog.SetDialogType(OrchisDialogType.OK);
+                        dialog.ShowMessage($"A folder called {ProjectName.Text} already exists in the specified path.", "Error");
                         return;
                     }
 

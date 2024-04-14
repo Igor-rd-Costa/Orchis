@@ -1,4 +1,6 @@
-﻿using System;
+﻿using OrchisEditor.Controller.Editor;
+using OrchisEditor.Controller.Editor.Components;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -9,27 +11,26 @@ namespace OrchisEditor.Controller.Orchis
 {
     internal class OrchisInterface
     {
+        [DllImport("OrchisRuntime.dll")]
+        public static extern void TestTest();
 
-        internal class Application
-        {
         //Application
         [DllImport("OrchisRuntime.dll")]
-        public static extern void OrchisInit(IntPtr parentWindow);
+        protected static extern void OrchisInit(IntPtr parentWindow);
 
         [DllImport("OrchisRuntime.dll")]
-        public static extern void OrchisShutdown();
+        protected static extern void OrchisShutdown();
 
         [DllImport("OrchisRuntime.dll")]
-        public static extern IntPtr OrchisGetMainWindowHandle();
-        }
+        protected static extern IntPtr OrchisGetMainWindowHandle();
 
 
         //Camera
         [DllImport("OrchisRuntime.dll")]
-        public static extern IntPtr OrchisCameraCreate();
+        protected static extern IntPtr OrchisCameraCreate();
 
         [DllImport("OrchisRuntime.dll")]
-        public static extern void OrchisCameraDelete(IntPtr camera);
+        protected static extern void OrchisCameraDelete(IntPtr camera);
 
 
         //Renderer
@@ -40,8 +41,25 @@ namespace OrchisEditor.Controller.Orchis
         public static extern void OrchisRendererSetDefaultShaders(string vertexPath, string fragPath);
 
 
+        //SceneManager
+        [DllImport("OrchisRuntime.dll")]
+        public static extern Guid OrchisSceneManagerCreateScene(Guid sceneId, bool makeActive = false);
+        [DllImport("OrchisRuntime.dll")]
+        public static extern void OrchisSceneManagerDeleteScene(Guid sceneId);  
+        [DllImport("OrchisRuntime.dll")]
+        public static extern void OrchisSceneManagerLoadScene();
+        [DllImport("OrchisRuntime.dll")]
+        public static extern void OrchisSceneManagerUnloadScene();
+
+
         //Scene
         [DllImport("OrchisRuntime.dll")]
-        public static extern void OrchisSceneCreate(string name);
+        public static extern Guid OrchisSceneAddEntity(Guid sceneId, Guid entityId);
+
+
+        //Entity
+        [DllImport("OrchisRuntime.dll")]
+        public static extern Guid OrchisEntityAddComponent(Guid sceneId, Guid entityId, ComponentType type);
+
     }
 }

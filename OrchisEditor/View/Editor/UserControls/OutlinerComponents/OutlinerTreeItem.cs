@@ -19,11 +19,34 @@ namespace OrchisEditor.View.Editor.UserControls.OutlinerComponents
 
     public class OutlinerTreeItem : TreeViewItem
     {
-        public OutlinerTreeItem(string name, string imageSource, ItemType type)
+        private readonly Guid m_ItemId;
+        private string m_ItemName;
+        private readonly ItemType m_Type;
+
+        public string ItemName
+        {
+            get { return m_ItemName; }
+            set
+            {
+                m_ItemName = value;
+
+            }
+        }
+        public Guid Id
+        {
+            get { return m_ItemId; }
+        }
+        public ItemType Type
+        {
+            get { return m_Type; }
+        }
+
+        public OutlinerTreeItem(Guid id, string name, string imageSource, ItemType type)
         {
             m_ItemName = name;
+            m_ItemId = id;
             m_Type = type;
-            BitmapImage bitmap = new BitmapImage();
+            BitmapImage bitmap = new();
             bitmap.BeginInit();
             bitmap.UriSource = new Uri(imageSource, UriKind.Relative);
             bitmap.EndInit();
@@ -61,23 +84,6 @@ namespace OrchisEditor.View.Editor.UserControls.OutlinerComponents
                     ContextMenu = new EntityContextMenu(this);
                 } break;
             }
-        }
-
-        private string m_ItemName;
-        private readonly ItemType m_Type;
-
-        public string ItemName
-        {
-            get { return m_ItemName; }
-            set {
-                m_ItemName = value; 
-                
-            }
-        }
-
-        public ItemType Type
-        {
-            get { return m_Type; }
         }
     }
 

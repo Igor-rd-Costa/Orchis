@@ -23,10 +23,10 @@ add_compile_definitions(
     $<$<CONFIG:Release>:OC_RELEASE_BUILD>
 )
 
-add_subdirectory(Core)
+add_subdirectory(OrchisRuntime)
 add_subdirectory(SandBox)
 
 if (WIN32)
-    add_subdirectory(OrchisRuntime)
+   
     include_external_msproject(OrchisEditor OrchisEditor/OrchisEditor.csproj PLATFORM AnyCPU)
 endif()

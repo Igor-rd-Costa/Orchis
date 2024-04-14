@@ -26,6 +26,18 @@ namespace OrchisEditor.Controller.Utils
         {
 
         }
+        public Tag(string name)
+        {
+            Name = name;
+            Attributes = [];
+            Childs = [];
+        }
+        public Tag(string name, List<TagAttribute> attributes, List<Tag> childs)
+        {
+            Name = name;
+            Attributes = attributes;
+            Childs = childs;
+        }
 
         public string GetAttribute(string name)
         {

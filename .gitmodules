@@ -1,9 +1,18 @@
 [submodule "Core/vendor/spdlog"]
-	path = Core/vendor/spdlog
+	path = OrchisRuntime/vendor/spdlog
 	url = https://github.com/gabime/spdlog
 [submodule "Core/vendor/glm"]
-	path = Core/vendor/glm
+	path = OrchisRuntime/vendor/glm
 	url = https://github.com/g-truc/glm
 [submodule "Core/vendor/assimp"]
-	path = Core/vendor/assimp
+	path = OrchisRuntime/vendor/assimp
 	url = https://github.com/assimp/assimp
+[submodule "OrchisRuntime/vendor/assimp"]
+	path = OrchisRuntime/vendor/assimp
+	url = https://github.com/assimp/assimp
+[submodule "OrchisRuntime/vendor/glm"]
+	path = OrchisRuntime/vendor/glm
+	url = https://github.com/g-truc/glm
+[submodule "OrchisRuntime/vendor/spdlog"]
+	path = OrchisRuntime/vendor/spdlog
+	url = https://github.com/gabime/spdlog
