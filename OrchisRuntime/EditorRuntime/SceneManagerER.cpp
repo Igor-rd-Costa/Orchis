@@ -3,9 +3,11 @@
 #include "SceneManager.h"
 
 using namespace Orchis;
+
 OC_EXPORT UUID OrchisSceneManagerCreateScene(const UUID sceneId, bool makeActive)
 {
 	Scene* scene;
+	std::cout << "Creating Scene " << (const char*)sceneId << "\n";
 	if (!sceneId)
 	{
 		scene = SceneManager::CreateScene(makeActive);
@@ -28,4 +30,9 @@ OC_EXPORT void OrchisSceneManagerLoadScene(const UUID sceneId)
 OC_EXPORT void OrchisSceneManagerUnloadScene(const UUID sceneId)
 {
 	SceneManager::UnloadScene(sceneId);
+}
+
+OC_EXPORT void OrchisSceneManagerDebugScenes()
+{
+	SceneManager::DebugScenes();
 }

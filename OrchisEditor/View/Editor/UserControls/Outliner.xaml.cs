@@ -6,6 +6,7 @@ using OrchisEditor.View.UserControls;
 using System;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 
 namespace OrchisEditor.View.Editor.UserControls
 {
@@ -14,6 +15,7 @@ namespace OrchisEditor.View.Editor.UserControls
         public Outliner()
         {
             InitializeComponent();
+            DataContext = this;
             if (Project.IsLoaded)
             {
                 ProjectItem.Visibility = Visibility.Visible;
@@ -22,9 +24,11 @@ namespace OrchisEditor.View.Editor.UserControls
                 SceneHierarchy.ContextMenu = new ProjectContextMenu();
                 foreach (Scene scene in SceneManager.Scenes)
                 {
+                    Console.WriteLine($"Added scene TreeItem {scene.Id}");
                     SceneTreeView.Items.Add(new OutlinerTreeItem(scene.Id, scene.Name, "/View/Images/ImageTest.png", ItemType.ITEM_TYPE_SCENE));
                     foreach (Entity entity in scene.Entities)
                     {
+                        Console.WriteLine($"Added entity TreeItem {entity.Id}");
                         ((OutlinerTreeItem)SceneTreeView.Items[^1]).Items.Add(new OutlinerTreeItem(entity.Id, entity.Name, "./View/Images/MinimizeIcon.png", ItemType.ITEM_TYPE_ENTITY));
                     }
                 }
@@ -36,8 +40,9 @@ namespace OrchisEditor.View.Editor.UserControls
         {
             foreach (OutlinerTreeItem item in SceneTreeView.Items)
             {
-                if (item.ItemName == scene.Name)
+                if (item.Id == scene.Id)
                 {
+                    item.Name = scene.Name;
                     item.Items.Clear();
                     foreach(Entity entity in scene.Entities)
                     {
@@ -64,10 +69,28 @@ namespace OrchisEditor.View.Editor.UserControls
 
         private void SceneTreeView_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
         {
+            Console.WriteLine("Change!");
             if (e.NewValue != null) 
             {
                 OutlinerTreeItem treeItem = (OutlinerTreeItem)e.NewValue;
                 ((EditorWindow)Application.Current.MainWindow).PropertiesPanel.LoadProperties(treeItem);
+            }
+        }
+
+        private void SceneHierarchy_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            if (e.LeftButton == MouseButtonState.Pressed)
+            {
+                if (sender is StackPanel)
+                {
+                    var selectedItem = SceneTreeView.SelectedItem;
+                    if (selectedItem != null)
+                    {
+                        Console.WriteLine("Nulled!");
+                        ((OutlinerTreeItem)selectedItem).IsSelected = false;
+                        ((EditorWindow)Application.Current.MainWindow).PropertiesPanel.LoadProperties(null);
+                    }
+                }
             }
         }
     }

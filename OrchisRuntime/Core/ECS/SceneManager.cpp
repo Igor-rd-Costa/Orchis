@@ -3,7 +3,6 @@
 
 namespace Orchis {
 
-	std::vector<Scene*> SceneManager::s_ActiveScenes = {};
 	std::vector<Scene> SceneManager::s_Scenes = {};
 
 	Scene* SceneManager::GetScene(const UUID& sceneId)
@@ -15,7 +14,6 @@ namespace Orchis {
 				return &scene;
 			}
 		}
-
 		return nullptr;
 	}
 
@@ -23,10 +21,7 @@ namespace Orchis {
 	{
 		Scene* scene = &s_Scenes.emplace_back();
 		if (makeActive)
-		{
 			scene->SetActive(true);
-			s_ActiveScenes.push_back(scene);
-		}
 		return scene;
 	}
 
@@ -34,10 +29,8 @@ namespace Orchis {
 	{
 		Scene* scene = &s_Scenes.emplace_back(sceneId);
 		if (makeActive)
-		{
 			scene->SetActive(true);
-			s_ActiveScenes.push_back(scene);
-		}
+		
 		return scene;
 	}
 
@@ -47,19 +40,15 @@ namespace Orchis {
 		{
 			if (it->Id() == sceneId)
 			{
-				if (it->IsActive())
-				{
-					for (auto itTwo = s_ActiveScenes.begin(); itTwo != s_ActiveScenes.end(); itTwo++)
-					{
-						if ((*itTwo)->Id() == it->Id())
-						{
-							s_ActiveScenes.erase(itTwo);
-						}
-					}
-				}
 				s_Scenes.erase(it);
+				return;
 			}
 		}
+	}
+
+	void SceneManager::DebugScenes()
+	{
+		std::cout << "Engine: " << s_Scenes.size() << " scenes.\n";
 	}
 
 	void SceneManager::LoadScene(const UUID& sceneId)
@@ -69,21 +58,31 @@ namespace Orchis {
 			if (scene.Id() == sceneId)
 			{
 				scene.SetActive(true);
-				s_ActiveScenes.push_back(&scene);
+				return;
 			}
 		}
 	}
 
 	void SceneManager::UnloadScene(const UUID& sceneId)
 	{
-		for (auto it = s_ActiveScenes.begin(); it != s_ActiveScenes.end(); it++)
+		for (Scene& scene : s_Scenes)
 		{
-			if ((*it)->Id() == sceneId)
+			if (scene.Id() == sceneId)
 			{
-				(*it)->SetActive(false);
-				s_ActiveScenes.erase(it);
-				break;
+				scene.SetActive(false);
+				return;
 			}
 		}
+	}
+
+	const std::vector<Scene*> SceneManager::GetActiveScenes()
+	{
+		std::vector<Scene*> scenes = {};
+		for (Scene& scene : s_Scenes)
+		{
+			if (scene.IsActive())
+				scenes.push_back(&scene);
+		}
+		return scenes;
 	}
 }

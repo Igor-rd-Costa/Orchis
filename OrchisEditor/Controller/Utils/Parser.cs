@@ -58,8 +58,16 @@ namespace OrchisEditor.Controller.Utils
                     TagAttribute attr = Attributes[i];
                     attr.Value = newVal;
                     Attributes[i] = attr;
+                    return;
                 }
             }
+            TagAttribute attribute = new(name, newVal);
+            Attributes.Add(attribute);
+        }
+
+        public void AddAttributes(List<TagAttribute> attrs)
+        {
+            Attributes.AddRange(attrs);
         }
 
         public string Name = "";

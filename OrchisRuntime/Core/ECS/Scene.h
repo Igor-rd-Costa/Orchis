@@ -21,8 +21,10 @@ namespace Orchis {
 
 		Entity* AddEntity();
 		Entity* AddEntity(const UUID& entityId);
+		void RemoveEntity(const UUID& entityId);
 
 		Entity* GetEntity(const UUID& entityId);
+		const std::vector<Entity>& GetEntities() const { return m_Entities; }
 
 		void AddMesh(const char* filePath, const glm::vec3& position = { 0.0f, 0.0f, 0.0f });
 		std::vector<Mesh> m_Meshes;

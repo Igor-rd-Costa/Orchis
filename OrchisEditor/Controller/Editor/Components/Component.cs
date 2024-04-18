@@ -1,6 +1,10 @@
-﻿using System;
+﻿using OrchisEditor.Controller.Orchis;
+using OrchisEditor.Controller.Utils;
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -8,12 +12,60 @@ namespace OrchisEditor.Controller.Editor.Components
 {
     public enum ComponentType
     {
-        TRANSFORM
+        TRANSFORM, TEXTURE, MESH, INVALID
     }
 
-    public struct Component
+    public class Component
     {
         public Guid Id;
         public ComponentType Type;
+
+        public Component() { }
+        public Component(Guid sceneId, Guid entityId, Guid componentId, ComponentType componentType, Tag component)
+        {
+            Type = componentType;
+
+            Guid id = Guid.Empty;
+            switch (componentType)
+            {
+                case ComponentType.TRANSFORM:
+                {
+                    string[] posString = component.GetAttribute("Position").Split(',');
+                    string[] rotString = component.GetAttribute("Rotation").Split(',');
+                    string[] sclString = component.GetAttribute("Scale").Split(',');
+                    try
+                    {
+                        Vector3 pos = new(float.Parse(posString[0]), float.Parse(posString[1]), float.Parse(posString[2]));
+                        Vector3 rot = new(float.Parse(rotString[0]), float.Parse(rotString[1]), float.Parse(rotString[2]));
+                        Vector3 scl = new(float.Parse(sclString[0]), float.Parse(sclString[1]), float.Parse(sclString[2]));
+                        id = OrchisInterface.OrchisEntityAddTransformComponent(sceneId, entityId, componentId, pos, rot, scl);
+                    } catch (Exception)
+                    {
+                        Id = Guid.Empty;
+                    }
+                } break;
+                default:
+                {
+                    Debug.Assert(false, "ComponentType not implemented.");
+                } break;
+            }
+            Id = id;
+        }
+
+        public static ComponentType ParseType(string type)
+        {
+            if (type == ComponentType.TRANSFORM.ToString())
+                return ComponentType.TRANSFORM;
+
+            return ComponentType.INVALID;
+        }
+    }
+
+    public struct TransformComponent
+    {
+        public Guid Id;
+        public Vector3 Position;
+        public Vector3 Rotation;
+        public Vector3 Scale;
     }
 }

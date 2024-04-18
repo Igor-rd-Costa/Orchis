@@ -40,14 +40,17 @@ namespace OrchisEditor.View.Editor
             });
         }
 
-        public static Outliner GetProjectOutliner() { return ((EditorWindow)Application.Current.MainWindow).ProjectOutliner; }
-
+        public static Outliner? GetProjectOutliner() { return ((EditorWindow)Application.Current.MainWindow).ProjectOutliner; }
+        public static PropertyPanel? GetPropertyPanel() { return ((EditorWindow)Application.Current.MainWindow).PropertiesPanel; }
         private void Window_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
             if (e.GetPosition(this).Y < WindowGrid.RowDefinitions[0].Height.Value)
             {
                 DragMove();
+                return;
             }
+
+            Console.WriteLine("Sender: " + e.Source);
         }
 
         private void Window_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)

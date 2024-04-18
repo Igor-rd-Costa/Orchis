@@ -1,8 +1,10 @@
 ﻿using Microsoft.VisualBasic.FileIO;
+using OrchisEditor.Controller.Editor.Components;
 using OrchisEditor.Controller.Orchis;
 using OrchisEditor.Controller.Utils;
 using OrchisEditor.View.Editor;
 using OrchisEditor.View.UserControls;
+using System.Diagnostics;
 using System.IO;
 using System.Text;
 using System.Windows;
@@ -48,9 +50,7 @@ namespace OrchisEditor.Controller.Editor
         {
             if (s_HasUnsavedChanges)
                 if (!QueryProjectSave())
-                {
                     return false;
-                }
 
             Tag? proj = Parser.ParseFileXML(projectPath);
             if (!proj.HasValue)
@@ -102,6 +102,13 @@ namespace OrchisEditor.Controller.Editor
             s_Loaded = true;
             return true;
         }
+
+        public static bool OnAppClose()
+        {
+            if (s_HasUnsavedChanges)
+                return QueryProjectSave();
+            return true;
+        }
         public static string Name
         {
             get { return s_Name; }
@@ -147,7 +154,16 @@ namespace OrchisEditor.Controller.Editor
         //TODO implement saving
         private static bool QueryProjectSave()
         {
+            OrchisSaveDialog saveDialog = new OrchisSaveDialog();
+            saveDialog.ShowDialog();
+            SaveDialogResult result = saveDialog.Result;
+            if (result == SaveDialogResult.CANCEL)
+                return false;
 
+            if (result == SaveDialogResult.SAVE)
+            {
+                Save();
+            }
             return true;
         }
 
@@ -156,7 +172,6 @@ namespace OrchisEditor.Controller.Editor
             if (!s_HasUnsavedChanges)
                 return;
 
-            //TODO implement saving
             string projFilePath = s_ProjPath + Name + s_ProjExtension;
             if (!File.Exists(projFilePath))
             {
@@ -213,8 +228,36 @@ namespace OrchisEditor.Controller.Editor
 
         private static List<Tag> ParseEntityComponents(Entity entity)
         {
-            //TODO add components
-            return [];
+            List<Tag> components = [];
+            foreach (Component component in entity.Components)
+            {
+                Tag c = new("Component");
+                c.SetAttribute("Type", component.Type.ToString());
+                c.SetAttribute("Id", component.Id.ToString().ToUpper());
+                c.AddAttributes(GetComponentAttributes(component));
+                components.Add(c);
+            }
+            return components;
+        }
+
+        private static List<TagAttribute> GetComponentAttributes(Component component)
+        {
+            List<TagAttribute> attrbs = [];
+            switch (component.Type)
+            {
+                case ComponentType.TRANSFORM:
+                {
+                    TransformComponent c = OrchisInterface.OrchisComponentManagerGetTransformComponent(component.Id);
+                    attrbs.Add(new("Position", $"{c.Position.X},{c.Position.Y},{c.Position.Z}"));
+                    attrbs.Add(new("Scale", $"{c.Scale.X},{c.Scale.Y},{c.Scale.Z}"));
+                    attrbs.Add(new("Rotation", $"{c.Rotation.X},{c.Rotation.Y},{c.Rotation.Z}"));
+                } break;
+                default: 
+                {
+                    Debug.Assert(false, "Component type not implemented.");
+                } break;
+            }
+            return attrbs;
         }
 
         public static void RegisterChange()

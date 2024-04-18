@@ -28,7 +28,7 @@
             </Grid.ColumnDefinitions>
         </Grid>
         <TextBox Grid.Row="2" Background="#333333" Margin="0,0,-1,0"/>
-        <StackPanel Background="Transparent" Grid.Row="3" x:Name="SceneHierarchy">
+        <StackPanel Background="Transparent" Grid.Row="3" x:Name="SceneHierarchy" MouseDown="SceneHierarchy_MouseDown">
             <Components:ProjectHeader x:Name="ProjectItem"  Visibility="Hidden"/>
             <TreeView Background="Transparent" BorderThickness="0"
                       Name="SceneTreeView" SelectedItemChanged="SceneTreeView_SelectedItemChanged"/>

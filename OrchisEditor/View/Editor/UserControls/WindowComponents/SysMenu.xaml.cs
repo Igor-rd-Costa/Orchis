@@ -1,4 +1,5 @@
-﻿using System;
+﻿using OrchisEditor.Controller.Editor;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -73,6 +74,9 @@ namespace OrchisEditor.View.Editor.UserControls.WindowComponents
 
         private void CloseBtn_Click(object sender, RoutedEventArgs e)
         {
+            if (m_Window is EditorWindow)
+                if (!Project.OnAppClose())
+                    return;
             m_Window?.Close();
         }
 

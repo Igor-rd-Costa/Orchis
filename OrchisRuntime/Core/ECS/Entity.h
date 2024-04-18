@@ -14,7 +14,10 @@ namespace Orchis
 
 		const UUID& Id() const { return m_Id; }
 
+		const std::vector<Component>& GetComponents() const { return m_Components; }
+
 		const UUID AddComponent(ComponentType type);
+		void RemoveComponent(const UUID& componentId);
 		const UUID AddTransformComponent(const UUID& componentId, const glm::vec3& position, const glm::vec3& rotation, const glm::vec3& scale);
 	private:
 		UUID m_Id;

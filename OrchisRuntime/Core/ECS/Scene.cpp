@@ -30,6 +30,18 @@ namespace Orchis {
 		return &m_Entities.emplace_back(entityId);
 	}
 
+	void Scene::RemoveEntity(const UUID& entityId)
+	{
+		for (auto it = m_Entities.begin(); it != m_Entities.end(); it++)
+		{
+			if (it->Id() == entityId)
+			{
+				m_Entities.erase(it);
+				break;
+			}
+		}
+	}
+
 	Entity* Scene::GetEntity(const UUID& entityId)
 	{
 		for (Entity& entity : m_Entities)

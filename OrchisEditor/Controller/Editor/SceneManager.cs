@@ -40,6 +40,7 @@ namespace OrchisEditor.Controller.Editor
                 }
                 bool isActive = bool.Parse(scene.GetAttribute("Active"));
                 s_Scenes.Add(new(name, Guid.Parse(id), isActive));
+                Console.WriteLine("Created scene " + id);
                 bool status = s_Scenes[^1].LoadEntities(scene);
                 if (!status)
                     return false;
@@ -81,10 +82,19 @@ namespace OrchisEditor.Controller.Editor
             {
                 if (scene.Id == sceneId)
                 {
+                    OrchisInterface.OrchisSceneManagerDeleteScene(sceneId);
                     s_Scenes.Remove(scene);
                     Project.RegisterChange();
+                    EditorWindow.GetProjectOutliner()?.UpdateGUI();
+                    return;
                 }
             }
+        }
+
+        public static void DebugScenes()
+        {
+            Console.WriteLine($"Editor:\nProject {Project.Name}: {s_Scenes.Count} scenes.");
+            OrchisInterface.OrchisSceneManagerDebugScenes();
         }
 
         public static Scene? GetScene(Guid id)

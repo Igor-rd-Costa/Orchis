@@ -79,14 +79,26 @@ namespace OrchisEditor.Controller.Editor
                 }
             }
             if (entityId == Guid.Empty)
-                m_Entities.Add(new(ref m_Id, newEntName));
+                m_Entities.Add(new(m_Id, newEntName));
             else
-                m_Entities.Add(new(ref m_Id, newEntName, entityId));
+                m_Entities.Add(new(m_Id, newEntName, entityId));
             Project.RegisterChange();
             EditorWindow.GetProjectOutliner()?.UpdateSceneGUI(this);
             return m_Entities.Count - 1;
         }
-        public void RemoveEntity(int index) { m_Entities.RemoveAt(index); }
+        public void RemoveEntity(Guid id) 
+        { 
+            for (int i = 0; i < m_Entities.Count; i++)
+            {
+                if (m_Entities[i].Id == id)
+                {
+                    OrchisInterface.OrchisSceneRemoveEntity(m_Id, id);
+                    m_Entities.RemoveAt(i);
+                    Project.RegisterChange();
+                    EditorWindow.GetProjectOutliner()?.UpdateSceneGUI(this);
+                }
+            }
+        }
 
         public void RemoveEntity(string name)
         {
@@ -102,6 +114,7 @@ namespace OrchisEditor.Controller.Editor
 
         public bool LoadEntities(Tag scene)
         {
+            Guid sceneId = Guid.Parse(scene.GetAttribute("Id"));
             foreach (Tag entity in scene.Childs)
             {
                 if (entity.Name != "Entity")
@@ -115,13 +128,18 @@ namespace OrchisEditor.Controller.Editor
                     return false;
                 }
                 Guid eId = Guid.Parse(entityId);
-                m_Entities.Add(new(ref eId, entityName));
-                foreach (Tag component in entity.Childs)
-                {
-                    //TODO add components
-                }
+                m_Entities.Add(new(sceneId, entityName, eId));
+                bool status = m_Entities[^1].LoadComponents(entity);
+                if (!status)
+                    return false;
             }
             return true;
+        }
+
+        public void DebugEntities()
+        {
+            Console.WriteLine($"Editor:\nScene {m_Id}: {m_Entities.Count} entities.");
+            OrchisInterface.OrchisSceneDebugEntities(m_Id);
         }
     }
 }

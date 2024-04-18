@@ -19,13 +19,14 @@ namespace OrchisEditor.View.Editor.UserControls.PropertyPanelComponents
     /// <summary>
     /// Interaction logic for TransformComponent.xaml
     /// </summary>
-    public partial class TransformComponent : UserControl
+    public partial class TransformComponentItem : UserControl
     {
         private bool m_Visible = false;
-        public TransformComponent()
+        public TransformComponentItem(Guid componentId)
         {
             InitializeComponent();
             UpdateVisibility();
+            Heading.ContextMenu = new ComponentContextMenu(componentId);
             PosX.Text = "0.0";
             PosY.Text = "0.0";
             PosZ.Text = "0.0";
@@ -39,8 +40,9 @@ namespace OrchisEditor.View.Editor.UserControls.PropertyPanelComponents
             SclZ.Text = "0.0";
         }
 
-        public TransformComponent(Vector3 pos, Vector3 rot, Vector3 scl, bool expanded = false)
+        public TransformComponentItem(Guid componentId, Vector3 pos, Vector3 rot, Vector3 scl, bool expanded = false)
         {
+            Heading.ContextMenu = new ComponentContextMenu(componentId);
             InitializeComponent();
             m_Visible = expanded;
             UpdateVisibility();
@@ -101,13 +103,18 @@ namespace OrchisEditor.View.Editor.UserControls.PropertyPanelComponents
             }
         }
 
-        private void HeaderOnMouseDown(object sender, MouseButtonEventArgs e)
+        private void HeaderOnLeftMouseDown(object sender, MouseButtonEventArgs e)
         {
             if (e.ClickCount == 2)
             {
                 m_Visible = !m_Visible;
                 UpdateVisibility();
             }
+        }
+
+        private void HeaderOnRightMouseDown(object sender, MouseButtonEventArgs e)
+        {
+
         }
     }
 }

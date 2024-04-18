@@ -73,11 +73,12 @@ namespace Orchis {
 			s_ActiveCamera->Update();
 			s_Data->TransformsUB->SetUniformMat4("ViewProj", s_ActiveCamera->GetTransform());
 		}
-		for (const Scene* scene : SceneManager::GetActiveScenes())
+		auto scenes = SceneManager::GetActiveScenes();
+		for (const Scene* scene : scenes)
 		{
-			for (const Mesh& mesh : scene->m_Meshes)
+			for (const Entity& entity : scene->GetEntities())
 			{
-				RenderCommand::DrawIndexed(&mesh);
+
 			}
 		}
 	}

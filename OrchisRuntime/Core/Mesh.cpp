@@ -8,7 +8,7 @@
 
 
 namespace Orchis {
-	
+
 	Mesh::Mesh(const char* filePath, const glm::vec3& position)
 		: m_MeshPath(filePath), m_VertexBuffer(nullptr), m_IndexBuffer(nullptr)
 	{
@@ -18,7 +18,6 @@ namespace Orchis {
 		void* indicesBase = nullptr;
 		
 		const aiScene* scene = importer.ReadFile(filePath, aiProcess_Triangulate | aiProcess_MakeLeftHanded | aiProcess_FlipUVs);
-		
 		if (scene)
 		{
 			uint32_t vertexCount = 0;

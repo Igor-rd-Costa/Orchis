@@ -1,5 +1,6 @@
 ﻿using OrchisEditor.Controller.Editor.Components;
 using OrchisEditor.Controller.Orchis;
+using OrchisEditor.Controller.Utils;
 using System;
 using System.Collections.Generic;
 using System.IO.Packaging;
@@ -11,28 +12,65 @@ namespace OrchisEditor.Controller.Editor
 {
     public class Entity
     {
-        private Guid m_Id;
+        private readonly Guid m_Id;
+        private readonly Guid m_SceneId;
         private string m_Name;
         private readonly List<Component> m_Components = [];
 
-        public Entity(ref Guid sceneId, string name)
+        public Entity(Guid sceneId, string name)
         {
             m_Name = name;
+            m_SceneId = sceneId;
             m_Id = OrchisInterface.OrchisSceneAddEntity(sceneId, Guid.Empty);
         }
 
-        public Entity(ref Guid sceneId, string name, Guid entityId)
+        public Entity(Guid sceneId, string name, Guid entityId)
         {
             m_Name = name;
+            m_SceneId = sceneId;
             m_Id = OrchisInterface.OrchisSceneAddEntity(sceneId, entityId);
         }
 
-        public void AddComponent(ref Guid sceneId, ComponentType type)
+        public void AddComponent(ComponentType type)
         {
-            Guid id = OrchisInterface.OrchisEntityAddComponent(sceneId, m_Id, type);
+            Guid id = OrchisInterface.OrchisEntityAddComponent(m_SceneId, m_Id, type);
             if (id == Guid.Empty)
                 return;
             m_Components.Add(new() { Id = id, Type = type });
+            Project.RegisterChange();
+        }
+
+        public void RemoveComponent(Guid componentId)
+        {
+            for (int i = 0; i < m_Components.Count; i++)
+            {
+                if (m_Components[i].Id == componentId)
+                {
+                    OrchisInterface.OrchisEntityRemoveComponent(m_SceneId, m_Id, componentId);
+                    m_Components.RemoveAt(i);
+                    Project.RegisterChange();
+                }
+            }
+        }
+
+        public bool LoadComponents(Tag entity)
+        {
+            Guid entityId = Guid.Parse(entity.GetAttribute("Id"));
+            foreach (Tag component in entity.Childs)
+            {
+                if (component.Name != "Component")
+                    continue;
+
+                Guid componentId = Guid.Parse(component.GetAttribute("Id"));
+                ComponentType componentType = Component.ParseType(component.GetAttribute("Type"));
+                if (componentId == Guid.Empty || componentType == ComponentType.INVALID)
+                {
+                    //TODO handle error
+                    return false;
+                }
+                m_Components.Add(new(m_SceneId, entityId, componentId, componentType, component));
+            }
+            return true;
         }
 
         public string Name
@@ -43,6 +81,10 @@ namespace OrchisEditor.Controller.Editor
         public Guid Id
         {
             get { return m_Id; } 
+        }
+        public List<Component> Components
+        {
+            get { return m_Components; }
         }
     }
 }

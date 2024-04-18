@@ -2,7 +2,7 @@
 <Project ToolsVersion="Current" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup />
   <ItemGroup>
-    <Compile Update="View\Editor\UserControls\PropertyPanelComponents\TransformComponent.xaml.cs">
+    <Compile Update="View\Editor\UserControls\PropertyPanelComponents\TransformComponentItem.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Update="View\Editor\UserControls\ToolsPanelComponents\AssetManager.xaml.cs">
@@ -14,9 +14,12 @@
     <Compile Update="View\UserControls\OrchisDialog.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="View\UserControls\OrchisSaveDialog.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Page Update="View\Editor\UserControls\PropertyPanelComponents\TransformComponent.xaml">
+    <Page Update="View\Editor\UserControls\PropertyPanelComponents\TransformComponentItem.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Update="View\Editor\UserControls\ToolsPanelComponents\AssetManager.xaml">
@@ -26,6 +29,9 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Update="View\UserControls\OrchisDialog.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="View\UserControls\OrchisSaveDialog.xaml">
       <SubType>Designer</SubType>
     </Page>
   </ItemGroup>

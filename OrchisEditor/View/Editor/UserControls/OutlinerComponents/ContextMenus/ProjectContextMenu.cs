@@ -21,13 +21,22 @@ namespace OrchisEditor.View.Editor.UserControls.OutlinerComponents.ContextMenus
                 Header = "Add scene"
             };
             menuItem.PreviewMouseLeftButtonDown += AddScene_PreviewLeftMouseDown;
+
+            MenuItem debugScenes = new() { Header =  "Debug" };
+            debugScenes.PreviewMouseLeftButtonDown += DebugScenes_PreviewLeftMouseDown;
+
             Items.Add(menuItem);
+            Items.Add(debugScenes);
         }
 
         private void AddScene_PreviewLeftMouseDown(object sender, MouseEventArgs e)
         {
             if (Project.IsLoaded)
                 SceneManager.AddScene(Guid.Empty);
+        }
+        private void DebugScenes_PreviewLeftMouseDown(object sender, MouseEventArgs e)
+        {
+            SceneManager.DebugScenes();
         }
     }
 }

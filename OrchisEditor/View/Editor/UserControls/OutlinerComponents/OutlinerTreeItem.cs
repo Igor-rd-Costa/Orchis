@@ -22,7 +22,6 @@ namespace OrchisEditor.View.Editor.UserControls.OutlinerComponents
         private readonly Guid m_ItemId;
         private string m_ItemName;
         private readonly ItemType m_Type;
-
         public string ItemName
         {
             get { return m_ItemName; }
