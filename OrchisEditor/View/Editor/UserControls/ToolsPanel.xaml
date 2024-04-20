@@ -12,7 +12,7 @@
             <TabItem Background="Transparent">
                 <TabItem.Header>Assets</TabItem.Header>
                 <TabItem.Content>
-                    <ToolsPanelComponents:AssetManager></ToolsPanelComponents:AssetManager>
+                    <ToolsPanelComponents:AssetManagerView x:Name="AssetManagerView"></ToolsPanelComponents:AssetManagerView>
                 </TabItem.Content>
             </TabItem>
             <TabItem Background="Transparent">

@@ -6,14 +6,9 @@ using namespace Orchis;
 
 OC_EXPORT UUID OrchisSceneAddEntity(const UUID sceneId, const UUID entityId)
 {
-	std::cout << "Creating entity in scene " << sceneId.ToString() << "\n";
 	Scene* scene = SceneManager::GetScene(sceneId);
-
 	if (!scene)
-	{
-		std::cout << "Scene is null!\n";
 		return UUID::Null();
-	}
 
 	if (!entityId)
 	{

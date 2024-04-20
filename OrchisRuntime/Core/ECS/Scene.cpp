@@ -4,9 +4,7 @@
 namespace Orchis {
 	
 	Scene::Scene()
-		: m_Id(UUID::Generate()) {
-		std::cout << "Scene created!\n";
-	}
+		: m_Id(UUID::Generate()) {}
 
 	Scene::Scene(const UUID& id)
 		:m_Id(id)
@@ -15,18 +13,15 @@ namespace Orchis {
 		{
 			m_Id = UUID::Generate();
 		}
-		std::cout << "Scene created!\n";
 	}
 
 	Entity* Scene::AddEntity()
 	{
-		std::cout << "Adding entity!\n";
 		return &m_Entities.emplace_back();
 	}
 
 	Entity* Scene::AddEntity(const UUID& entityId)
 	{
-		std::cout << "Adding entity!\n";
 		return &m_Entities.emplace_back(entityId);
 	}
 

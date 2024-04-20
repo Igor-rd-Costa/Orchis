@@ -7,7 +7,6 @@ using namespace Orchis;
 OC_EXPORT UUID OrchisSceneManagerCreateScene(const UUID sceneId, bool makeActive)
 {
 	Scene* scene;
-	std::cout << "Creating Scene " << (const char*)sceneId << "\n";
 	if (!sceneId)
 	{
 		scene = SceneManager::CreateScene(makeActive);

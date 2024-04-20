@@ -9,10 +9,6 @@
   </PropertyGroup>
   
   <ItemGroup>
-    <Folder Include="View\Editor\UserControls\ToolsPanelComponents\AssetManagerComponents\ContextMenus\" />
-  </ItemGroup>
-  
-  <ItemGroup>
     <ProjectReference Include="..\OrchisRuntime\OrchisRuntime.vcxproj" />
   </ItemGroup>
 

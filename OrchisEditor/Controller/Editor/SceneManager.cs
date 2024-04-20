@@ -40,7 +40,6 @@ namespace OrchisEditor.Controller.Editor
                 }
                 bool isActive = bool.Parse(scene.GetAttribute("Active"));
                 s_Scenes.Add(new(name, Guid.Parse(id), isActive));
-                Console.WriteLine("Created scene " + id);
                 bool status = s_Scenes[^1].LoadEntities(scene);
                 if (!status)
                     return false;

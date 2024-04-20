@@ -5,7 +5,13 @@
     <Compile Update="View\Editor\UserControls\PropertyPanelComponents\TransformComponentItem.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="View\Editor\UserControls\ToolsPanelComponents\AssetManager.xaml.cs">
+    <Compile Update="View\Editor\UserControls\ToolsPanelComponents\AssetManagerComponents\AssetIcon.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="View\Editor\UserControls\ToolsPanelComponents\AssetManagerComponents\AssetImportForm\AssetImportForm.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="View\Editor\UserControls\ToolsPanelComponents\AssetManagerView.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Update="View\Editor\UserControls\ToolsPanelComponents\Logger.xaml.cs">
@@ -19,10 +25,19 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Page Update="Styles\WindowStyles.xaml">
+      <SubType>Designer</SubType>
+    </Page>
     <Page Update="View\Editor\UserControls\PropertyPanelComponents\TransformComponentItem.xaml">
       <SubType>Designer</SubType>
     </Page>
-    <Page Update="View\Editor\UserControls\ToolsPanelComponents\AssetManager.xaml">
+    <Page Update="View\Editor\UserControls\ToolsPanelComponents\AssetManagerComponents\AssetIcon.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="View\Editor\UserControls\ToolsPanelComponents\AssetManagerComponents\AssetImportForm\AssetImportForm.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="View\Editor\UserControls\ToolsPanelComponents\AssetManagerView.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Update="View\Editor\UserControls\ToolsPanelComponents\Logger.xaml">

@@ -7,10 +7,7 @@
         xmlns:UserControls="clr-namespace:OrchisEditor.View.ProjectSelector.UserControls"
         xmlns:WindowComponents="clr-namespace:OrchisEditor.View.Editor.UserControls.WindowComponents"
             mc:Ignorable="d" Background="#222222" MouseDown="Window_MouseDown" StateChanged="Window_StateChanged"
-    Title="ProjectSelector" MinHeight="622" Height="622" MinWidth="800" Width="960">
-    <WindowChrome.WindowChrome>
-        <WindowChrome GlassFrameThickness="0" CornerRadius="11" CaptionHeight="0" ResizeBorderThickness="4"/>
-    </WindowChrome.WindowChrome>
+    Title="ProjectSelector" MinHeight="622" Height="622" MinWidth="800" Width="960" Style="{StaticResource OrchisWindowBordered}">
     <Grid x:Name="WindowGrid">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="30"/>
@@ -27,7 +24,6 @@
             <RowDefinition Height="65"/>
             <RowDefinition Height="1*"/>
         </Grid.RowDefinitions>
-        <Border Grid.RowSpan="6" Grid.ColumnSpan="6" BorderThickness="1" BorderBrush="#FFE75CA4" CornerRadius="7"/>
         <WindowComponents:SysMenu x:Name="SystemMenu" Grid.Row="0" Grid.Column="3" Grid.ColumnSpan="2" HorizontalAlignment="Right"/>
         <TextBlock Grid.Row="1" Grid.Column="0" Text="Orchis Engine" FontSize="24" Foreground="White" Margin="24,-1,0,0"  
                Width="auto" Grid.ColumnSpan="2" VerticalAlignment="Top" TextAlignment="Left"/>

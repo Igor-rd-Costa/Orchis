@@ -6,11 +6,8 @@
         xmlns:local="clr-namespace:OrchisEditor.View.UserControls"
         xmlns:WindowComponents="clr-namespace:OrchisEditor.View.Editor.UserControls.WindowComponents"
         mc:Ignorable="d"
-        Height="150" Width="275" Background="#222222" WindowStyle="None"
+        Height="150" Width="275" Style="{StaticResource OrchisWindow}"
         MouseDown="Window_MouseDown" ResizeMode="NoResize">
-    <WindowChrome.WindowChrome>
-        <WindowChrome GlassFrameThickness="0" CornerRadius="11" CaptionHeight="0" ResizeBorderThickness="3"/>
-    </WindowChrome.WindowChrome>
     <Grid Name="WindowGrid">
         <Grid.RowDefinitions>
             <RowDefinition Height="30"/>
@@ -22,8 +19,6 @@
             <ColumnDefinition/>
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
-        <Border BorderBrush="#333333" BorderThickness="1"
-    Grid.RowSpan="6" Grid.ColumnSpan="7" CornerRadius="7"/>
         <WindowComponents:SysMenu x:Name="SystemMenu" HorizontalAlignment="Right" Grid.Column="1"/>
         <TextBlock Grid.Column="0" Grid.ColumnSpan="3" Grid.Row="1" Margin="15 0 15 0" 
                    Foreground="LightGray" TextAlignment="Center" 

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using OrchisEditor.View.Editor.UserControls.ToolsPanelComponents;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -23,6 +24,11 @@ namespace OrchisEditor.View.Editor.UserControls
         public ToolsPanel()
         {
             InitializeComponent();
+        }
+
+        public AssetManagerView GetAssetManagerView()
+        {
+            return AssetManagerView;
         }
     }
 }

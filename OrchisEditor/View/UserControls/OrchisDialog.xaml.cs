@@ -34,6 +34,15 @@ namespace OrchisEditor.View.UserControls
             SystemMenu.SetMode(SysMenuMode.CLOSE_ONLY);
         }
 
+        public OrchisDialog(OrchisDialogType type)
+        {
+            InitializeComponent();
+            SystemMenu.Window = this;
+            DataContext = this;
+            SystemMenu.SetMode(SysMenuMode.CLOSE_ONLY);
+            SetDialogType(type);
+        }
+
         public bool? ShowMessage(string message, string title = "Orchis")
         {
             MessageTextBlock.Text = message;

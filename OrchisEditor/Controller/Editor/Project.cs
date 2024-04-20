@@ -30,6 +30,20 @@ namespace OrchisEditor.Controller.Editor
             BLANK
         }
 
+        public static string Name
+        {
+            get { return s_Name; }
+            set { s_Name = value; }
+        }
+
+        public static bool IsLoaded
+        {
+            get { return s_Loaded; }
+        }
+        public static string Version { get { return s_ProjVersion; } }
+
+        public static string ProjectPath { get { return s_ProjPath; } }
+
         public static void Create(ProjectTemplate template, string name, string projectPath)
         {
             if (s_HasUnsavedChanges)
@@ -98,7 +112,6 @@ namespace OrchisEditor.Controller.Editor
             s_ProjPath = projectPath.Substring(0, projectPath.LastIndexOf('\\') + 1);
             s_EditorCamera = Engine.Camera.Create();
             OrchisInterface.OrchisRendererSetActiveCamera(s_EditorCamera);
-            Console.WriteLine($"Project \"{Name}\" Loaded!");
             s_Loaded = true;
             return true;
         }
@@ -109,18 +122,6 @@ namespace OrchisEditor.Controller.Editor
                 return QueryProjectSave();
             return true;
         }
-        public static string Name
-        {
-            get { return s_Name; }
-            set { s_Name = value; }
-        }
-
-        public static bool IsLoaded
-        {
-            get { return  s_Loaded; }
-        }
-        public static string Version { get { return s_ProjVersion; } }
-
         private static void CreateBlankProject(string name, string projectPath)
         {
             FileSystem.CreateDirectory(projectPath + name);
@@ -141,8 +142,6 @@ namespace OrchisEditor.Controller.Editor
                         ])
                 ]
             };
-            Console.WriteLine("Editor: Creating project with scene id " + newProject.Childs[1].Childs[0].GetAttribute("Id"));
-
             var buffer = new UTF8Encoding(true).GetBytes(Parser.ToXML(newProject));
             fileStream.Write(buffer, 0, buffer.Length);
             fileStream.Flush();

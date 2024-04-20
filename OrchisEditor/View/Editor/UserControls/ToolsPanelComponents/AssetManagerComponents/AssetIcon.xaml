@@ -1,0 +1,23 @@
+﻿<UserControl x:Class="OrchisEditor.View.Editor.UserControls.ToolsPanelComponents.AssetManagerComponents.AssetIcon"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:OrchisEditor.View.Editor.UserControls.ToolsPanelComponents.AssetManagerComponents"
+             mc:Ignorable="d"
+             d:DesignHeight="50" d:DesignWidth="50">
+    <Grid x:Name="SelectionGrid" Margin="5">
+        <Border x:Name="SelectionBorder" BorderThickness="0.7" BorderBrush="Transparent"></Border>
+        <Grid Margin="5">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="80"/>
+                <RowDefinition Height="30"/>
+            </Grid.RowDefinitions>
+            <!--TODO: Make this an icon-->
+            <TextBlock x:Name="Icon" Width="80" Height="80">
+            </TextBlock>
+            <TextBlock Grid.Row="1" TextAlignment="Center" FontSize="12" Width="80" 
+                       Foreground="LightGray" TextWrapping="Wrap" Text="{Binding AssetName}"></TextBlock>
+        </Grid>
+    </Grid>
+</UserControl>
