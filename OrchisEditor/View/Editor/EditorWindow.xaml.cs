@@ -56,6 +56,8 @@ namespace OrchisEditor.View.Editor
                 Engine.Window.UpdateRect();
                 return;
             }
+
+
         }
 
         private void Window_KeyDown(object sender, KeyEventArgs e)
@@ -74,7 +76,10 @@ namespace OrchisEditor.View.Editor
         private void Window_KeyUp(object sender, KeyEventArgs e)
         {
             if (Engine.IsHovering)
+            {
                 Engine.RegisterKeyUpEvent(e.Key);
+                e.Handled= true;
+            }
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)

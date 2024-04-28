@@ -2,6 +2,7 @@
 using OrchisEditor.Controller.Orchis;
 using OrchisEditor.Controller.Utils;
 using OrchisEditor.View.Editor;
+using OrchisEditor.View.UserControls;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -222,6 +223,66 @@ namespace OrchisEditor.Controller.Editor
                 } break;
             }
             return attributes;
+        }
+
+        public static bool RenameScene(string newName)
+        {
+            if(s_Scene != null)
+            {
+                if (File.Exists($"{AssetManager.Path}Scenes\\{newName}.osn"))
+                {
+                    OrchisDialog dialog = new(OrchisDialogType.OK);
+                    dialog.ShowMessage("A scene with this name already exists.");
+                    return false;
+                }
+                FileStream stream = File.Open($"{AssetManager.Path}Scenes\\{s_Scene.Name}.osn", FileMode.Open);
+                Tag? scene = Parser.ParseXML(new StreamReader(stream).ReadToEnd());
+                if (!scene.HasValue || scene.Value.Name != "Scene")
+                    return false;
+                scene.Value.SetAttribute("Name", newName);
+                stream.SetLength(0);
+                stream.Write(new UTF8Encoding().GetBytes(Parser.ToXML(scene.Value)));
+                stream.Flush();
+                stream.Dispose();
+                File.Move($"{AssetManager.Path}Scenes\\{s_Scene.Name}.osn", $"{AssetManager.Path}Scenes\\{newName}.osn");
+                stream = File.Open($"{AssetManager.Path}Scenes\\scenes.osi", FileMode.Open);
+                Tag? sceneInfo = Parser.ParseXML(new StreamReader(stream).ReadToEnd());
+                if (sceneInfo.HasValue)
+                {
+                    foreach (Tag info in sceneInfo.Value.Childs)
+                    {
+                        if (Guid.Parse(info.GetAttribute("Id")) == s_Scene.Id)
+                        {
+                            info.SetAttribute("Path", $"{AssetManager.Path}Scenes\\{newName}.osn");
+                            stream.SetLength(0);
+                            stream.Write(new UTF8Encoding().GetBytes(Parser.ToXML(sceneInfo.Value)));
+                            stream.Flush();
+                            break;
+                        }
+                    }
+                }
+                stream.Dispose();
+                s_Scene.Name = newName;
+                return true;
+            }
+            return false;
+        }
+
+        public static bool RenameEntity(Guid entityId, string newName)
+        {
+            if (s_Scene == null)
+                return false;
+
+            foreach (Entity entity in s_Scene.Entities)
+            {
+                if (entity.Id == entityId)
+                {
+                    entity.Name = newName;
+                    RegisterChange();
+                    return true;
+                }
+            }
+            return false;
         }
     }
 }

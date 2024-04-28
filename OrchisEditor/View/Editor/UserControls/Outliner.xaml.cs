@@ -37,7 +37,6 @@ namespace OrchisEditor.View.Editor.UserControls
 
         public void UpdateGUI()
         {
-            //TODO not recreate the whole tree here
             SceneTreeView.Items.Clear();
             Scene? scene = SceneManager.Scene;
             if (scene == null)
@@ -52,14 +51,20 @@ namespace OrchisEditor.View.Editor.UserControls
 
         private void SceneTreeView_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
         {
+            if (e.OldValue != null && ((OutlinerTreeItem)e.OldValue).IsInEditMode)
+            {
+                ((OutlinerTreeItem)e.OldValue).ExitEditMode();
+            }
             if (e.NewValue != null) 
             {
+                
                 OutlinerTreeItem treeItem = (OutlinerTreeItem)e.NewValue;
                 ((EditorWindow)Application.Current.MainWindow).PropertiesPanel.LoadProperties(treeItem);
             }
+  
         }
 
-        private void SceneHierarchy_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        private void SceneHierarchy_MouseDown(object sender, MouseButtonEventArgs e)
         {
             if (e.LeftButton == MouseButtonState.Pressed)
             {
@@ -69,6 +74,8 @@ namespace OrchisEditor.View.Editor.UserControls
                     if (selectedItem != null)
                     {
                         ((OutlinerTreeItem)selectedItem).IsSelected = false;
+                        if (((OutlinerTreeItem)selectedItem).IsInEditMode)
+                            ((OutlinerTreeItem)selectedItem).ExitEditMode();
                         ((EditorWindow)Application.Current.MainWindow).PropertiesPanel.LoadProperties(null);
                     }
                 }
