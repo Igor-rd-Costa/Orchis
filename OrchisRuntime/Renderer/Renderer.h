@@ -52,6 +52,7 @@ namespace Orchis {
 
 		static void BeginFrame();
 		static void EndFrame();
+		static void RenderScene(Scene* scene);
 			
 		static void SetActiveCamera(PerspectiveCamera* camera) { s_ActiveCamera = camera; }
 		static const PerspectiveCamera* GetActiveCamera() { return s_ActiveCamera; }
@@ -59,6 +60,9 @@ namespace Orchis {
 		static std::thread s_RenderThread;
 		static RenderData* s_Data;
 		static PerspectiveCamera* s_ActiveCamera;
+		
+		//probably temporary
+		static void RenderEntity(const Entity* entity);
 
 
 		static std::string DefaultVertexPath;

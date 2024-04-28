@@ -19,8 +19,15 @@ namespace Orchis {
 		s_Instance->BeginFrameImpl();
 	}
 
+	void RenderCommand::SetTransform(const UUID& transformId)
+	{
+		s_Instance->SetTransformImpl(transformId);
+	}
+
 	void RenderCommand::DrawIndexed(const Mesh* mesh)
 	{
+		if (mesh == nullptr)
+			return;
 		s_Instance->DrawIndexedImpl(mesh);
 	}
 

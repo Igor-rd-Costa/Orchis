@@ -16,37 +16,21 @@ namespace OrchisEditor.View.Editor.UserControls
         {
             InitializeComponent();
             DataContext = this;
+            Console.WriteLine("Outliner init!");
             if (Project.IsLoaded)
             {
                 ProjectItem.Visibility = Visibility.Visible;
                 ProjectItem.ProjectName = Project.Name;
                 ProjectItem.ContextMenu = new ProjectContextMenu();
                 SceneHierarchy.ContextMenu = new ProjectContextMenu();
-                foreach (Scene scene in SceneManager.Scenes)
+                Scene? scene = SceneManager.Scene;
+                if (scene == null)
+                    return;
+                SceneTreeView.Items.Add(new OutlinerTreeItem(scene.Id, scene.Name, "/View/Images/ImageTest.png", ItemType.ITEM_TYPE_SCENE));
+                ((OutlinerTreeItem)SceneTreeView.Items[^1]).IsExpanded = true;
+                foreach (Entity entity in scene.Entities)
                 {
-                    SceneTreeView.Items.Add(new OutlinerTreeItem(scene.Id, scene.Name, "/View/Images/ImageTest.png", ItemType.ITEM_TYPE_SCENE));
-                    foreach (Entity entity in scene.Entities)
-                    {
-                        ((OutlinerTreeItem)SceneTreeView.Items[^1]).Items.Add(new OutlinerTreeItem(entity.Id, entity.Name, "./View/Images/MinimizeIcon.png", ItemType.ITEM_TYPE_ENTITY));
-                    }
-                }
-            }
-            
-        }
-
-        public void UpdateSceneGUI(Scene scene)
-        {
-            foreach (OutlinerTreeItem item in SceneTreeView.Items)
-            {
-                if (item.Id == scene.Id)
-                {
-                    item.Name = scene.Name;
-                    item.Items.Clear();
-                    foreach(Entity entity in scene.Entities)
-                    {
-                        item.Items.Add(new OutlinerTreeItem(entity.Id, entity.Name, "/View/Images/MinimizeIcon.png", ItemType.ITEM_TYPE_ENTITY));
-                    }
-                    item.IsExpanded = true;
+                    ((OutlinerTreeItem)SceneTreeView.Items[^1]).Items.Add(new OutlinerTreeItem(entity.Id, entity.Name, "./View/Images/MinimizeIcon.png", ItemType.ITEM_TYPE_ENTITY));
                 }
             }
         }
@@ -55,13 +39,14 @@ namespace OrchisEditor.View.Editor.UserControls
         {
             //TODO not recreate the whole tree here
             SceneTreeView.Items.Clear();
-            foreach (Scene scene in SceneManager.Scenes)
+            Scene? scene = SceneManager.Scene;
+            if (scene == null)
+                return;
+            int index = SceneTreeView.Items.Add(new OutlinerTreeItem(scene.Id, scene.Name, "/View/Images/ImageTest.png", ItemType.ITEM_TYPE_SCENE));
+            ((OutlinerTreeItem)SceneTreeView.Items[index]).IsExpanded = true;
+            foreach (Entity entity in scene.Entities)
             {
-                int index = SceneTreeView.Items.Add(new OutlinerTreeItem(scene.Id, scene.Name, "/View/Images/ImageTest.png", ItemType.ITEM_TYPE_SCENE));
-                foreach (Entity entity in scene.Entities)
-                {
-                    ((OutlinerTreeItem)SceneTreeView.Items[index]).Items.Add(new OutlinerTreeItem(entity.Id, entity.Name, "/View/Images/MinimizeIcon.png", ItemType.ITEM_TYPE_ENTITY));
-                }
+                ((OutlinerTreeItem)SceneTreeView.Items[index]).Items.Add(new OutlinerTreeItem(entity.Id, entity.Name, "/View/Images/MinimizeIcon.png", ItemType.ITEM_TYPE_ENTITY));
             }
         }
 

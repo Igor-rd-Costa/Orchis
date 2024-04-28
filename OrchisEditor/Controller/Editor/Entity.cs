@@ -13,31 +13,22 @@ namespace OrchisEditor.Controller.Editor
     public class Entity
     {
         private readonly Guid m_Id;
-        private readonly Guid m_SceneId;
         private string m_Name;
         private readonly List<Component> m_Components = [];
 
-        public Entity(Guid sceneId, string name)
+        public Entity(string name, Guid entityId)
         {
             m_Name = name;
-            m_SceneId = sceneId;
-            m_Id = OrchisInterface.OrchisSceneAddEntity(sceneId, Guid.Empty);
-        }
-
-        public Entity(Guid sceneId, string name, Guid entityId)
-        {
-            m_Name = name;
-            m_SceneId = sceneId;
-            m_Id = OrchisInterface.OrchisSceneAddEntity(sceneId, entityId);
+            m_Id = OrchisInterface.OrchisSceneAddEntity(entityId);
         }
 
         public void AddComponent(ComponentType type)
         {
-            Guid id = OrchisInterface.OrchisEntityAddComponent(m_SceneId, m_Id, type);
+            Guid id = OrchisInterface.OrchisEntityAddComponent(m_Id, type);
             if (id == Guid.Empty)
                 return;
             m_Components.Add(new() { Id = id, Type = type });
-            Project.RegisterChange();
+            SceneManager.RegisterChange();
         }
 
         public void RemoveComponent(Guid componentId)
@@ -46,9 +37,9 @@ namespace OrchisEditor.Controller.Editor
             {
                 if (m_Components[i].Id == componentId)
                 {
-                    OrchisInterface.OrchisEntityRemoveComponent(m_SceneId, m_Id, componentId);
+                    OrchisInterface.OrchisEntityRemoveComponent(m_Id, componentId);
                     m_Components.RemoveAt(i);
-                    Project.RegisterChange();
+                    SceneManager.RegisterChange();
                 }
             }
         }
@@ -68,7 +59,7 @@ namespace OrchisEditor.Controller.Editor
                     //TODO handle error
                     return false;
                 }
-                m_Components.Add(new(m_SceneId, entityId, componentId, componentType, component));
+                m_Components.Add(new(entityId, componentId, componentType, component));
             }
             return true;
         }

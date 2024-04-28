@@ -46,12 +46,4 @@ namespace Orchis {
 		}
 		return nullptr;
 	}
-
-
-
-	void Scene::AddMesh(const char* filePath, const glm::vec3& position)
-	{
-		m_Meshes.emplace_back(filePath, position);
-	}
-
 }

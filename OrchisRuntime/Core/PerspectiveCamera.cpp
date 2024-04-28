@@ -9,6 +9,7 @@ namespace Orchis {
 		m_CameraSpeed(speed), m_CameraUp({ 0.0f, 0.0f, 1.0f }), m_Yaw(0.0f), m_Pitch(0.0f), m_Sensitivity(0.3f), 
 		m_ViewMatrix(glm::mat4(1.0f)), m_ViewProj(m_ProjMatrix * m_ViewMatrix)
 	{
+		std::cout << "Camera Created!\n";
 		Window* window = Application::GetWindow();
 		float width = 1.0f, height = 1.0f;
 		if (window)
@@ -24,8 +25,14 @@ namespace Orchis {
 
 	void PerspectiveCamera::Update()
 	{
+		m_ViewMatrix = glm::lookAt(m_Position, m_Position + m_CameraFront, m_CameraUp);
+		m_ViewProj = m_ProjMatrix * m_ViewMatrix;
+	}
+
+	void PerspectiveCamera::Move()
+	{
 		static CursorPos cursorPosition = Input::GetCursorPos();
-		/*cursorPosition = Input::GetCursorPos();
+		cursorPosition = Input::GetCursorPos();
 		std::pair<long, long> center = Application::GetWindow()->GetCenter();
 		m_Yaw += (cursorPosition.x - center.first) * m_Sensitivity;
 		m_Pitch += (center.second - cursorPosition.y) * m_Sensitivity;
@@ -64,10 +71,7 @@ namespace Orchis {
 		else if (Input::IsKeyDown(Key::KEY_LSHIFT))
 		{
 			m_Position -= m_CameraUp * m_CameraSpeed * Time::GetDelta();
-		}*/
-
-		m_ViewMatrix = glm::lookAt(m_Position, m_Position + m_CameraFront, m_CameraUp);
-		m_ViewProj = m_ProjMatrix * m_ViewMatrix;
+		}
 	}
 
 	void PerspectiveCamera::SetProjMatrix(float width, float height)

@@ -4,9 +4,9 @@
 
 using namespace Orchis;
 
-OC_EXPORT UUID OrchisSceneAddEntity(const UUID sceneId, const UUID entityId)
+OC_EXPORT UUID OrchisSceneAddEntity(const UUID entityId)
 {
-	Scene* scene = SceneManager::GetScene(sceneId);
+	Scene* scene = SceneManager::GetScene();
 	if (!scene)
 		return UUID::Null();
 
@@ -19,21 +19,11 @@ OC_EXPORT UUID OrchisSceneAddEntity(const UUID sceneId, const UUID entityId)
 	return entity->Id();
 }
 
-OC_EXPORT void OrchisSceneRemoveEntity(const UUID sceneId, const UUID entityId)
+OC_EXPORT void OrchisSceneRemoveEntity(const UUID entityId)
 {
-	Scene* scene = SceneManager::GetScene(sceneId);
+	Scene* scene = SceneManager::GetScene();
 	if (!scene)
 		return;
 
 	scene->RemoveEntity(entityId);
-}
-
-OC_EXPORT void OrchisSceneDebugEntities(const UUID sceneId)
-{
-	Scene* scene = SceneManager::GetScene(sceneId);
-	if (!scene)
-		return;
-
-	auto entities = scene->GetEntities();
-	std::cout << "Engine:\nScene " << scene->Id().ToString() << ": " << entities.size() << " entities.";
 }

@@ -6,8 +6,9 @@
         xmlns:local="clr-namespace:OrchisEditor.View.Editor"
         xmlns:UserControls="clr-namespace:OrchisEditor.View.Editor.UserControls"
         xmlns:WindowComponents="clr-namespace:OrchisEditor.View.Editor.UserControls.WindowComponents"
-        mc:Ignorable="d" Style="{StaticResource OrchisWindowBordered}"
-        Title="" Height="900" Width="1600" MouseDown="Window_MouseDown" KeyDown="Window_KeyDown">
+        mc:Ignorable="d" Style="{StaticResource OrchisWindowBordered}" Loaded="Window_Loaded" MouseMove="Window_MouseMove"
+        
+        Title="" Height="900" Width="1600" MouseDown="Window_MouseDown" KeyDown="Window_KeyDown" KeyUp="Window_KeyUp">
     <Grid x:Name="WindowGrid">
         <Grid.RowDefinitions>
             <RowDefinition Height="30"/>

@@ -15,6 +15,9 @@ namespace Orchis {
 		virtual void Update() = 0;
 		virtual std::pair<long, long> GetCenter() const = 0;
 
+		virtual bool IsMouseHovering() = 0;
+		virtual void UpdateRect() = 0;
+
 		virtual void* GetHandle() = 0;
 		static Window* Create(void* parentHandle = nullptr);
 	protected:

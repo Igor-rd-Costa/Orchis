@@ -25,6 +25,13 @@ namespace Orchis {
 		return std::ifstream(path, openMode);
 	}
 
+	std::string FS::GetPath(const std::string& vPath)
+	{
+		if (m_MountedPaths.contains(vPath))
+			return m_MountedPaths[vPath];
+		return "";
+	}
+
 	void FS::Init()
 	{
 		std::filesystem::create_directories("C:\\Orchis\\Data\\Shaders");

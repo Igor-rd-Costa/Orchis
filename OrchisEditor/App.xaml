@@ -2,11 +2,21 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:local="clr-namespace:OrchisEditor"
-             StartupUri="View/Editor/EditorWindow.xaml">
+             xmlns:CCC="clr-namespace:OrchisEditor.View.Editor.UserControls.PropertyPanelComponents.UserControls"
+             StartupUri="View/Editor/EditorWindow.xaml" LoadCompleted="Application_LoadCompleted">
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary>
+                    <Color x:Key="MainColor">#FFE75CA4</Color>
+                    <Color x:Key="Gray">#333333</Color>
+                    <Color x:Key="DarkGray">#222222</Color>
+                    <SolidColorBrush x:Key="MainBrush" Color="{StaticResource MainColor}"></SolidColorBrush>
+                    <SolidColorBrush x:Key="GrayBrush" Color="{StaticResource Gray}"></SolidColorBrush>
+                    <SolidColorBrush x:Key="DarkGrayBrush" Color="{StaticResource DarkGray}"></SolidColorBrush>
+                </ResourceDictionary>
                 <ResourceDictionary Source="Styles/WindowStyles.xaml"/>
+                <ResourceDictionary Source="Styles/ComponentsStyles.xaml"/>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>

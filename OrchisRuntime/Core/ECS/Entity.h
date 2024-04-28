@@ -18,7 +18,9 @@ namespace Orchis
 
 		const UUID AddComponent(ComponentType type);
 		void RemoveComponent(const UUID& componentId);
+
 		const UUID AddTransformComponent(const UUID& componentId, const glm::vec3& position, const glm::vec3& rotation, const glm::vec3& scale);
+		const UUID AddMeshComponent(const UUID& componentId, const UUID& meshId, MeshType meshType);
 	private:
 		UUID m_Id;
 		std::vector<Component> m_Components = {};

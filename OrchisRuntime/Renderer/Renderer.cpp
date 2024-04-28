@@ -54,8 +54,6 @@ namespace Orchis {
 		s_Data->TransformsUB->SetUniformMat4("Model", glm::mat4(1.0f));
 		s_Data->MaterialUniformBuffer->Update(&s_Data->material, sizeof(s_Data->material));
 		s_Data->LightUniformBuffer->Update(&s_Data->light, sizeof(s_Data->light));
-
-
 	}
 
 	void Renderer::Shutdown()
@@ -68,19 +66,13 @@ namespace Orchis {
 	void Renderer::BeginFrame()
 	{
 		RenderCommand::BeginFrame();
-		if (s_ActiveCamera && !SceneManager::GetActiveScenes().empty())
+		if (s_ActiveCamera)
 		{
 			s_ActiveCamera->Update();
 			s_Data->TransformsUB->SetUniformMat4("ViewProj", s_ActiveCamera->GetTransform());
 		}
-		auto scenes = SceneManager::GetActiveScenes();
-		for (const Scene* scene : scenes)
-		{
-			for (const Entity& entity : scene->GetEntities())
-			{
-
-			}
-		}
+		Scene* scene = SceneManager::GetScene();
+		RenderScene(scene);
 	}
 
 	void Renderer::EndFrame()
@@ -88,4 +80,45 @@ namespace Orchis {
 		RenderCommand::SwapBuffers();
 	}
 
+	void Renderer::RenderScene(Scene* scene)
+	{
+		if (scene == nullptr)
+			return;
+
+		for (const Entity& entity : scene->GetEntities())
+		{
+			Renderer::RenderEntity(&entity);
+		}
+	}
+
+	void Renderer::RenderEntity(const Entity* entity)
+	{
+		const UUID* transformId = nullptr;
+		const UUID* meshId = nullptr;
+		for (const Component& component : entity->GetComponents())
+		{
+			switch (component.type)
+			{
+			case ComponentType::TRANSFORM:
+			{
+				transformId = &component.id;
+			} break;
+			case ComponentType::MESH:
+			{
+				meshId = &component.id;
+			} break;
+			default:
+				break;
+			}
+		}
+
+		if (transformId == nullptr || meshId == nullptr)
+			return;
+		
+		MeshComponent* mc = ComponentManager::GetMeshComponent(*meshId);
+		RenderCommand::SetTransform(*transformId);
+		Mesh* mesh = AssetManager::LoadMesh(mc->meshId);
+		RenderCommand::DrawIndexed(mesh);
+	}
+	
 }

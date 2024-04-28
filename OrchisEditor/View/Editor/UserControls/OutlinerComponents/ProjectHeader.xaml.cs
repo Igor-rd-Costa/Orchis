@@ -25,13 +25,14 @@ namespace OrchisEditor.View.Editor.UserControls.OutlinerComponents
         {
             DataContext = this;
             InitializeComponent();
+            m_ProjectName = "";
         }
 
         public ProjectHeader(string projectName)
         {
             DataContext = this;
             InitializeComponent();
-            ProjectName = projectName;
+            m_ProjectName = projectName;
         }
 
         private string m_ProjectName;

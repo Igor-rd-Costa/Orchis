@@ -2,6 +2,9 @@
 <Project ToolsVersion="Current" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup />
   <ItemGroup>
+    <Compile Update="View\Editor\UserControls\PropertyPanelComponents\MeshComponentItem.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="View\Editor\UserControls\PropertyPanelComponents\TransformComponentItem.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -17,6 +20,9 @@
     <Compile Update="View\Editor\UserControls\ToolsPanelComponents\Logger.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="View\UserControls\NumberInput.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="View\UserControls\OrchisDialog.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -25,7 +31,13 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Page Update="Styles\ComponentsStyles.xaml">
+      <SubType>Designer</SubType>
+    </Page>
     <Page Update="Styles\WindowStyles.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="View\Editor\UserControls\PropertyPanelComponents\MeshComponentItem.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Update="View\Editor\UserControls\PropertyPanelComponents\TransformComponentItem.xaml">
@@ -41,6 +53,9 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Update="View\Editor\UserControls\ToolsPanelComponents\Logger.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="View\UserControls\NumberInput.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Update="View\UserControls\OrchisDialog.xaml">

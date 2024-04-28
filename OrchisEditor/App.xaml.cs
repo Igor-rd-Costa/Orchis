@@ -16,6 +16,8 @@ namespace OrchisEditor
     {
         private const string m_CurrentVersion = "0.0.1";
         FileStream m_MetaDataStream;
+        private bool m_IsScenePlaying = false;
+
         public App()
         {
             if (!File.Exists("./OrchisEditor.meta"))
@@ -39,7 +41,7 @@ namespace OrchisEditor
                 if (!tag.HasValue)
                 {
                     // TODO handle parsing error
-                } 
+                }
                 else
                 {
                     Tag metaData = tag.Value;
@@ -49,7 +51,7 @@ namespace OrchisEditor
                         return;
                     }
 
-                    for (int i = 0; i <  metaData.Attributes.Count; i++)
+                    for (int i = 0; i < metaData.Attributes.Count; i++)
                     {
                         if (metaData.Attributes[i].Name == "Version" && metaData.Attributes[i].Value != m_CurrentVersion)
                         {
@@ -61,7 +63,10 @@ namespace OrchisEditor
             }
 
         }
-
+        public bool IsScenePlaying
+        {
+            get { return m_IsScenePlaying; }
+        }
         public Tag[] GetRecentProjects()
         {
             m_MetaDataStream.Seek(0, SeekOrigin.Begin);
@@ -174,7 +179,13 @@ namespace OrchisEditor
         {
             m_MetaDataStream.Flush();
             m_MetaDataStream.Dispose();
+            AssetManager.Shudown();
             base.OnExit(e);
+        }
+
+        private void Application_LoadCompleted(object sender, System.Windows.Navigation.NavigationEventArgs e)
+        {
+            Console.WriteLine("Load Complete!");
         }
     }
 

@@ -6,7 +6,7 @@
              xmlns:local="clr-namespace:OrchisEditor.View.Editor.UserControls.ToolsPanelComponents.AssetManagerComponents"
              mc:Ignorable="d"
              d:DesignHeight="50" d:DesignWidth="50">
-    <Grid x:Name="SelectionGrid" Margin="5">
+    <Grid x:Name="SelectionGrid" Margin="5" MouseLeave="SelectionGrid_MouseLeave">
         <Border x:Name="SelectionBorder" BorderThickness="0.7" BorderBrush="Transparent"></Border>
         <Grid Margin="5">
             <Grid.RowDefinitions>

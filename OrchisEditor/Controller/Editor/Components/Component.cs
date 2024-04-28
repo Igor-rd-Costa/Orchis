@@ -21,7 +21,7 @@ namespace OrchisEditor.Controller.Editor.Components
         public ComponentType Type;
 
         public Component() { }
-        public Component(Guid sceneId, Guid entityId, Guid componentId, ComponentType componentType, Tag component)
+        public Component(Guid entityId, Guid componentId, ComponentType componentType, Tag component)
         {
             Type = componentType;
 
@@ -38,11 +38,17 @@ namespace OrchisEditor.Controller.Editor.Components
                         Vector3 pos = new(float.Parse(posString[0]), float.Parse(posString[1]), float.Parse(posString[2]));
                         Vector3 rot = new(float.Parse(rotString[0]), float.Parse(rotString[1]), float.Parse(rotString[2]));
                         Vector3 scl = new(float.Parse(sclString[0]), float.Parse(sclString[1]), float.Parse(sclString[2]));
-                        id = OrchisInterface.OrchisEntityAddTransformComponent(sceneId, entityId, componentId, pos, rot, scl);
+                        id = OrchisInterface.OrchisEntityAddTransformComponent(entityId, componentId, pos, rot, scl);
                     } catch (Exception)
                     {
                         Id = Guid.Empty;
                     }
+                } break;
+                case ComponentType.MESH:
+                {
+                    MeshType meshType = ParseMeshType(component.GetAttribute("MeshType"));
+                    Guid meshId = Guid.Parse(component.GetAttribute("MeshId"));
+                    id = OrchisInterface.OrchisEntityAddMeshComponent(entityId, componentId, meshId, meshType);
                 } break;
                 default:
                 {
@@ -56,8 +62,18 @@ namespace OrchisEditor.Controller.Editor.Components
         {
             if (type == ComponentType.TRANSFORM.ToString())
                 return ComponentType.TRANSFORM;
+            if (type == ComponentType.MESH.ToString()) 
+                return ComponentType.MESH;
 
             return ComponentType.INVALID;
+        }
+
+        public static MeshType ParseMeshType(string type)
+        {
+            if (type == MeshType.STATIC.ToString())
+                return MeshType.STATIC;
+
+            return MeshType.STATIC;
         }
     }
 
@@ -67,5 +83,16 @@ namespace OrchisEditor.Controller.Editor.Components
         public Vector3 Position;
         public Vector3 Rotation;
         public Vector3 Scale;
+    }
+
+    public enum MeshType
+    {
+        STATIC
+    }
+    public struct MeshComponent
+    {
+        public Guid Id;
+        public Guid MeshId;
+        public MeshType MeshType;
     }
 }

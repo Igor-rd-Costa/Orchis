@@ -15,7 +15,6 @@ namespace OrchisEditor.Controller.Editor
     {
         private string m_Name;
         private Guid m_Id;
-        private bool m_IsActive;
         private readonly List<Entity> m_Entities = [];
 
         public Guid Id
@@ -27,27 +26,15 @@ namespace OrchisEditor.Controller.Editor
             get { return m_Name; }
             set { m_Name = value; }
         }
-        public bool Active
-        {
-            get { return m_IsActive; }
-            set { m_IsActive = value; }
-        }
         public List<Entity> Entities
         {
             get { return m_Entities; }
         }
-        public Scene(string name, bool isActive)
-        {
-            m_Name = name;
-            m_IsActive = isActive;
-            m_Id = OrchisInterface.OrchisSceneManagerCreateScene(Guid.Empty, isActive);
-        }
 
-        public Scene(string name, Guid id, bool isActive) 
+        public Scene(string name, Guid id) 
         {
             m_Name = name;
-            m_Id = OrchisInterface.OrchisSceneManagerCreateScene(id, isActive);
-            m_IsActive = isActive;
+            m_Id = OrchisInterface.OrchisSceneManagerCreateScene(id);
         }
 
         public Entity? GetEntity(Guid id)
@@ -78,12 +65,10 @@ namespace OrchisEditor.Controller.Editor
                     }
                 }
             }
-            if (entityId == Guid.Empty)
-                m_Entities.Add(new(m_Id, newEntName));
-            else
-                m_Entities.Add(new(m_Id, newEntName, entityId));
-            Project.RegisterChange();
-            EditorWindow.GetProjectOutliner()?.UpdateSceneGUI(this);
+
+            m_Entities.Add(new(newEntName, entityId));
+            SceneManager.RegisterChange();
+            EditorWindow.GetProjectOutliner()?.UpdateGUI();
             return m_Entities.Count - 1;
         }
         public void RemoveEntity(Guid id) 
@@ -92,10 +77,10 @@ namespace OrchisEditor.Controller.Editor
             {
                 if (m_Entities[i].Id == id)
                 {
-                    OrchisInterface.OrchisSceneRemoveEntity(m_Id, id);
+                    OrchisInterface.OrchisSceneRemoveEntity(id);
                     m_Entities.RemoveAt(i);
-                    Project.RegisterChange();
-                    EditorWindow.GetProjectOutliner()?.UpdateSceneGUI(this);
+                    SceneManager.RegisterChange();
+                    EditorWindow.GetProjectOutliner()?.UpdateGUI();
                 }
             }
         }
@@ -107,7 +92,7 @@ namespace OrchisEditor.Controller.Editor
                 if (m_Entities[i].Name == name)
                 {
                     m_Entities.RemoveAt(i);
-                    EditorWindow.GetProjectOutliner()?.UpdateSceneGUI(this);
+                    EditorWindow.GetProjectOutliner()?.UpdateGUI();
                 }
             }
         }
@@ -128,18 +113,12 @@ namespace OrchisEditor.Controller.Editor
                     return false;
                 }
                 Guid eId = Guid.Parse(entityId);
-                m_Entities.Add(new(sceneId, entityName, eId));
+                m_Entities.Add(new(entityName, eId));
                 bool status = m_Entities[^1].LoadComponents(entity);
                 if (!status)
                     return false;
             }
             return true;
-        }
-
-        public void DebugEntities()
-        {
-            Console.WriteLine($"Editor:\nScene {m_Id}: {m_Entities.Count} entities.");
-            OrchisInterface.OrchisSceneDebugEntities(m_Id);
         }
     }
 }

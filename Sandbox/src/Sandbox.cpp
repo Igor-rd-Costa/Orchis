@@ -3,15 +3,21 @@
 
 namespace Orchis 
 {
+	static PerspectiveCamera* camera = nullptr;
 	Sandbox::Sandbox()
 	{
 		//Input::ToggleCursorVisibility();
 		//Input::ClipCursor();
 	
-		Renderer::SetActiveCamera(new Orchis::PerspectiveCamera({ 0.0f, 0.0f, 0.0f }, 45.0f, 5.0f));
+		camera = new Orchis::PerspectiveCamera({ 0.0f, -5.0f, 0.0f }, 45.0f, 5.0f);
+		Renderer::SetActiveCamera(camera);
 
-		Scene* scene = SceneManager::CreateScene(true);
-		scene->AddMesh("Assets/Models/Shiba.FBX", { 0.0f,  6.0f,  0.0f });
+		Scene* scene = SceneManager::CreateScene();
+		Entity* dog = scene->AddEntity();
+		dog->AddComponent(ComponentType::TRANSFORM);
+		dog->AddComponent(ComponentType::MESH);
+		
+		/*scene->AddMesh("Assets/Models/Shiba.FBX", { 0.0f,  6.0f,  0.0f });
 
 		for (Mesh& mesh : scene->m_Meshes)
 		{
@@ -21,8 +27,7 @@ namespace Orchis
 				subMesh.Rotate(-90.0f, { 1.0f, 0.0f, 0.0f });
 				subMesh.Rotate(-40.0f, { 0.0f, 1.0f, 0.0f });
 			}
-		}
-		UUID uuid = UUID::Generate();
+		}*/
 	}
 
 	void Sandbox::Run()
@@ -32,18 +37,33 @@ namespace Orchis
 			Application::Update();
 			if (Input::KeyPressed(Key::KEY_ESCAPE))
 			{	
-				Input::ClipCursor();
-				Input::CenterCursor();
-				Input::ToggleCursorVisibility();
 				m_IsPaused = !m_IsPaused;
 			}
-			if (!m_IsPaused)	
+
+
+			if (!m_IsPaused && Application::s_IsRunning)	
 			{
 				Renderer::BeginFrame();
 				
+				if (Input::KeyPressed(Key::MOUSE_RBUTTON))
+				{
+
+					Input::ClipCursor();
+					Input::CenterCursor();
+					Input::ToggleCursorVisibility();
+				}
+				if (Input::KeyReleased(Key::MOUSE_RBUTTON))
+				{
+					Input::ClipCursor();
+					Input::CenterCursor();
+					Input::ToggleCursorVisibility();
+				}
+				if (Input::IsKeyDown(Key::MOUSE_RBUTTON))
+				{
+					camera->Move();
+				}
 					
 				Renderer::EndFrame();
-				m_IsPaused = true;
 			}
 		}
 	}

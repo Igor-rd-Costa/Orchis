@@ -1,4 +1,6 @@
-﻿using System;
+﻿using OrchisEditor.Controller.Editor;
+using OrchisEditor.Controller.Orchis;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
@@ -21,100 +23,60 @@ namespace OrchisEditor.View.Editor.UserControls.PropertyPanelComponents
     /// </summary>
     public partial class TransformComponentItem : UserControl
     {
-        private bool m_Visible = false;
+        private Guid m_Id;
         public TransformComponentItem(Guid componentId)
         {
             InitializeComponent();
-            UpdateVisibility();
-            Heading.ContextMenu = new ComponentContextMenu(componentId);
-            PosX.Text = "0.0";
-            PosY.Text = "0.0";
-            PosZ.Text = "0.0";
+            DataContext = this;
+            m_Id = componentId;
+            PosX.Value = 0.0M;
+            PosY.Value = 0.0M;
+            PosZ.Value = 0.0M;
 
-            RotX.Text = "0.0";
-            RotY.Text = "0.0";
-            RotZ.Text = "0.0";
+            RotX.Value = 0.0M;
+            RotY.Value = 0.0M;
+            RotZ.Value = 0.0M;
 
-            SclX.Text = "0.0";
-            SclY.Text = "0.0";
-            SclZ.Text = "0.0";
+            SclX.Value = 0.0M;
+            SclY.Value = 0.0M;
+            SclZ.Value = 0.0M;
         }
 
-        public TransformComponentItem(Guid componentId, Vector3 pos, Vector3 rot, Vector3 scl, bool expanded = false)
+        public TransformComponentItem(Guid componentId, Vector3 pos, Vector3 rot, Vector3 scl)
         {
-            Heading.ContextMenu = new ComponentContextMenu(componentId);
             InitializeComponent();
-            m_Visible = expanded;
-            UpdateVisibility();
-            PosX.Text = pos.X.ToString();
-            PosY.Text = pos.Y.ToString();
-            PosZ.Text = pos.Z.ToString();
+            DataContext = this;
+            m_Id = componentId;
+            PosX.Value = (decimal)pos.X;
+            PosY.Value = (decimal)pos.Y;
+            PosZ.Value = (decimal)pos.Z;
 
-            RotX.Text = rot.X.ToString();
-            RotY.Text = rot.Y.ToString();
-            RotZ.Text = rot.Z.ToString();
+            RotX.Value = (decimal)rot.X;
+            RotY.Value = (decimal)rot.Y;
+            RotZ.Value = (decimal)rot.Z;
 
-            SclX.Text = scl.X.ToString();
-            SclY.Text = scl.Y.ToString();
-            SclZ.Text = scl.Z.ToString();
+            SclX.Value = (decimal)scl.X;
+            SclY.Value = (decimal)scl.Y;
+            SclZ.Value = (decimal)scl.Z;
         }
 
-        private void OnRetractButtonClick(object sender, RoutedEventArgs e)
+        private void OnInputChange(object sender, decimal val)
         {
-            m_Visible = !m_Visible;
-            UpdateVisibility();
-        }
-
-        private void OnKeyDown(object sender, KeyEventArgs e)
-        {
-            if (e.Key == Key.Space)
+            if (sender == PosX || sender == PosY || sender == PosZ)
             {
-                e.Handled = true;
-                return;
+                Engine.ComponentManager.TransformComponent.SetPosition(m_Id, new((float)PosX.Value, (float)PosY.Value, (float)PosZ.Value));
             }
-        }
-
-        private void OnTextPreview(object sender, TextCompositionEventArgs e)
-        {
-            Console.WriteLine(e.Text);
-            foreach (char c in e.Text)
+            if (sender == RotX || sender == RotY || sender == RotZ)
             {
-                if (c == ',' && !((TextBox)sender).Text.Contains(','))
-                    continue;
-                if (!char.IsDigit(c))
-                {
-                    e.Handled = true;
-                    return;
-                }
+                Engine.ComponentManager.TransformComponent.SetRotation(m_Id, new((float)RotX.Value, (float)RotY.Value, (float)RotZ.Value));
             }
-        }
-
-        private void UpdateVisibility()
-        {
-            if (m_Visible)
+            if (sender == SclX || sender == SclY || sender == SclZ)
             {
-                Transforms.Visibility = Visibility.Visible;
-                BottomBorder.Visibility = Visibility.Visible;
+                Engine.ComponentManager.TransformComponent.SetScale(m_Id, new((float)SclX.Value, (float)SclY.Value, (float)SclZ.Value));
             }
-            else
-            {
-                Transforms.Visibility = Visibility.Hidden;
-                BottomBorder.Visibility = Visibility.Hidden;
-            }
-        }
 
-        private void HeaderOnLeftMouseDown(object sender, MouseButtonEventArgs e)
-        {
-            if (e.ClickCount == 2)
-            {
-                m_Visible = !m_Visible;
-                UpdateVisibility();
-            }
-        }
-
-        private void HeaderOnRightMouseDown(object sender, MouseButtonEventArgs e)
-        {
-
+            if (!((App)Application.Current).IsScenePlaying)
+                SceneManager.RegisterChange();
         }
     }
 }

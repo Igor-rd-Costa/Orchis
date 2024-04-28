@@ -1,5 +1,5 @@
 #include "Macros.h"
-#include "Editor.h"
+#include "Editor/Editor.h"
 #include "Application.h"
 
 using namespace Orchis;
@@ -21,4 +21,24 @@ OC_EXPORT void OrchisShutdown()
 OC_EXPORT void* OrchisGetMainWindowHandle()
 {
 	return Application::GetWindow()->GetHandle();
+}
+
+OC_EXPORT void OrchisEditorRegisterEventCallback(void(*callback)(EditorEventArgs e))
+{
+	editor->RegisterEventCallback(callback);
+}
+
+OC_EXPORT bool OrchisIsMouseHovering()
+{
+	Window* window = Application::GetWindow();
+	if (!window)
+		return false;
+	return window->IsMouseHovering();
+}
+
+OC_EXPORT void OrchisMainWindowUpdateRect()
+{
+	Window* window = Application::GetWindow();
+	if (window != nullptr)
+		window->UpdateRect();
 }

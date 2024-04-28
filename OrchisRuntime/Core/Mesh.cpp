@@ -5,18 +5,16 @@
 #include <assimp/postprocess.h>
 #include "Mesh.h"
 #include "Renderer/AssetManager.h"
-
+#include "VFS/FS.h"
 
 namespace Orchis {
-
-	Mesh::Mesh(const char* filePath, const glm::vec3& position)
-		: m_MeshPath(filePath), m_VertexBuffer(nullptr), m_IndexBuffer(nullptr)
+	Mesh::Mesh(const std::string& filePath)
+		: m_VertexBuffer(nullptr), m_IndexBuffer(nullptr)
 	{
 		Assimp::Importer importer;
 		DefaultVertex* vertices = nullptr;
 		IndexType indexType = INDEX_TYPE_NONE;
 		void* indicesBase = nullptr;
-		
 		const aiScene* scene = importer.ReadFile(filePath, aiProcess_Triangulate | aiProcess_MakeLeftHanded | aiProcess_FlipUVs);
 		if (scene)
 		{
@@ -100,30 +98,15 @@ namespace Orchis {
 				m_SubMeshes[i].IndexCount = indicesCount - indexCount;
 			}
 
-			for (SubMesh& subMesh : m_SubMeshes)
-			{
-				subMesh.Move(position);
-			}
-
-			MeshData* buffers = AssetManager::GetMeshData(filePath);
-			if (buffers)
-			{
-				m_VertexBuffer = buffers->VertexBuffer;
-				m_IndexBuffer = buffers->IndexBuffer;
-			}
-			else
-			{
-				m_VertexBuffer = VertexBuffer::Create(vertices, vertexCount * sizeof(DefaultVertex));
-				if (indexType == INDEX_TYPE_UINT16)
-					m_IndexBuffer = IndexBuffer::Create(indicesBase, indicesCount * sizeof(uint16_t), indexType);
-				else if (indexType == INDEX_TYPE_UINT32)
-					m_IndexBuffer = IndexBuffer::Create(indicesBase, indicesCount * sizeof(uint32_t), indexType);
-				
-				AssetManager::RegisterBuffers(filePath, m_VertexBuffer, m_IndexBuffer);
-			}
+			m_VertexBuffer = VertexBuffer::Create(vertices, vertexCount * sizeof(DefaultVertex));
+			if (indexType == INDEX_TYPE_UINT16)
+				m_IndexBuffer = IndexBuffer::Create(indicesBase, indicesCount * sizeof(uint16_t), indexType);
+			else if (indexType == INDEX_TYPE_UINT32)
+				m_IndexBuffer = IndexBuffer::Create(indicesBase, indicesCount * sizeof(uint32_t), indexType);
 		}
-
-		if (vertices) delete[] vertices;
+		
+		if (vertices) 
+			delete[] vertices;
 		if (indexType == INDEX_TYPE_UINT16)
 			delete[] reinterpret_cast<uint16_t*>(indicesBase);
 		else if (indexType == INDEX_TYPE_UINT32)
@@ -132,41 +115,23 @@ namespace Orchis {
 
 	void Mesh::Bind() const
 	{
+		if (m_VertexBuffer == nullptr || m_IndexBuffer == nullptr)
+			return;
+		
 		m_VertexBuffer->Bind(0);
 		m_IndexBuffer->Bind(0);
 	}
 
+	uint32_t Mesh::GetIndexCount() const
+	{
+		if (m_IndexBuffer)
+			return m_IndexBuffer->GetIndexCount();
+		return 0;
+	}
+
 	Mesh::~Mesh()
 	{
-	}
-
-	void SubMesh::Move(const glm::vec3& positionOffset)
-	{
-		Position += positionOffset;
-		Transform = glm::translate(Transform, positionOffset);
-	}
-
-	void SubMesh::Rotate(float angleOffset, const glm::vec3& axisOffset)
-	{
-		RotationAngle += angleOffset;
-		Rotation += axisOffset;
-		Transform = glm::rotate(Transform, glm::radians(angleOffset), axisOffset);
-	}
-
-	void SubMesh::Scale(const glm::vec3& scaleOffset)
-	{
-		ScaleAxis += scaleOffset;
-		Transform += glm::scale(Transform, scaleOffset);
-	}
-
-	const glm::mat4& SubMesh::GetTransform() const
-	{
-		return Transform;
-	}
-
-	void SubMesh::SetTexture(const std::string& filePath)
-	{
-		TexturePath = filePath;
-		Texture = AssetManager::GetTexture(filePath);
+		delete m_IndexBuffer;
+		delete m_VertexBuffer;
 	}
 }

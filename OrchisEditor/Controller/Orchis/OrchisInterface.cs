@@ -7,9 +7,20 @@ using System.Numerics;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Input;
 
 namespace OrchisEditor.Controller.Orchis
 {
+    public enum EditorEventType
+    {
+        MOUSE_MOVE
+    };
+
+    public struct EditorEventArgs
+    {
+        public EditorEventType type;
+    };
+
     internal class OrchisInterface
     {
         //Application
@@ -22,15 +33,6 @@ namespace OrchisEditor.Controller.Orchis
         [DllImport("OrchisRuntime.dll")]
         protected static extern IntPtr OrchisGetMainWindowHandle();
 
-
-        //Camera
-        [DllImport("OrchisRuntime.dll")]
-        protected static extern IntPtr OrchisCameraCreate();
-
-        [DllImport("OrchisRuntime.dll")]
-        protected static extern void OrchisCameraDelete(IntPtr camera);
-
-
         //Renderer
         [DllImport("OrchisRuntime.dll")]
         public static extern void OrchisRendererSetActiveCamera(IntPtr camera);
@@ -41,37 +43,64 @@ namespace OrchisEditor.Controller.Orchis
 
         //SceneManager
         [DllImport("OrchisRuntime.dll")]
-        public static extern Guid OrchisSceneManagerCreateScene(Guid sceneId, bool makeActive = false);
-        [DllImport("OrchisRuntime.dll")]
-        public static extern void OrchisSceneManagerDeleteScene(Guid sceneId);  
-        [DllImport("OrchisRuntime.dll")]
-        public static extern void OrchisSceneManagerLoadScene();
-        [DllImport("OrchisRuntime.dll")]
-        public static extern void OrchisSceneManagerUnloadScene();
-        [DllImport("OrchisRuntime.dll")]
-        public static extern void OrchisSceneManagerDebugScenes();
+        public static extern Guid OrchisSceneManagerCreateScene(Guid sceneId);
 
         //Scene
         [DllImport("OrchisRuntime.dll")]
-        public static extern Guid OrchisSceneAddEntity(Guid sceneId, Guid entityId);
+        public static extern Guid OrchisSceneAddEntity(Guid entityId);
         [DllImport("OrchisRuntime.dll")]
-        public static extern void OrchisSceneRemoveEntity(Guid sceneId, Guid entityId);
-        [DllImport("OrchisRuntime.dll")]
-        public static extern void OrchisSceneDebugEntities(Guid sceneId);
+        public static extern void OrchisSceneRemoveEntity(Guid entityId);
 
         //Entity
         [DllImport("OrchisRuntime.dll")]
-        public static extern Guid OrchisEntityAddComponent(Guid sceneId, Guid entityId, ComponentType componentType);
+        public static extern Guid OrchisEntityAddComponent(Guid entityId, ComponentType componentType);
         [DllImport("OrchisRuntime.dll")]
-        public static extern Guid OrchisEntityAddTransformComponent(Guid sceneId, Guid entityId, Guid componentId, Vector3 position, Vector3 rotation, Vector3 scale);
+        public static extern Guid OrchisEntityAddTransformComponent(Guid entityId, Guid componentId, Vector3 position, Vector3 rotation, Vector3 scale);
         [DllImport("OrchisRuntime.dll")]
-        public static extern void OrchisEntityRemoveComponent(Guid sceneId, Guid entityId, Guid componentId);
+        public static extern Guid OrchisEntityAddMeshComponent(Guid entityId, Guid componentId, Guid meshId, MeshType type);
         [DllImport("OrchisRuntime.dll")]
-        public static extern void OrchisEntityDebugComponents(Guid sceneId, Guid entityId);
+        public static extern void OrchisEntityRemoveComponent(Guid entityId, Guid componentId);
+        [DllImport("OrchisRuntime.dll")]
+        public static extern void OrchisEntityDebugComponents(Guid entityId);
 
         //Component Manager
         [DllImport("OrchisRuntime.dll")]
         public static extern TransformComponent OrchisComponentManagerGetTransformComponent(Guid componentId);
+        [DllImport("OrchisRuntime.dll")]
+        public static extern MeshComponent OrchisComponentManagerGetMeshComponent(Guid componentId);
+
+        [DllImport("OrchisRuntime.dll")]
+        protected static extern void OrchisComponentManagerTransformComponentSetPosition(Guid componentId, Vector3 position);
+        [DllImport("OrchisRuntime.dll")]
+        protected static extern void OrchisComponentManagerTransformComponentSetRotation(Guid componentId, Vector3 rotation);
+        [DllImport("OrchisRuntime.dll")]
+        protected static extern void OrchisComponentManagerTransformComponentSetScale(Guid componentId, Vector3 scale);
+
+        [DllImport("OrchisRuntime.dll")]
+        public static extern void OrchisComponentManagerUpdateMeshComponentMeshId(Guid componentId, Guid meshId);
+        [DllImport("OrchisRuntime.dll")]
+        public static extern void OrchisComponentManagerUpdateMeshComponentMeshType(Guid componentId, MeshType meshType);
+
+
+        protected delegate void EditorEventCallback(EditorEventArgs e);
+        [DllImport("OrchisRuntime.dll")]
+        protected static extern void OrchisEditorRegisterEventCallback(EditorEventCallback callback);
+
+
+        //Events
+        [DllImport("OrchisRuntime.dll")]
+        protected static extern void OrchisEventsRegisterKeyDownEvent(OrchisKey key);
+        [DllImport("OrchisRuntime.dll")]
+        protected static extern void OrchisEventsRegisterKeyUpEvent(OrchisKey key);
+
+
+        //FS
+        [DllImport("OrchisRuntime.dll")]
+        public static extern void OrchisFileSystemMount(string path, string vPath);
+
+        //Main Window
+        [DllImport("OrchisRuntime.dll")]
+        public static extern void OrchisMainWindowUpdateRect();
 
     }
 }

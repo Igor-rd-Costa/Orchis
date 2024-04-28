@@ -3,86 +3,36 @@
 
 namespace Orchis {
 
-	std::vector<Scene> SceneManager::s_Scenes = {};
+	Scene* SceneManager::s_ActiveScene = nullptr;
 
-	Scene* SceneManager::GetScene(const UUID& sceneId)
+	Scene* SceneManager::GetScene()
 	{
-		for (Scene& scene : s_Scenes)
-		{
-			if (scene.Id() == sceneId)
-			{
-				return &scene;
-			}
-		}
-		return nullptr;
+		return s_ActiveScene;
 	}
 
-	Scene* SceneManager::CreateScene(bool makeActive)
+	Scene* SceneManager::CreateScene()
 	{
-		Scene* scene = &s_Scenes.emplace_back();
-		if (makeActive)
-			scene->SetActive(true);
-		return scene;
+		UnloadScene();
+		s_ActiveScene = new Scene();
+		return s_ActiveScene;
 	}
 
-	Scene* SceneManager::CreateScene(const UUID& sceneId, bool makeActive)
+	Scene* SceneManager::CreateScene(const UUID& sceneId)
 	{
-		Scene* scene = &s_Scenes.emplace_back(sceneId);
-		if (makeActive)
-			scene->SetActive(true);
-		
-		return scene;
+		UnloadScene();
+		s_ActiveScene = new Scene(sceneId);
+		return s_ActiveScene;
 	}
 
-	void SceneManager::DeleteScene(const UUID& sceneId)
+	void SceneManager::LoadScene(Scene* scene)
 	{
-		for (auto it = s_Scenes.begin(); it != s_Scenes.end(); it++)
-		{
-			if (it->Id() == sceneId)
-			{
-				s_Scenes.erase(it);
-				return;
-			}
-		}
+		UnloadScene();
+		s_ActiveScene = scene;
 	}
 
-	void SceneManager::DebugScenes()
+	void SceneManager::UnloadScene()
 	{
-		std::cout << "Engine: " << s_Scenes.size() << " scenes.\n";
-	}
-
-	void SceneManager::LoadScene(const UUID& sceneId)
-	{
-		for (Scene& scene : s_Scenes)
-		{
-			if (scene.Id() == sceneId)
-			{
-				scene.SetActive(true);
-				return;
-			}
-		}
-	}
-
-	void SceneManager::UnloadScene(const UUID& sceneId)
-	{
-		for (Scene& scene : s_Scenes)
-		{
-			if (scene.Id() == sceneId)
-			{
-				scene.SetActive(false);
-				return;
-			}
-		}
-	}
-
-	const std::vector<Scene*> SceneManager::GetActiveScenes()
-	{
-		std::vector<Scene*> scenes = {};
-		for (Scene& scene : s_Scenes)
-		{
-			if (scene.IsActive())
-				scenes.push_back(&scene);
-		}
-		return scenes;
+		if (s_ActiveScene)
+			delete s_ActiveScene;
 	}
 }

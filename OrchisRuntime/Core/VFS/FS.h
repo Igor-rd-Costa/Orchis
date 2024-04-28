@@ -14,6 +14,7 @@ namespace Orchis {
 
 		static std::ifstream Open(const std::string& path, std::ios_base::openmode openMode);
 
+		static std::string GetPath(const std::string& vPath);
 		static void Init();
 		static void Mount(const std::string& path, const std::string& vPath);
 	private:

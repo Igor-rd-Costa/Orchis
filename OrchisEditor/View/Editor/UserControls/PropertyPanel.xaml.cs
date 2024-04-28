@@ -35,6 +35,7 @@ namespace OrchisEditor.View.Editor.UserControls
         {
             InitializeComponent();
             DataContext = this;
+            Console.WriteLine("Properties init!");
         }
 
         public void LoadProperties(OutlinerTreeItem? treeItem)
@@ -56,12 +57,11 @@ namespace OrchisEditor.View.Editor.UserControls
             {
                 case ItemType.ITEM_TYPE_SCENE:
                 {
-                    m_Item = SceneManager.GetScene(treeItem.Id);
+                    m_Item = SceneManager.Scene;
                 } break;
                 case ItemType.ITEM_TYPE_ENTITY: 
                 {
-                    Scene? scene = SceneManager.GetScene(((OutlinerTreeItem)treeItem.Parent).Id);
-                    Entity? entity = scene?.GetEntity(treeItem.Id);
+                    Entity? entity = SceneManager.Scene?.GetEntity(treeItem.Id);
                     m_Item = entity;
                 } break;
             }
@@ -97,7 +97,16 @@ namespace OrchisEditor.View.Editor.UserControls
         {
             switch (component.Type)
             {
-                case ComponentType.TRANSFORM: return new TransformComponentItem(component.Id);
+                case ComponentType.TRANSFORM:
+                {
+                    TransformComponent tc = OrchisInterface.OrchisComponentManagerGetTransformComponent(component.Id);
+                    return new TransformComponentItem(component.Id, tc.Position, tc.Rotation, tc.Scale);
+                } 
+                case ComponentType.MESH:
+                {
+                    MeshComponent mc = OrchisInterface.OrchisComponentManagerGetMeshComponent(component.Id);
+                    return new MeshComponentItem(component.Id, mc.MeshId, mc.MeshType);
+                }
                 default: return new TransformComponentItem(component.Id);
             }
         }

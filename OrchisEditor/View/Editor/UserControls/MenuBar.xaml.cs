@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Microsoft.Win32;
+using OrchisEditor.Controller.Editor;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -23,6 +25,34 @@ namespace OrchisEditor.View.Editor.UserControls
         public MenuBar()
         {
             InitializeComponent();
+        }
+
+        private void OnExit(object sender, MouseButtonEventArgs e)
+        {
+            if (Project.OnAppClose())
+            {
+                Application.Current.Shutdown();
+            }
+        }
+
+        private void NewScene(object sender, MouseButtonEventArgs e)
+        {
+            SceneManager.CreateScene();
+        }
+
+        private void LoadScene(object sender, MouseButtonEventArgs e)
+        {
+            OpenFileDialog dialog = new OpenFileDialog();
+            dialog.AddExtension = true;
+            dialog.Multiselect = false;
+            dialog.DefaultDirectory = $"{AssetManager.Path}Scenes";
+            dialog.DefaultExt = "osn";
+            bool? status = dialog.ShowDialog();
+            if (status.HasValue && status.Value)
+            {
+                SceneManager.LoadScene(dialog.FileName);
+                Project.RegisterChange();
+            }
         }
     }
 }

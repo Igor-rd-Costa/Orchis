@@ -15,8 +15,6 @@ namespace Orchis {
 		Scene(const UUID& id);
 		~Scene() = default;
 
-		bool IsActive() const { return m_IsActive; }
-		void SetActive(bool active) { m_IsActive = active; }
 		const UUID& Id() const { return m_Id; }
 
 		Entity* AddEntity();
@@ -25,12 +23,8 @@ namespace Orchis {
 
 		Entity* GetEntity(const UUID& entityId);
 		const std::vector<Entity>& GetEntities() const { return m_Entities; }
-
-		void AddMesh(const char* filePath, const glm::vec3& position = { 0.0f, 0.0f, 0.0f });
-		std::vector<Mesh> m_Meshes;
 	private:
 		UUID m_Id;
 		std::vector<Entity> m_Entities;
-		bool m_IsActive = false;
 	};
 }

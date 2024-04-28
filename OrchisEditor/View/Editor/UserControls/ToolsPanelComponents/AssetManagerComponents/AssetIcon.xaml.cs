@@ -21,6 +21,11 @@ namespace OrchisEditor.View.Editor.UserControls.ToolsPanelComponents.AssetManage
     /// Interaction logic for AssetIcon.xaml
     /// </summary>
     
+    public struct AssetIconDragData
+    {
+        public string Name;
+        public string Path;
+    }
 
     public partial class AssetIcon : UserControl
     {
@@ -34,6 +39,8 @@ namespace OrchisEditor.View.Editor.UserControls.ToolsPanelComponents.AssetManage
             InitializeComponent();
             DataContext = this;
             Icon.Background = GetIcon(m_Type);
+            if (m_Type != AssetType.FOLDER)
+                SelectionGrid.AllowDrop = true;
         }
 
         public AssetIcon(string name, string path, AssetType type)
@@ -102,6 +109,12 @@ namespace OrchisEditor.View.Editor.UserControls.ToolsPanelComponents.AssetManage
                 case AssetType.FOLDER: return Brushes.Purple;
                 default: return Brushes.RosyBrown;
             }
+        }
+
+        private void SelectionGrid_MouseLeave(object sender, MouseEventArgs e)
+        {
+            AssetIconDragData data = new() { Name = m_Name, Path = m_Path };
+            DragDrop.DoDragDrop(this, data, DragDropEffects.Copy);
         }
     }
 }

@@ -16,9 +16,10 @@ namespace Orchis
 		case ComponentType::TRANSFORM:
 			c = ComponentManager::CreateTransformComponent();
 			break;
-		case ComponentType::TEXTURE:
-			break;
 		case ComponentType::MESH:
+			c = ComponentManager::CreateMeshComponent();
+			break;
+		case ComponentType::TEXTURE:
 			break;
 		default:
 			break;
@@ -43,6 +44,12 @@ namespace Orchis
 	const UUID Entity::AddTransformComponent(const UUID& componentId, const glm::vec3& position, const glm::vec3& rotation, const glm::vec3& scale)
 	{
 		Component c = ComponentManager::CreateTransformComponent(componentId, position, rotation, scale);
+		m_Components.push_back(c);
+		return c.id;
+	}
+	const UUID Entity::AddMeshComponent(const UUID& componentId, const UUID& meshId, MeshType meshType)
+	{
+		Component c = ComponentManager::CreateMeshComponent(componentId, meshId, meshType);
 		m_Components.push_back(c);
 		return c.id;
 	}

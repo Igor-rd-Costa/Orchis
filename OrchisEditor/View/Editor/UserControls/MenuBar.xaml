@@ -17,7 +17,9 @@
                 <MenuItem.Header>
                     <TextBlock Text="File" VerticalAlignment="Center" TextAlignment="Center"/>
                 </MenuItem.Header>
-                <MenuItem Header="Exit"/>
+                <MenuItem Header="New Scene" PreviewMouseLeftButtonDown="NewScene"/>
+                <MenuItem Header="Load Scene" PreviewMouseLeftButtonDown="LoadScene"/>
+                <MenuItem Header="Exit" PreviewMouseLeftButtonDown="OnExit"/>
             </MenuItem>
         </Menu>
     </Grid>

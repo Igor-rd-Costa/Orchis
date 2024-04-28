@@ -19,7 +19,6 @@ namespace OrchisEditor.View.Editor.UserControls
                 m_WindowHost = new WindowHost();
             }
         }
-
         public void Attach()
         {
             SceneViewWrapper.Child = m_WindowHost;

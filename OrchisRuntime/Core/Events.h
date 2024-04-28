@@ -7,7 +7,8 @@ namespace Orchis {
 	enum class EventType
 	{
 		UNDEFINED_EVENT = -1, 
-		MOUSE_BUTTON_DOWN_EVENT, MOUSE_BUTTON_UP_EVENT, MOUSE_MOVE_EVENT, MOUSE_SCROLL_EVENT, 
+		MOUSE_BUTTON_DOWN_EVENT, MOUSE_BUTTON_UP_EVENT, MOUSE_MOVE_EVENT, MOUSE_SCROLL_EVENT,
+		MOUSE_LEAVE_EVENT, MOUSE_ENTER_EVENT,
 		KEY_DOWN_EVENT, KEY_UP_EVENT,
 		WINDOW_RESIZE_EVENT, WINDOW_CLOSE_EVENT, WINDOW_MINIMIZE_EVENT
 	};
@@ -83,6 +84,14 @@ namespace Orchis {
 		float GetDelta() const { return m_Delta; }
 	private:
 		float m_Delta;
+	};
+
+	class MouseLeaveEvent : public Event
+	{
+	public:
+		MouseLeaveEvent()
+			: Event(EventType::MOUSE_LEAVE_EVENT) {}
+		~MouseLeaveEvent() = default;
 	};
 
 	class KeyDownEvent : public Event

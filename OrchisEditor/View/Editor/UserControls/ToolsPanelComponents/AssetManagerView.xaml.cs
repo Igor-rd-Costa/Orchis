@@ -37,10 +37,10 @@ namespace OrchisEditor.View.Editor.UserControls.ToolsPanelComponents
             if (Project.IsLoaded)
             {
                 AssetManager.OnChange(OnAssetChange);
-                AssetManager.Init();
                 m_CurrentPath = AssetManager.Path;
                 LoadAssets(m_CurrentPath);
             }
+            Console.WriteLine("AssetManager init!");
         }
 
         public void RemoveSelectedAssets()
@@ -77,7 +77,20 @@ namespace OrchisEditor.View.Editor.UserControls.ToolsPanelComponents
 
         private void OnAssetChange(AssetChangeEventArgs args)
         {
-            Console.WriteLine($"Change:\nName: {args.Name}\nPath: {args.Path}\nChange: {args.Change}");
+            //Console.WriteLine($"Change:\nName: {args.Name}\nPath: {args.Path}\nChange: {args.Change}");
+            int fileDot = args.Path.LastIndexOf('.');
+            int fileBarIndex = args.Path.LastIndexOf('\\');
+            bool hasFileInPath = fileDot != -1 && fileDot > fileBarIndex;
+
+
+            if ((hasFileInPath && args.Path.Substring(0, fileBarIndex + 1) == m_CurrentPath) 
+                || (!hasFileInPath && args.Path == m_CurrentPath))
+            {
+                Dispatcher.Invoke(() =>
+                {
+                    LoadAssets(m_CurrentPath);
+                });
+            }
         }
 
         private void WrapPanel_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
@@ -154,7 +167,7 @@ namespace OrchisEditor.View.Editor.UserControls.ToolsPanelComponents
 
         private static bool ShouldIgnoreFile(string path)
         {
-            return path.EndsWith(".oai") || path.EndsWith(".txt");
+            return path.EndsWith(".oai") || path.EndsWith(".txt") || path.EndsWith(".osi");
         }
 
         private void LoadAssets(string path)
@@ -171,7 +184,7 @@ namespace OrchisEditor.View.Editor.UserControls.ToolsPanelComponents
                 if (name.Contains('.'))
                 {
                     AssetView.Children.Add(new AssetIcon(name, assetPath, AssetType.GENERIC));
-                }
+                } 
                 else
                 {
                     AssetView.Children.Add(new AssetIcon(name, assetPath, AssetType.FOLDER));

@@ -41,5 +41,6 @@ void main()
 	vec3 Diffuse = material.Diffuse * max(dot(lightDir, normal), 0.0) * light.Diffuse;
 	vec3 Specular = material.Specular * pow(max(dot(viewDir, reflectDir), 0.0), material.Shininess) * light.Specular;
 
-	Color = texture(TexSampler[TextureIndex], fTexCoord) * vec4(Ambient + Diffuse + Specular, 1.0);
+	//Color = texture(TexSampler[TextureIndex], fTexCoord) * vec4(Ambient + Diffuse + Specular, 1.0);
+	Color = vec4(1.0, 0.0, 0.0, 1.0) * vec4(Ambient + Diffuse + Specular, 1.0);
 }

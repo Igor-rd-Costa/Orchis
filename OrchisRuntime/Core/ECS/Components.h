@@ -2,6 +2,7 @@
 #include "Macros.h"
 #include "glm/glm.hpp"
 #include "Utils/UUID.h"
+#include "Mesh.h"
 
 namespace Orchis
 {
@@ -22,14 +23,21 @@ namespace Orchis
 			: id(componentId), position(position), rotation(rotation), scale(scale) {}
 	};
 
+	enum MeshType
+	{
+		STATIC
+	};
+
 	struct OC_API MeshComponent
 	{
 		UUID id;
+		UUID meshId;
+		MeshType meshType = MeshType::STATIC;
 		
 		MeshComponent()
-			: id(UUID::Null()) {}
+			: id(UUID::Null()), meshId(UUID::Null()) {}
 		
-		MeshComponent(const UUID& componentId)
-			: id(componentId) {}
+		MeshComponent(const UUID& componentId, const UUID& meshId, MeshType meshType)
+			: id(componentId), meshId(meshId), meshType(meshType) {}
 	};
 }

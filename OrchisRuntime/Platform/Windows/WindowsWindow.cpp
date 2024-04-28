@@ -63,6 +63,16 @@ namespace Orchis {
 		GetWindowRect(m_WindowHandle, &m_WindowRect);
 	}
 
+	bool WindowsWindow::IsMouseHovering()
+	{
+		POINT cursorPos;
+		GetCursorPos(&cursorPos);
+		HWND handle = WindowFromPoint(cursorPos);
+		if (handle == m_WindowHandle)
+			return true;
+		return false;
+	}
+
 	void WindowsWindow::Update()
 	{
 		static MSG msg;
@@ -141,6 +151,10 @@ namespace Orchis {
 			{
 				EventDispatcher::Dispatch<MouseButtonUpEvent>({ Key::MOUSE_EXTRA2, (float)GET_X_LPARAM(lParam), (float)GET_Y_LPARAM(lParam) });
 			}
+		} break;
+		case WM_MOUSELEAVE:
+		{
+			EventDispatcher::Dispatch<MouseLeaveEvent>({});
 		} break;
 		case WM_MOUSEWHEEL:
 		{

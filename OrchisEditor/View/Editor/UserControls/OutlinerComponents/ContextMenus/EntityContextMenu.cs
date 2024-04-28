@@ -24,16 +24,13 @@ namespace OrchisEditor.View.Editor.UserControls.OutlinerComponents.ContextMenus
             MenuItem debug = new() { Header = "Debug" };
             debug.PreviewMouseLeftButtonDown += DebugComponents_MouseLeftButtonDown;
 
-            MenuItem addComponentItem = new()
-            {
-                Header = "Add Component",
-            };
-            MenuItem transformComponent = new()
-            {
-                Header = "Tranform Component"
-            };
+            MenuItem addComponentItem = new() { Header = "Add Component" };
+            MenuItem transformComponent = new() { Header = "Tranform Component" };
             transformComponent.PreviewMouseLeftButtonDown += AddTransformComponent;
+            MenuItem meshComponent = new() { Header = "Mesh Component" };
+            meshComponent.PreviewMouseLeftButtonDown += AddMeshComponent;
             addComponentItem.Items.Add(transformComponent);
+            addComponentItem.Items.Add(meshComponent);
             Items.Add(removeItem);
             Items.Add(addComponentItem);
             Items.Add(debug);
@@ -43,12 +40,7 @@ namespace OrchisEditor.View.Editor.UserControls.OutlinerComponents.ContextMenus
         {
             
             Guid id = ((OutlinerTreeItem)DataContext).Id;
-            OutlinerTreeItem parent = (OutlinerTreeItem)((OutlinerTreeItem)DataContext).Parent;
-            if (parent == null)
-                return;
-            Guid sceneId = parent.Id;
-            Scene? scene = SceneManager.GetScene(sceneId);
-            Entity? entity = scene?.GetEntity(id);
+            Entity? entity = SceneManager.Scene?.GetEntity(id);
             if (entity == null)
                 return;
             entity.AddComponent(ComponentType.TRANSFORM);
@@ -62,22 +54,39 @@ namespace OrchisEditor.View.Editor.UserControls.OutlinerComponents.ContextMenus
                 EditorWindow.GetPropertyPanel()?.UpdateGUI();
             }
         }
+        private void AddMeshComponent(object sender, MouseButtonEventArgs e)
+        {
+            Guid id = ((OutlinerTreeItem)DataContext).Id;
+            Entity? entity = SceneManager.Scene?.GetEntity(id);
+            if (entity == null) 
+                return;
+            entity.AddComponent(ComponentType.MESH);
+            Outliner? outliner = EditorWindow.GetProjectOutliner();
+            if (outliner == null)
+                return;
+
+            OutlinerTreeItem? item = (OutlinerTreeItem)outliner.SceneTreeView.SelectedItem;
+            if (item != null && item.Id == id)
+            {
+                EditorWindow.GetPropertyPanel()?.UpdateGUI();
+            }
+        }
 
         private void Remove_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            Scene? scene = SceneManager.GetScene(((OutlinerTreeItem)((OutlinerTreeItem)DataContext).Parent).Id);
-            scene?.RemoveEntity(((OutlinerTreeItem)DataContext).Id);
+            //Scene? scene = SceneManager.GetScene(((OutlinerTreeItem)((OutlinerTreeItem)DataContext).Parent).Id);
+            //scene?.RemoveEntity(((OutlinerTreeItem)DataContext).Id);
         }
 
         private void DebugComponents_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            Scene? scene = SceneManager.GetScene(((OutlinerTreeItem)((OutlinerTreeItem)DataContext).Parent).Id);
-            Entity? entity = scene?.GetEntity(((OutlinerTreeItem)DataContext).Id);
-            if (entity != null && scene != null)
-            {
-                Console.WriteLine($"Editor:\nEntity {entity.Id} has {entity.Components.Count} components.");
-                OrchisInterface.OrchisEntityDebugComponents(scene.Id, entity.Id);
-            }
+            //Scene? scene = SceneManager.GetScene(((OutlinerTreeItem)((OutlinerTreeItem)DataContext).Parent).Id);
+            //Entity? entity = scene?.GetEntity(((OutlinerTreeItem)DataContext).Id);
+            //if (entity != null && scene != null)
+            //{
+            //    Console.WriteLine($"Editor:\nEntity {entity.Id} has {entity.Components.Count} components.");
+            //    OrchisInterface.OrchisEntityDebugComponents(scene.Id, entity.Id);
+            //}
         }
     }
 }

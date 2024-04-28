@@ -16,7 +16,7 @@ namespace OrchisEditor.Controller.Editor
 
     internal class Project
     {
-        private static IntPtr s_EditorCamera = IntPtr.Zero;
+        private static Guid s_CurrentScene = Guid.Empty;
         public static bool s_HasUnsavedChanges = false;
         private static string s_Name = "";
         private static bool s_Loaded = false;
@@ -40,6 +40,7 @@ namespace OrchisEditor.Controller.Editor
         {
             get { return s_Loaded; }
         }
+        public static Guid CurrentScene { get {  return s_CurrentScene; } }
         public static string Version { get { return s_ProjVersion; } }
 
         public static string ProjectPath { get { return s_ProjPath; } }
@@ -94,24 +95,10 @@ namespace OrchisEditor.Controller.Editor
                 return false;
             }
 
-            Tag assets = project.Childs[0];
-            if (assets.Name != "Assets")
-            {
-                //TODO handle error. wrong file sintax, could not find assets.
-                return false;
-            }
-            
-            Tag scenes = project.Childs[1];
-            if (scenes.Name != "Scenes")
-            {
-                //TODO handle error. wrong file sintax, could not find assets.
-                return false;
-            }
-            SceneManager.LoadScenes(scenes.Childs);
+            Guid sceneId = Guid.Parse(project.GetAttribute("CurrentScene"));
+            s_CurrentScene = sceneId;
             ((App)Application.Current).RegisterRecentProject(Name, projectPath);
             s_ProjPath = projectPath.Substring(0, projectPath.LastIndexOf('\\') + 1);
-            s_EditorCamera = Engine.Camera.Create();
-            OrchisInterface.OrchisRendererSetActiveCamera(s_EditorCamera);
             s_Loaded = true;
             return true;
         }
@@ -126,20 +113,19 @@ namespace OrchisEditor.Controller.Editor
         {
             FileSystem.CreateDirectory(projectPath + name);
             FileSystem.CreateDirectory(projectPath + name + "\\Assets");
-            File.Create(projectPath + name + "\\Assets\\info.oai");
             projectPath = projectPath + name + "\\" + name + s_ProjExtension;
             FileStream fileStream = File.Create(projectPath);
             Tag newProject = new()
             {
                 Name = "OrchisProject",
-                Attributes = [new TagAttribute("Name", name), new TagAttribute("Version", s_ProjVersion)],
+                Attributes = [new("Name", name), new("Version", s_ProjVersion), new("CurrentScene", Guid.Empty.ToString())],
                 Childs = [new Tag("Assets"),
-                    new Tag("Scenes", [], [
-                        new Tag("Scene", [
-                            new TagAttribute("Id", Guid.NewGuid().ToString().ToUpper()),
-                            new TagAttribute("Name", "NewScene"),
-                            new TagAttribute("Active", "true")], [])
-                        ])
+                    //new Tag("Scenes", [], [
+                    //    new Tag("Scene", [
+                    //        new TagAttribute("Id", Guid.NewGuid().ToString().ToUpper()),
+                    //        new TagAttribute("Name", "NewScene"),
+                    //        new TagAttribute("Active", "true")], [])
+                    //    ])
                 ]
             };
             var buffer = new UTF8Encoding(true).GetBytes(Parser.ToXML(newProject));
@@ -151,8 +137,11 @@ namespace OrchisEditor.Controller.Editor
         }
 
         //TODO implement saving
-        private static bool QueryProjectSave()
+        public static bool QueryProjectSave()
         {
+            if (!s_HasUnsavedChanges)
+                return true;
+
             OrchisSaveDialog saveDialog = new OrchisSaveDialog();
             saveDialog.ShowDialog();
             SaveDialogResult result = saveDialog.Result;
@@ -177,30 +166,18 @@ namespace OrchisEditor.Controller.Editor
                 OrchisDialog dialog = new();
                 dialog.SetDialogType(OrchisDialogType.OK);
                 dialog.ShowMessage($"Unable to find project file at {projFilePath}.", "Error");
-                // TODO add a way to locate file manually
                 return;
             }
             Tag project = new(
                 "OrchisProject",
                 [
-                    new TagAttribute("Name", Name), 
-                    new TagAttribute("Version", s_ProjVersion)
-                ], 
-                [
-                    new ("Assets") //TODO add assets
-                ]);
-            Tag scenes = new("Scenes");
-            foreach (Scene scene in SceneManager.Scenes)
-            {
-                scenes.Childs.Add(new(
-                    "Scene",
-                    [
-                        new("Id", scene.Id.ToString().ToUpper()),
-                        new("Name", scene.Name),
-                        new("Active", scene.Active.ToString())
-                    ], ParseSceneEntities(scene)));
-            }
-            project.Childs.Add(scenes);
+                    new ("Name", Name), 
+                    new ("Version", s_ProjVersion),
+                    new("CurrentScene", 
+                    SceneManager.Scene == null ? Guid.Empty.ToString().ToUpper() : SceneManager.Scene.Id.ToString().ToUpper())
+                ], []);
+            SceneManager.Save();
+            AssetManager.Save();
             FileStream fs = File.Open(projFilePath, FileMode.Open);
             fs.SetLength(0);
             fs.Write(new UTF8Encoding().GetBytes(Parser.ToXML(project)));
@@ -250,6 +227,12 @@ namespace OrchisEditor.Controller.Editor
                     attrbs.Add(new("Position", $"{c.Position.X},{c.Position.Y},{c.Position.Z}"));
                     attrbs.Add(new("Scale", $"{c.Scale.X},{c.Scale.Y},{c.Scale.Z}"));
                     attrbs.Add(new("Rotation", $"{c.Rotation.X},{c.Rotation.Y},{c.Rotation.Z}"));
+                } break;
+                case ComponentType.MESH:
+                {
+                    MeshComponent c = OrchisInterface.OrchisComponentManagerGetMeshComponent(component.Id);
+                    attrbs.Add(new("MeshType", c.MeshType.ToString()));
+                    attrbs.Add(new("MeshId", c.MeshId.ToString().ToUpper()));
                 } break;
                 default: 
                 {

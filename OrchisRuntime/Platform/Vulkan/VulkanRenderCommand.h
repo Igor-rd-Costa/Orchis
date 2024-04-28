@@ -17,6 +17,7 @@ namespace Orchis {
 		static std::array<VkClearValue, 2> s_ClearValues;
 		
 		static void Begin();
+		virtual void SetTransformImpl(const UUID& transformId) override;
 		virtual void DrawIndexedImpl(const Mesh* mesh) override;
 		virtual void SetClearColorImpl(float r, float g, float b, float a) override;
 		virtual void BeginFrameImpl() const override;

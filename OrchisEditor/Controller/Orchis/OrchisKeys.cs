@@ -1,11 +1,15 @@
-#pragma once
-#include "Macros.h"
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Input;
 
-namespace Orchis {
-
-	enum class Key
-	{
-		KEY_UNKNOWN = 0,
+namespace OrchisEditor.Controller.Orchis
+{
+    public enum OrchisKey
+    {
+        KEY_UNKNOWN = 0,
 		MOUSE_LBUTTON,  /* Left mouse button. */
 		MOUSE_RBUTTON,  /* Right mouse button. */
 		MOUSE_MBUTTON,  /* Middle mouse button. */
@@ -171,6 +175,4 @@ namespace Orchis {
 		KEY_OEM_2,
 		KEY_OEM_3,
 	};
-
 }
-//TODO add remaining descriptions. add gamepad codes.
