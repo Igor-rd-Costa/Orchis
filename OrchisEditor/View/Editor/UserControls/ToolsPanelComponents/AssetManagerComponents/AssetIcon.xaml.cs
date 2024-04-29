@@ -1,4 +1,5 @@
 ﻿using OrchisEditor.Controller.Editor;
+using OrchisEditor.View.UserControls;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -93,6 +94,13 @@ namespace OrchisEditor.View.Editor.UserControls.ToolsPanelComponents.AssetManage
                 {
                     if (m_Path.EndsWith(".osn"))
                     {
+                        if (SceneManager.Scene != null && m_Path.EndsWith($"{SceneManager.Scene.Name}.osn"))
+                        {
+                            OrchisDialog dialog = new(OrchisDialogType.OK);
+                            dialog.ShowMessage($"Could not delete scene file {AssetName} because it is currently in use.");
+                            return false;
+                        }
+
                         AssetManager.DeleteSceneInfo(m_Path);
                     }
 
