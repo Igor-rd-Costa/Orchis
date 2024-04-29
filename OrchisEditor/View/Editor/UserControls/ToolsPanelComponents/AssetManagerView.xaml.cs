@@ -50,11 +50,11 @@ namespace OrchisEditor.View.Editor.UserControls.ToolsPanelComponents
 
             foreach(AssetIcon item in m_SelectedItems)
             {
+                
                 if (item.Type == AssetType.FOLDER)
-                {
                     folders++;
-                }
-                else assets++;
+                else 
+                    assets++;
             }    
 
             OrchisDialog dialog = new(OrchisDialogType.YES_NO);
@@ -77,12 +77,10 @@ namespace OrchisEditor.View.Editor.UserControls.ToolsPanelComponents
 
         private void OnAssetChange(AssetChangeEventArgs args)
         {
-            //Console.WriteLine($"Change:\nName: {args.Name}\nPath: {args.Path}\nChange: {args.Change}");
             int fileDot = args.Path.LastIndexOf('.');
             int fileBarIndex = args.Path.LastIndexOf('\\');
             bool hasFileInPath = fileDot != -1 && fileDot > fileBarIndex;
-
-
+            
             if ((hasFileInPath && args.Path.Substring(0, fileBarIndex + 1) == m_CurrentPath) 
                 || (!hasFileInPath && args.Path == m_CurrentPath))
             {

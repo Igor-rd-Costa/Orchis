@@ -91,6 +91,11 @@ namespace OrchisEditor.View.Editor.UserControls.ToolsPanelComponents.AssetManage
                 }
                 else
                 {
+                    if (m_Path.EndsWith(".osn"))
+                    {
+                        AssetManager.DeleteSceneInfo(m_Path);
+                    }
+
                     File.Delete(m_Path);
                 }
                 return true;

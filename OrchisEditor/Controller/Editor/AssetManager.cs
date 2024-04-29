@@ -192,5 +192,39 @@ namespace OrchisEditor.Controller.Editor
             s_InfoStream.Dispose();
             return tag;
         }
+
+        public static void DeleteSceneInfo(string path)
+        {
+            if (!File.Exists(path))
+                return;
+            FileStream stream = File.Open(path, FileMode.Open);
+            Tag? scene = Parser.ParseXML(new StreamReader(stream).ReadToEnd());
+            stream.Dispose();
+            if (!scene.HasValue)
+                return;
+            DeleteSceneInfo(Guid.Parse(scene.Value.GetAttribute("Id")));
+        }
+
+        public static void DeleteSceneInfo(Guid sceneId)
+        {
+            if (!File.Exists($"{Path}Scenes\\scenes.osi"))
+                return;
+            FileStream stream = File.Open($"{Path}Scenes\\scenes.osi", FileMode.Open);
+            Tag? sceneInfo = Parser.ParseXML(new StreamReader(stream).ReadToEnd());
+            if (!sceneInfo.HasValue) 
+                return;
+            foreach (Tag scene in sceneInfo.Value.Childs)
+            {
+                if (Guid.Parse(scene.GetAttribute("Id")) == sceneId)
+                {
+                    sceneInfo.Value.Childs.Remove(scene);
+                    stream.SetLength(0);
+                    stream.Write(new UTF8Encoding().GetBytes(Parser.ToXML(sceneInfo.Value)));
+                    stream.Flush();
+                    break;
+                }
+            }
+            stream.Dispose();
+        }
     }
 }
