@@ -28,7 +28,7 @@ layout (location = 0) in vec3 fPosition;
 layout (location = 1) in vec3 fNormals;
 layout (location = 2) in vec2 fTexCoord;
 
-layout (set = 1, binding = 0) uniform sampler2D TexSampler[1];
+layout (set = 1, binding = 0) uniform sampler2D TexSampler[100];
 
 void main()
 {
@@ -41,6 +41,5 @@ void main()
 	vec3 Diffuse = material.Diffuse * max(dot(lightDir, normal), 0.0) * light.Diffuse;
 	vec3 Specular = material.Specular * pow(max(dot(viewDir, reflectDir), 0.0), material.Shininess) * light.Specular;
 
-	//Color = texture(TexSampler[TextureIndex], fTexCoord) * vec4(Ambient + Diffuse + Specular, 1.0);
-	Color = vec4(1.0, 0.0, 0.0, 1.0) * vec4(Ambient + Diffuse + Specular, 1.0);
+	Color = texture(TexSampler[TextureIndex], fTexCoord) * vec4(Ambient + Diffuse + Specular, 1.0);
 }

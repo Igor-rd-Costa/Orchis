@@ -221,6 +221,12 @@ namespace OrchisEditor.Controller.Editor
                     attributes.Add(new("MeshId", mc.MeshId.ToString().ToUpper()));
                     attributes.Add(new("MeshType", mc.MeshType.ToString()));
                 } break;
+                case ComponentType.TEXTURE:
+                {
+                    TextureComponent tc = OrchisInterface.OrchisComponentManagerGetTextureComponent(component.Id);
+                    if (tc.Id == Guid.Empty) break;
+                    attributes.Add(new("TextureId", tc.TextureId.ToString().ToUpper()));
+                } break;
             }
             return attributes;
         }

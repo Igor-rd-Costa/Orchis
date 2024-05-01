@@ -29,7 +29,7 @@ namespace OrchisEditor.View.Editor.UserControls.PropertyPanelComponents
             m_AssetId = meshId;
             m_Type = meshType;
             if (meshId == Guid.Empty)
-                MeshNameField.Text = "Empty";
+                m_MeshName = "Empty";
             else
             {
                 AssetInfo? info = AssetManager.GetAssetInfo(meshId);
@@ -38,7 +38,6 @@ namespace OrchisEditor.View.Editor.UserControls.PropertyPanelComponents
                     m_MeshName = info.Value.Name;
                     m_MeshPath = info.Value.Path;
                     MeshIcon.ToolTip = m_MeshPath;
-                    MeshNameField.ToolTip = m_MeshPath;
                 }
             }
             MeshNameField.Text = m_MeshName;

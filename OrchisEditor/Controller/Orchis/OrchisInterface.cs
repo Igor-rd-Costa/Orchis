@@ -59,15 +59,18 @@ namespace OrchisEditor.Controller.Orchis
         [DllImport("OrchisRuntime.dll")]
         public static extern Guid OrchisEntityAddMeshComponent(Guid entityId, Guid componentId, Guid meshId, MeshType type);
         [DllImport("OrchisRuntime.dll")]
-        public static extern void OrchisEntityRemoveComponent(Guid entityId, Guid componentId);
+        public static extern Guid OrchisEntityAddTextureComponent(Guid entityId, Guid componentId, Guid textureId);
         [DllImport("OrchisRuntime.dll")]
-        public static extern void OrchisEntityDebugComponents(Guid entityId);
+        public static extern void OrchisEntityRemoveComponent(Guid entityId, Guid componentId);
+
 
         //Component Manager
         [DllImport("OrchisRuntime.dll")]
         public static extern TransformComponent OrchisComponentManagerGetTransformComponent(Guid componentId);
         [DllImport("OrchisRuntime.dll")]
         public static extern MeshComponent OrchisComponentManagerGetMeshComponent(Guid componentId);
+        [DllImport("OrchisRuntime.dll")]
+        public static extern TextureComponent OrchisComponentManagerGetTextureComponent(Guid componentId);
 
         [DllImport("OrchisRuntime.dll")]
         protected static extern void OrchisComponentManagerTransformComponentSetPosition(Guid componentId, Vector3 position);
@@ -81,6 +84,8 @@ namespace OrchisEditor.Controller.Orchis
         [DllImport("OrchisRuntime.dll")]
         public static extern void OrchisComponentManagerUpdateMeshComponentMeshType(Guid componentId, MeshType meshType);
 
+        [DllImport("OrchisRuntime.dll")]
+        public static extern void OrchisComponentManagerUpdateTextureComponentTextureId(Guid componentId, Guid textureId);
 
         protected delegate void EditorEventCallback(EditorEventArgs e);
         [DllImport("OrchisRuntime.dll")]

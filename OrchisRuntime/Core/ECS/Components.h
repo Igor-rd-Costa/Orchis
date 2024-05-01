@@ -40,4 +40,16 @@ namespace Orchis
 		MeshComponent(const UUID& componentId, const UUID& meshId, MeshType meshType)
 			: id(componentId), meshId(meshId), meshType(meshType) {}
 	};
+
+	struct OC_API TextureComponent
+	{
+		UUID id;
+		UUID textureId;
+
+		TextureComponent()
+			: id(UUID::Null()), textureId(UUID::Null()) {}
+
+		TextureComponent(const UUID& componentId, const UUID& textureId)
+			: id(componentId), textureId(textureId) {}
+	};
 }

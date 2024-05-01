@@ -29,8 +29,11 @@ namespace OrchisEditor.View.Editor.UserControls.OutlinerComponents.ContextMenus
             transformComponent.PreviewMouseLeftButtonDown += AddTransformComponent;
             MenuItem meshComponent = new() { Header = "Mesh Component" };
             meshComponent.PreviewMouseLeftButtonDown += AddMeshComponent;
+            MenuItem textureComponent = new() { Header = "Texture Component" };
+            textureComponent.PreviewMouseLeftButtonDown += AddTextureComponent;
             addComponentItem.Items.Add(transformComponent);
             addComponentItem.Items.Add(meshComponent);
+            addComponentItem.Items.Add(textureComponent);
             Items.Add(removeItem);
             Items.Add(addComponentItem);
             Items.Add(debug);
@@ -38,29 +41,24 @@ namespace OrchisEditor.View.Editor.UserControls.OutlinerComponents.ContextMenus
 
         private void AddTransformComponent(object sender, MouseButtonEventArgs e)
         {
-            
+            AddComponent(ComponentType.TRANSFORM);
+        }
+        private void AddMeshComponent(object sender, MouseButtonEventArgs e)
+        {
+            AddComponent(ComponentType.MESH);
+        }
+        private void AddTextureComponent(object sender, MouseButtonEventArgs e)
+        {
+            AddComponent(ComponentType.TEXTURE);
+        }
+
+        private void AddComponent(ComponentType componentType)
+        {
             Guid id = ((OutlinerTreeItem)DataContext).Id;
             Entity? entity = SceneManager.Scene?.GetEntity(id);
             if (entity == null)
                 return;
-            entity.AddComponent(ComponentType.TRANSFORM);
-            Outliner? outliner = EditorWindow.GetProjectOutliner();
-            if (outliner == null)
-                return;
-
-            OutlinerTreeItem? item = (OutlinerTreeItem)outliner.SceneTreeView.SelectedItem;
-            if (item != null && item.Id == id)
-            {
-                EditorWindow.GetPropertyPanel()?.UpdateGUI();
-            }
-        }
-        private void AddMeshComponent(object sender, MouseButtonEventArgs e)
-        {
-            Guid id = ((OutlinerTreeItem)DataContext).Id;
-            Entity? entity = SceneManager.Scene?.GetEntity(id);
-            if (entity == null) 
-                return;
-            entity.AddComponent(ComponentType.MESH);
+            entity.AddComponent(componentType);
             Outliner? outliner = EditorWindow.GetProjectOutliner();
             if (outliner == null)
                 return;

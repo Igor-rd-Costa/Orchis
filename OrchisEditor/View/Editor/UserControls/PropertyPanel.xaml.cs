@@ -107,6 +107,11 @@ namespace OrchisEditor.View.Editor.UserControls
                     MeshComponent mc = OrchisInterface.OrchisComponentManagerGetMeshComponent(component.Id);
                     return new MeshComponentItem(component.Id, mc.MeshId, mc.MeshType);
                 }
+                case ComponentType.TEXTURE:
+                {
+                    TextureComponent tc = OrchisInterface.OrchisComponentManagerGetTextureComponent(component.Id);
+                    return new TextureComponentItem(tc.Id, tc.TextureId);
+                }
                 default: return new TransformComponentItem(component.Id);
             }
         }

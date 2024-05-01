@@ -54,6 +54,7 @@ namespace Orchis {
 		s_Data->TransformsUB->SetUniformMat4("Model", glm::mat4(1.0f));
 		s_Data->MaterialUniformBuffer->Update(&s_Data->material, sizeof(s_Data->material));
 		s_Data->LightUniformBuffer->Update(&s_Data->light, sizeof(s_Data->light));
+		AssetManager::Init();
 	}
 
 	void Renderer::Shutdown()
@@ -95,6 +96,7 @@ namespace Orchis {
 	{
 		const UUID* transformId = nullptr;
 		const UUID* meshId = nullptr;
+		const UUID* textureId = nullptr;
 		for (const Component& component : entity->GetComponents())
 		{
 			switch (component.type)
@@ -107,17 +109,28 @@ namespace Orchis {
 			{
 				meshId = &component.id;
 			} break;
-			default:
-				break;
+			case ComponentType::TEXTURE:
+			{
+				textureId = &component.id;
+			} break;
 			}
 		}
 
 		if (transformId == nullptr || meshId == nullptr)
 			return;
-		
+
 		MeshComponent* mc = ComponentManager::GetMeshComponent(*meshId);
-		RenderCommand::SetTransform(*transformId);
+		Texture* texture = AssetManager::LoadDefaultTexture();
+		if (textureId)
+		{
+			TextureComponent* tc = ComponentManager::GetTextureComponent(*textureId);
+			if (!tc->textureId.IsNull())
+				texture = AssetManager::LoadTexture(tc->textureId);
+		}
 		Mesh* mesh = AssetManager::LoadMesh(mc->meshId);
+		RenderCommand::SetTransform(*transformId);
+
+		texture->Bind();
 		RenderCommand::DrawIndexed(mesh);
 	}
 	

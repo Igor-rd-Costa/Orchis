@@ -20,6 +20,7 @@ namespace Orchis
 			c = ComponentManager::CreateMeshComponent();
 			break;
 		case ComponentType::TEXTURE:
+			c = ComponentManager::CreateTextureComponent();
 			break;
 		default:
 			break;
@@ -50,6 +51,12 @@ namespace Orchis
 	const UUID Entity::AddMeshComponent(const UUID& componentId, const UUID& meshId, MeshType meshType)
 	{
 		Component c = ComponentManager::CreateMeshComponent(componentId, meshId, meshType);
+		m_Components.push_back(c);
+		return c.id;
+	}
+	const UUID Entity::AddTextureComponent(const UUID& componentId, const UUID& textureId)
+	{
+		Component c = ComponentManager::CreateTextureComponent(componentId, textureId);
 		m_Components.push_back(c);
 		return c.id;
 	}

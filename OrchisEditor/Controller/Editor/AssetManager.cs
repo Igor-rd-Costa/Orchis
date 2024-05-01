@@ -90,39 +90,38 @@ namespace OrchisEditor.Controller.Editor
             {
                 File.Create($"{Path}info.oai");
             }
-            s_InfoStream = File.Open($"{Path}info.oai", FileMode.Open);
-            s_InfoStream.Position = 0;
-            Tag? info = Parser.ParseXML(new StreamReader(s_InfoStream).ReadToEnd());
+            FileStream stream = File.Open($"{Path}info.oai", FileMode.Open);
+            Tag? info = Parser.ParseXML(new StreamReader(stream).ReadToEnd());
             if (info.HasValue == false)
             {
-                s_InfoStream.Dispose();
+                stream.Dispose();
                 return Guid.Empty;
             }
             for (int i = 0; i < info.Value.Childs.Count; i++)
             {
-                if (info.Value.Childs[i].Name == "Mesh" 
-                    && info.Value.Childs[i].GetAttribute("Path") == assetPath)
+                if (info.Value.Childs[i].GetAttribute("Path") == assetPath)
                 {
-                    s_InfoStream.Dispose();
+                    stream.Dispose();
                     return Guid.Parse(info.Value.Childs[i].GetAttribute("Id"));
                 }
             }
-            Guid meshId = Guid.NewGuid();
+            Guid assetId = Guid.NewGuid();
+            string assetTagName = GetAssetTagName(assetPath);
             info.Value.Childs.Add(new()
             {
-                Name = "Mesh",
+                Name = assetTagName,
                 Attributes = 
                 { 
-                    new("Id", meshId.ToString().ToUpper()),
+                    new("Id", assetId.ToString().ToUpper()),
                     new("Path", assetPath),
-                    new("Type", MeshType.STATIC.ToString()),
                 }
             });
-            s_InfoStream.SetLength(0);
-            s_InfoStream.Write(new UTF8Encoding().GetBytes(Parser.ToXML(info.Value)));
-            s_InfoStream.Flush();
-            s_InfoStream.Dispose();
-            return meshId;
+            info.Value.Childs[^1].AddAttributes(GetAssetAttributes(assetTagName));
+            stream.SetLength(0);
+            stream.Write(new UTF8Encoding().GetBytes(Parser.ToXML(info.Value)));
+            stream.Flush();
+            stream.Dispose();
+            return assetId;
         }
 
         public static AssetInfo? GetAssetInfo(Guid assetId)
@@ -143,6 +142,26 @@ namespace OrchisEditor.Controller.Editor
                 }
             }
             return null;
+        }
+
+        public static string GetAssetTagName(string path)
+        {
+            int dot = path.LastIndexOf('.');
+            string ext = path.Substring(dot, path.Length - dot).ToLower();
+            if (ext == ".obj" || ext == ".fbx")
+                return "Mesh";
+            if (ext == ".png")
+                return "Texture";
+            return "Asset";
+        }
+
+        private static List<TagAttribute> GetAssetAttributes(string tagName)
+        {
+            List<TagAttribute> attributes = [];
+            if (tagName == "Mesh")
+                attributes.Add(new("Type", MeshType.STATIC.ToString()));
+
+            return attributes;
         }
 
         public static void Save()

@@ -59,7 +59,7 @@ namespace Orchis {
 		result = vkBeginCommandBuffer(s_CommandBuffers[VulkanAPI::s_CurrentFrame], &beginInfo);
 		OC_ASSERT(result == VK_SUCCESS);
 	}
-
+	//TODO recieve transformComponent instead of uuid
 	void VulkanRenderCommand::SetTransformImpl(const UUID& transformId)
 	{
 		static glm::mat4 transform = {};
@@ -131,10 +131,6 @@ namespace Orchis {
 		mesh->Bind();
 		for (const SubMesh& subMesh : mesh->m_SubMeshes)
 		{
-			//subMesh.GetTexture()->Bind();
-			uint32_t textureIndex = 0; //reinterpret_cast<const VulkanTexture*>(subMesh.GetTexture())->GetIndex();
-			vkCmdPushConstants(s_CommandBuffers[VulkanAPI::s_CurrentFrame], VulkanGraphicsPipeline::GetBoundPipelineLayout(),
-				VK_SHADER_STAGE_FRAGMENT_BIT, (sizeof(glm::mat4) + sizeof(glm::vec4)), sizeof(uint32_t), &textureIndex);
 			vkCmdDrawIndexed(s_CommandBuffers[VulkanAPI::s_CurrentFrame], subMesh.IndexCount, 1, subMesh.IndexOffset, 0, 0);
 		}
 	}

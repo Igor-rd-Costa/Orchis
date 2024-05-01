@@ -23,14 +23,18 @@ namespace Orchis {
 		AssetManager(const AssetManager&) = delete;
 		AssetManager(AssetManager&&) = delete;
 
+		static void Init();
 		static void ShutDown();
 		static Mesh* LoadMesh(const UUID& meshId);
+		static Texture* LoadTexture(const UUID& textureId);
+		static Texture* LoadDefaultTexture();
 
-		static Texture* GetTexture(const std::string& texturePath);
 	private:
-		static std::unordered_map<std::string, Texture*> s_Textures;
+		static void CreateDefaultTexture();
+		static Texture* s_DefaultTexture;
+		static std::unordered_map<UUID, Texture*> s_Textures;
 		static std::unordered_map<UUID, Mesh*> s_Meshes;
-		static const uint32_t s_MaxIndexedTextures = 32;
+		static const uint32_t s_MaxIndexedTextures = 100;
 		static uint32_t s_CurrentIndex;
 	};
 }

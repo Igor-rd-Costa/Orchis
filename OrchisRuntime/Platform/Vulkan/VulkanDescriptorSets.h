@@ -17,10 +17,13 @@ namespace Orchis {
 		~VulkanDescriptorSetManager() = delete;
 
 		static VkDescriptorSetLayout CreateUniformBuffersDescriptorSetLayout(uint32_t uniformBufferCount, UniformBuffer** pUniformBuffers);
+
 		static VkDescriptorSetLayout CreateImageSamplersDescriptorSetLayout();
+		static void CreateImageSamplersDescriptorPool();
+		static void CreateImageSamplersDescriptorSet();
 		static void DeleteUniformBuffersDescriptorSetLayout();
 		static void DeleteImageSamplersDescriptorSetLayout();
-		static void UpdateImageSampler(const Texture* texture);
+		static void UpdateImageSampler(const Texture* texture, uint32_t index);
 		static void DeleteUniformBuffersDescriptorPool();
 		static void DeleteImageSamplersDescriptorPool();
 

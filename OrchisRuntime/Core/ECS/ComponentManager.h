@@ -31,13 +31,18 @@ namespace Orchis
 		static Component CreateTransformComponent(const UUID& componentId, const glm::vec3& position, const glm::vec3& rotation, const glm::vec3& scale);
 		static Component CreateMeshComponent();
 		static Component CreateMeshComponent(const UUID& componentId, const UUID& meshId, MeshType meshType);
+		static Component CreateTextureComponent();
+		static Component CreateTextureComponent(const UUID& componentId, const UUID& textureId);
+
 
 		static void RemoveComponent(const UUID& componentId, ComponentType type);
 		static void RemoveTransformComponent(const UUID& componentId);
 		static void RemoveMeshComponent(const UUID& componentId);
+		static void RemoveTextureComponent(const UUID& componentId);
 
 		static TransformComponent* GetTranformComponent(const UUID& componentId);
 		static MeshComponent* GetMeshComponent(const UUID& componentId);
+		static TextureComponent* GetTextureComponent(const UUID& componentId);
 
 		static void UpdateTransformComponentPosition(const UUID& componentId, glm::vec3 position);
 		static void UpdateTransformComponentRotation(const UUID& componentId, glm::vec3 rotation);
@@ -45,8 +50,11 @@ namespace Orchis
 
 		static void UpdateMeshComponentMeshId(const UUID& componentId, const UUID& meshId);
 		static void UpdateMeshComponentMeshType(const UUID& componentId, MeshType meshType);
+
+		static void UpdateTextureComponentTextureId(const UUID& componentId, const UUID& newTextureId);
 	private:
 		static std::vector<TransformComponent> s_TransformComponents;
 		static std::vector<MeshComponent> s_MeshComponents;
+		static std::vector<TextureComponent> s_TextureComponents;
 	};
 }

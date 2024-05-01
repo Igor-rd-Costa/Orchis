@@ -4,6 +4,7 @@ namespace Orchis
 {
 	std::vector<TransformComponent> ComponentManager::s_TransformComponents = {};
 	std::vector<MeshComponent> ComponentManager::s_MeshComponents = {};
+	std::vector<TextureComponent> ComponentManager::s_TextureComponents = {};
 
 	Component ComponentManager::CreateComponent(ComponentType type)
 	{
@@ -45,7 +46,7 @@ namespace Orchis
 
 	Component ComponentManager::CreateTransformComponent()
 	{
-		return CreateTransformComponent(UUID::Generate(), glm::vec3(0.0f), glm::vec3(0.0f), glm::vec3(0.0f));
+		return CreateTransformComponent(UUID::Generate(), glm::vec3(0.0f), glm::vec3(1.0f), glm::vec3(1.0f));
 	}
 
 	Component ComponentManager::CreateTransformComponent(const UUID& componentId, const glm::vec3& position, 
@@ -66,6 +67,18 @@ namespace Orchis
 		Component component = { .id = componentId, .type = ComponentType::MESH };
 		s_MeshComponents.emplace_back(componentId, meshId, meshType);
 		return component;
+	}
+
+	Component ComponentManager::CreateTextureComponent()
+	{
+		return CreateTextureComponent(UUID::Generate(), UUID::Null());
+	}
+
+	Component ComponentManager::CreateTextureComponent(const UUID& componentId, const UUID& textureId)
+	{
+		Component c = { .id = componentId, .type = ComponentType::TEXTURE };
+		s_TextureComponents.emplace_back(componentId, textureId);
+		return c;
 	}
 
 	void ComponentManager::RemoveTransformComponent(const UUID& componentId)
@@ -92,25 +105,48 @@ namespace Orchis
 		}
 	}
 
+	void ComponentManager::RemoveTextureComponent(const UUID& componentId)
+	{
+		for (auto it = s_TextureComponents.begin(); it != s_TextureComponents.end(); it++)
+		{
+			if (it->id == componentId)
+			{
+				s_TextureComponents.erase(it);
+				return;
+			}
+		}
+	}
+
 	TransformComponent* ComponentManager::GetTranformComponent(const UUID& componentId)
 	{
-		for (TransformComponent& component : s_TransformComponents)
+		for (TransformComponent& tc : s_TransformComponents)
 		{
-			if (component.id == componentId)
-				return &component;
+			if (tc.id == componentId)
+				return &tc;
 		}
 		return nullptr;
 	}
 
 	MeshComponent* ComponentManager::GetMeshComponent(const UUID& componentId)
 	{
-		for (MeshComponent& component : s_MeshComponents)
+		for (MeshComponent& mc : s_MeshComponents)
 		{
-			if (component.id == componentId)
-				return &component;
+			if (mc.id == componentId)
+				return &mc;
 		}
 		return nullptr;
 	}
+
+	TextureComponent* ComponentManager::GetTextureComponent(const UUID& componentId)
+	{
+		for (TextureComponent& tc : s_TextureComponents)
+		{
+			if (tc.id == componentId)
+				return &tc;
+		}
+		return nullptr;
+	}
+
 
 	void ComponentManager::UpdateTransformComponentPosition(const UUID& componentId, glm::vec3 position)
 	{
@@ -119,11 +155,10 @@ namespace Orchis
 			if (tc.id == componentId)
 			{
 				tc.position = position;
-				break;
+				return;
 			}
 		}
 	}
-
 	void ComponentManager::UpdateTransformComponentRotation(const UUID& componentId, glm::vec3 rotation)
 	{
 		for (TransformComponent& tc : s_TransformComponents)
@@ -131,11 +166,10 @@ namespace Orchis
 			if (tc.id == componentId)
 			{
 				tc.rotation = rotation;
-				break;
+				return;
 			}
 		}
 	}
-
 	void ComponentManager::UpdateTransformComponentScale(const UUID& componentId, glm::vec3 scale)
 	{
 		for (TransformComponent& tc : s_TransformComponents)
@@ -143,10 +177,11 @@ namespace Orchis
 			if (tc.id == componentId)
 			{
 				tc.scale = scale;
-				break;
+				return;
 			}
 		}
 	}
+
 
 	void ComponentManager::UpdateMeshComponentMeshId(const UUID& componentId, const UUID& meshId)
 	{
@@ -155,11 +190,10 @@ namespace Orchis
 			if (mc.id == componentId)
 			{
 				mc.meshId = meshId;
-				break;
+				return;
 			}
 		}
 	}
-
 	void ComponentManager::UpdateMeshComponentMeshType(const UUID& componentId, MeshType meshType)
 	{
 		for (MeshComponent& mc : s_MeshComponents)
@@ -167,7 +201,20 @@ namespace Orchis
 			if (mc.id == componentId)
 			{
 				mc.meshType = meshType;
-				break;
+				return;
+			}
+		}
+	}
+
+
+	void ComponentManager::UpdateTextureComponentTextureId(const UUID& componentId, const UUID& newTextureId)
+	{
+		for (TextureComponent& tc : s_TextureComponents)
+		{
+			if (tc.id == componentId)
+			{
+				tc.textureId = newTextureId;
+				return;
 			}
 		}
 	}

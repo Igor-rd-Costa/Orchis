@@ -5,6 +5,9 @@
     <Compile Update="View\Editor\UserControls\PropertyPanelComponents\MeshComponentItem.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="View\Editor\UserControls\PropertyPanelComponents\TextureComponentItem.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="View\Editor\UserControls\PropertyPanelComponents\TransformComponentItem.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -38,6 +41,9 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Update="View\Editor\UserControls\PropertyPanelComponents\MeshComponentItem.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="View\Editor\UserControls\PropertyPanelComponents\TextureComponentItem.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Update="View\Editor\UserControls\PropertyPanelComponents\TransformComponentItem.xaml">

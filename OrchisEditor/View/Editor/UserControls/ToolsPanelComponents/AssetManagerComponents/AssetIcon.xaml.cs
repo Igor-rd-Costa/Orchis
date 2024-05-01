@@ -39,6 +39,7 @@ namespace OrchisEditor.View.Editor.UserControls.ToolsPanelComponents.AssetManage
         {
             InitializeComponent();
             DataContext = this;
+            ToolTip = m_Name;
             Icon.Background = GetIcon(m_Type);
             if (m_Type != AssetType.FOLDER)
                 SelectionGrid.AllowDrop = true;
@@ -51,6 +52,7 @@ namespace OrchisEditor.View.Editor.UserControls.ToolsPanelComponents.AssetManage
             m_Name = name;
             m_Path = path;
             m_Type = type;
+            ToolTip = m_Name;
             Icon.Background = GetIcon(m_Type);
         }
 

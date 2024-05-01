@@ -11,7 +11,7 @@
         <Grid Margin="5">
             <Grid.RowDefinitions>
                 <RowDefinition Height="80"/>
-                <RowDefinition Height="30"/>
+                <RowDefinition Height="32"/>
             </Grid.RowDefinitions>
             <!--TODO: Make this an icon-->
             <TextBlock x:Name="Icon" Width="80" Height="80">

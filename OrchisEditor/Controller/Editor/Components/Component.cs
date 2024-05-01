@@ -20,7 +20,11 @@ namespace OrchisEditor.Controller.Editor.Components
         public Guid Id;
         public ComponentType Type;
 
-        public Component() { }
+        public Component() 
+        { 
+        
+        }
+
         public Component(Guid entityId, Guid componentId, ComponentType componentType, Tag component)
         {
             Type = componentType;
@@ -50,6 +54,11 @@ namespace OrchisEditor.Controller.Editor.Components
                     Guid meshId = Guid.Parse(component.GetAttribute("MeshId"));
                     id = OrchisInterface.OrchisEntityAddMeshComponent(entityId, componentId, meshId, meshType);
                 } break;
+                case ComponentType.TEXTURE:
+                {
+                    Guid textureId = Guid.Parse(component.GetAttribute("TextureId"));
+                    id = OrchisInterface.OrchisEntityAddTextureComponent(entityId, componentId, textureId);
+                } break;
                 default:
                 {
                     Debug.Assert(false, "ComponentType not implemented.");
@@ -64,6 +73,8 @@ namespace OrchisEditor.Controller.Editor.Components
                 return ComponentType.TRANSFORM;
             if (type == ComponentType.MESH.ToString()) 
                 return ComponentType.MESH;
+            if (type == ComponentType.TEXTURE.ToString())
+                return ComponentType.TEXTURE;
 
             return ComponentType.INVALID;
         }
@@ -94,5 +105,11 @@ namespace OrchisEditor.Controller.Editor.Components
         public Guid Id;
         public Guid MeshId;
         public MeshType MeshType;
+    }
+
+    public struct TextureComponent
+    {
+        public Guid Id;
+        public Guid TextureId;
     }
 }
