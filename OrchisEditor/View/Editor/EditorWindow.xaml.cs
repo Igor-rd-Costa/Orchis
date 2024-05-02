@@ -13,6 +13,8 @@ namespace OrchisEditor.View.Editor
     public partial class EditorWindow : Window
     {
         private ProjectSelectorWindow m_ProjectSelector;
+        private static List<Action<object, MouseButtonEventArgs>> s_OnClickCallbacks = [];
+        private static List<Action<object, KeyEventArgs>> s_OnKeyDownCallbacks = [];
         public EditorWindow()
         {
             m_ProjectSelector = new ProjectSelectorWindow();
@@ -57,7 +59,7 @@ namespace OrchisEditor.View.Editor
                 return;
             }
 
-
+            TriggerOnClickCallback(sender, e);
         }
 
         private void Window_KeyDown(object sender, KeyEventArgs e)
@@ -65,12 +67,18 @@ namespace OrchisEditor.View.Editor
             if (e.Key == Key.S && Keyboard.IsKeyDown(Key.LeftCtrl))
             {
                 Project.Save();
+                return;
             }
 
-            if (Engine.IsHovering && e.IsRepeat == false)
+            if (Engine.IsHovering)
             {
-                Engine.RegisterKeyDownEvent(e.Key);
+                if (!e.IsRepeat)
+                    Engine.RegisterKeyDownEvent(e.Key);
+                e.Handled = true;
+                return;
             }
+
+            TriggerOnKeyDownCallback(sender, e);
         }
 
         private void Window_KeyUp(object sender, KeyEventArgs e)
@@ -92,5 +100,31 @@ namespace OrchisEditor.View.Editor
             Engine.RegisterWindowHover();
         }
 
+        public static void OnClick(Action<object, MouseButtonEventArgs> callback)
+        {
+            s_OnClickCallbacks.Add(callback);
+        }
+        public static void OnKeyDown(Action<object, KeyEventArgs> callback)
+        {
+            s_OnKeyDownCallbacks.Add(callback);
+        }
+        private void TriggerOnClickCallback(object sender, MouseButtonEventArgs e)
+        {
+            foreach (Action<object, MouseButtonEventArgs> callback in s_OnClickCallbacks)
+            {
+                if (e.Handled)
+                    break;
+                callback(sender, e);
+            }
+        }
+        private void TriggerOnKeyDownCallback(object sender, KeyEventArgs e)
+        {
+            foreach (Action<object, KeyEventArgs> callback in s_OnKeyDownCallbacks)
+            {
+                if (e.Handled)
+                    break;
+                callback(sender, e);
+            }
+        }
     }
 }

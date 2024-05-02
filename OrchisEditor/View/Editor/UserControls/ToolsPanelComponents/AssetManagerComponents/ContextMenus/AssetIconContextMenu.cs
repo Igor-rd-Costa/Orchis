@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Input;
 
 namespace OrchisEditor.View.Editor.UserControls.ToolsPanelComponents.AssetManagerComponents.ContextMenus
 {
@@ -13,18 +8,26 @@ namespace OrchisEditor.View.Editor.UserControls.ToolsPanelComponents.AssetManage
         public AssetIconContextMenu() 
         {
             MenuItem remove = new() { Header = "Remove" };
-            remove.PreviewMouseLeftButtonDown += RemoveSelectedAssets;
+            remove.Click += RemoveSelectedAssets;
+
+            if (EditorWindow.GetAssetManagerView()?.SelectedCount <= 1)
+            {
+                MenuItem rename = new() { Header = "Rename" };
+                rename.Click += RenameSelectedAsset;
+                Items.Add(rename);
+            }
+
             Items.Add(remove);
         }
 
-        private void RemoveSelectedAssets(object sender, MouseButtonEventArgs e)
+        private void RemoveSelectedAssets(object sender, RoutedEventArgs e)
         {
-            AssetManagerView? amv = EditorWindow.GetAssetManagerView();
-            if (amv == null)
-                return;
-
-            amv.RemoveSelectedAssets();
+            EditorWindow.GetAssetManagerView()?.RemoveSelectedAssets();
         }
 
+        private void RenameSelectedAsset(object sender, RoutedEventArgs e)
+        {
+            EditorWindow.GetAssetManagerView()?.RenameSelectedAsset();
+        }
     }
 }

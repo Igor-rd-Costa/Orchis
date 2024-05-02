@@ -23,11 +23,11 @@ namespace OrchisEditor.Controller.Editor
         public static Scene? Scene { get { return s_Scene; } }
         public static void Init()
         {
-            if (!Directory.Exists($"{AssetManager.Path}Scenes"))
-                Directory.CreateDirectory($"{AssetManager.Path}Scenes");
-            if (!File.Exists($"{AssetManager.Path}Scenes\\scenes.osi"))
+            if (!Directory.Exists($"{AssetManager.Path}\\Scenes"))
+                Directory.CreateDirectory($"{AssetManager.Path}\\Scenes");
+            if (!File.Exists($"{AssetManager.Path}\\Scenes\\scenes.osi"))
             {
-                FileStream fs = File.Create($"{AssetManager.Path}Scenes\\scenes.osi");
+                FileStream fs = File.Create($"{AssetManager.Path}\\Scenes\\scenes.osi");
                 Tag tag = new Tag("SceneInfo");
                 fs.Write(new UTF8Encoding().GetBytes(Parser.ToXML(tag)));
                 fs.Flush();
@@ -43,7 +43,7 @@ namespace OrchisEditor.Controller.Editor
             if (Project.QueryProjectSave())
             {
                 Guid sceneId = Guid.NewGuid();
-                string scenePath = AssetManager.Path + "Scenes\\";
+                string scenePath = $"{AssetManager.Path}\\Scenes\\";
                 string scenePrefix = "NewScene";
                 string sceneName = scenePrefix;
                 int count = 2;
@@ -74,6 +74,9 @@ namespace OrchisEditor.Controller.Editor
             if (!File.Exists(scenePath))
                 return;
 
+            if (!Project.QueryProjectSave())
+                return;
+
             FileStream fs = File.Open(scenePath, FileMode.Open);
             Tag? scene = Parser.ParseXML(new StreamReader(fs).ReadToEnd());
             fs.Dispose();
@@ -83,8 +86,11 @@ namespace OrchisEditor.Controller.Editor
                 return;
             }
 
-            string sceneName = scene.Value.GetAttribute("Name");
             Guid sceneId = Guid.Parse(scene.Value.GetAttribute("Id"));
+            if (s_Scene != null && s_Scene.Id == sceneId)
+                return;
+            
+            string sceneName = scene.Value.GetAttribute("Name");
             s_Scene = new Scene(sceneName, sceneId);
             s_Scene.LoadEntities(scene.Value);
             EditorWindow.GetProjectOutliner()?.UpdateGUI();
@@ -95,7 +101,7 @@ namespace OrchisEditor.Controller.Editor
             if (sceneId == Guid.Empty)
                 return;
 
-            FileStream fs = File.Open(AssetManager.Path + "Scenes\\scenes.osi", FileMode.Open);
+            FileStream fs = File.Open($"{AssetManager.Path}\\Scenes\\scenes.osi", FileMode.Open);
             string content = new StreamReader(fs).ReadToEnd();
             Tag? tag = Parser.ParseXML(content);
             fs.Dispose();
@@ -114,11 +120,11 @@ namespace OrchisEditor.Controller.Editor
 
         private static void RegisterSceneEntry(Guid sceneId, string scenePath)
         {
-            if (!File.Exists(AssetManager.Path + "Scenes\\scenes.osi"))
+            if (!File.Exists($"{AssetManager.Path}\\Scenes\\scenes.osi"))
             {
                 return;
             }
-            FileStream fs = File.Open(AssetManager.Path + "Scenes\\scenes.osi", FileMode.Open);
+            FileStream fs = File.Open($"{AssetManager.Path}\\Scenes\\scenes.osi", FileMode.Open);
             Tag? tag = Parser.ParseXML(new StreamReader(fs).ReadToEnd());
             if (tag.HasValue)
             {
@@ -145,13 +151,13 @@ namespace OrchisEditor.Controller.Editor
             if (!s_HasUnsavedChanges || Scene == null)
                 return;
 
-            if (!File.Exists($"{AssetManager.Path}Scenes\\{Scene.Name}.osn"))
+            if (!File.Exists($"{AssetManager.Path}\\Scenes\\{Scene.Name}.osn"))
             {
                 Debug.Assert(false); 
                 return;
             }
 
-            FileStream fs = File.Open($"{AssetManager.Path}Scenes\\{Scene.Name}.osn", FileMode.Open);
+            FileStream fs = File.Open($"{AssetManager.Path}\\Scenes\\{Scene.Name}.osn", FileMode.Open);
             Tag scene = new Tag("Scene",
                 [
                 new ("Name", Scene.Name),
@@ -235,13 +241,13 @@ namespace OrchisEditor.Controller.Editor
         {
             if(s_Scene != null)
             {
-                if (File.Exists($"{AssetManager.Path}Scenes\\{newName}.osn"))
+                if (File.Exists($"{AssetManager.Path}\\Scenes\\{newName}.osn"))
                 {
                     OrchisDialog dialog = new(OrchisDialogType.OK);
                     dialog.ShowMessage("A scene with this name already exists.");
                     return false;
                 }
-                FileStream stream = File.Open($"{AssetManager.Path}Scenes\\{s_Scene.Name}.osn", FileMode.Open);
+                FileStream stream = File.Open($"{AssetManager.Path}\\Scenes\\{s_Scene.Name}.osn", FileMode.Open);
                 Tag? scene = Parser.ParseXML(new StreamReader(stream).ReadToEnd());
                 if (!scene.HasValue || scene.Value.Name != "Scene")
                     return false;
@@ -250,8 +256,8 @@ namespace OrchisEditor.Controller.Editor
                 stream.Write(new UTF8Encoding().GetBytes(Parser.ToXML(scene.Value)));
                 stream.Flush();
                 stream.Dispose();
-                File.Move($"{AssetManager.Path}Scenes\\{s_Scene.Name}.osn", $"{AssetManager.Path}Scenes\\{newName}.osn");
-                stream = File.Open($"{AssetManager.Path}Scenes\\scenes.osi", FileMode.Open);
+                File.Move($"{AssetManager.Path}\\Scenes\\{s_Scene.Name}.osn", $"{AssetManager.Path}\\Scenes\\{newName}.osn");
+                stream = File.Open($"{AssetManager.Path}\\Scenes\\scenes.osi", FileMode.Open);
                 Tag? sceneInfo = Parser.ParseXML(new StreamReader(stream).ReadToEnd());
                 if (sceneInfo.HasValue)
                 {
@@ -259,7 +265,7 @@ namespace OrchisEditor.Controller.Editor
                     {
                         if (Guid.Parse(info.GetAttribute("Id")) == s_Scene.Id)
                         {
-                            info.SetAttribute("Path", $"{AssetManager.Path}Scenes\\{newName}.osn");
+                            info.SetAttribute("Path", $"{AssetManager.Path}\\Scenes\\{newName}.osn");
                             stream.SetLength(0);
                             stream.Write(new UTF8Encoding().GetBytes(Parser.ToXML(sceneInfo.Value)));
                             stream.Flush();

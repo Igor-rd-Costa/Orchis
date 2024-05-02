@@ -45,7 +45,7 @@ namespace OrchisEditor.View.Editor.UserControls
             OpenFileDialog dialog = new OpenFileDialog();
             dialog.AddExtension = true;
             dialog.Multiselect = false;
-            dialog.DefaultDirectory = $"{AssetManager.Path}Scenes";
+            dialog.DefaultDirectory = $"{AssetManager.Path}\\Scenes";
             dialog.DefaultExt = "osn";
             bool? status = dialog.ShowDialog();
             if (status.HasValue && status.Value)

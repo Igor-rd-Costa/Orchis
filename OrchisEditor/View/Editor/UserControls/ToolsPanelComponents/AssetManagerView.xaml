@@ -13,16 +13,24 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <Grid Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="20"/>
+                <ColumnDefinition Width="33"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
             <Border BorderBrush="LightGray" BorderThickness="0.2"/>
-            <Button x:Name="BackButton" IsEnabled="False" Background="Orange" 
+            <Button Grid.Column="0" x:Name="BackButton" IsEnabled="False" Background="Transparent" 
                     HorizontalAlignment="Left" VerticalAlignment="Top" 
                     Click="BackButton_Click"
-                    Width="20" Height="20"></Button>
+                    Width="20" Height="20" Foreground="LightGray">&lt;</Button>
+            <Button HorizontalAlignment="Left" Grid.Column="1" Margin="10 0 0 0" x:Name="Home" Content="H" Width="20" Height="20" Click="Home_Click" 
+                    Background="Transparent" Foreground="LightGray"/>
+            <WrapPanel Margin="0 0 0 0" x:Name="NavBar" Grid.Column="2" VerticalAlignment="Center" MouseLeftButtonDown="NavBar_MouseLeftButtonDown">
+            </WrapPanel>
         </Grid>
         <ScrollViewer Grid.Row="1">
-            <WrapPanel x:Name="AssetView" Background="Transparent" Margin="5" MouseRightButtonDown="WrapPanel_MouseRightButtonDown" 
-                       MouseLeftButtonDown="WrapPanel_MouseLeftButtonDown">
-            </WrapPanel>
+            <WrapPanel Background="Transparent" x:Name="AssetView" MouseRightButtonDown="WrapPanel_MouseRightButtonDown" 
+                       MouseLeftButtonDown="WrapPanel_MouseLeftButtonDown"/>
         </ScrollViewer>
     </Grid>
 </UserControl>

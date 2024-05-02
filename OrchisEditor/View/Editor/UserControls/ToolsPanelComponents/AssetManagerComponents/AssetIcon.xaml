@@ -8,7 +8,7 @@
              d:DesignHeight="50" d:DesignWidth="50">
     <Grid x:Name="SelectionGrid" Margin="5" MouseLeave="SelectionGrid_MouseLeave">
         <Border x:Name="SelectionBorder" BorderThickness="0.7" BorderBrush="Transparent"></Border>
-        <Grid Margin="5">
+        <Grid Name="Wrapper" Margin="5">
             <Grid.RowDefinitions>
                 <RowDefinition Height="80"/>
                 <RowDefinition Height="32"/>
@@ -16,8 +16,10 @@
             <!--TODO: Make this an icon-->
             <TextBlock x:Name="Icon" Width="80" Height="80">
             </TextBlock>
-            <TextBlock Grid.Row="1" TextAlignment="Center" FontSize="12" Width="80" 
+            <TextBlock Visibility="Visible" VerticalAlignment="Top" x:Name="AssetNameField" Grid.Row="1" TextAlignment="Center" FontSize="12" Width="80" 
                        Foreground="LightGray" TextWrapping="Wrap" Text="{Binding AssetName}"></TextBlock>
+            <TextBox Background="Transparent" BorderThickness="0" Visibility="Hidden" VerticalAlignment="Top" x:Name="AssetRenameField" Grid.Row="1" TextAlignment="Center" FontSize="12" Width="80" 
+                       Foreground="LightGray" TextWrapping="Wrap" KeyDown="AssetRenameField_KeyDown" PreviewTextInput="AssetRenameField_PreviewTextInput"/>
         </Grid>
     </Grid>
 </UserControl>

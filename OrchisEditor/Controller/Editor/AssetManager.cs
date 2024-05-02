@@ -1,6 +1,7 @@
 ﻿using OrchisEditor.Controller.Editor.Components;
 using OrchisEditor.Controller.Orchis;
 using OrchisEditor.Controller.Utils;
+using OrchisEditor.View.Editor.UserControls.ToolsPanelComponents.AssetManagerComponents;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -47,7 +48,7 @@ namespace OrchisEditor.Controller.Editor
         private static string s_AssetsFolderPath = "";
         private static FileSystemWatcher? s_Watcher = null;
         private static List<Action<AssetChangeEventArgs>> s_AssetChangeCallbacks = [];
-        private static FileStream? s_InfoStream = null;
+
         private AssetManager() { }
 
         public static void Init()
@@ -55,30 +56,26 @@ namespace OrchisEditor.Controller.Editor
             if (Project.IsLoaded)
             { 
                 s_AssetChangeCallbacks.Clear();
-                s_AssetsFolderPath = $"{Project.ProjectPath}Assets\\";
+                s_AssetsFolderPath = $"{Project.ProjectPath}Assets";
                 s_Watcher = new FileSystemWatcher(s_AssetsFolderPath);
                 s_Watcher.Created += OnWatcherCreated;
                 s_Watcher.Deleted += OnWatcherDeleted;
                 s_Watcher.Renamed += OnWatcherRenamed;
                 s_Watcher.Changed += OnWatcherChanged;
                 s_Watcher.EnableRaisingEvents = true;
-                if (!File.Exists($"{Path}info.oai"))
+                s_Watcher.IncludeSubdirectories = true;
+                if (!File.Exists($"{Path}\\info.oai"))
                 {
-                    s_InfoStream = File.Create($"{Path}info.oai");
-                    Tag tag = new("AssetInfo");
-                    s_InfoStream.Write(new UTF8Encoding().GetBytes(Parser.ToXML(tag)));
-                    s_InfoStream.Flush();
+                    CreateAssetInfoFile();
                 }
                 else
                 {
-                    //  s_InfoStream = File.Open($"{Path}info.oai", FileMode.Open);
-                    OrchisInterface.OrchisFileSystemMount(Path.Substring(0, Path.Length - 1), "Assets");
+                    OrchisInterface.OrchisFileSystemMount(Path, "Assets");
                 }
             }
         }
         public static void Shudown()
         {
-            s_InfoStream?.Dispose();
             s_Watcher?.Dispose();
         }
 
@@ -86,11 +83,11 @@ namespace OrchisEditor.Controller.Editor
 
         public static Guid RegisterAsset(string assetPath)
         {
-            if (!File.Exists($"{Path}info.oai"))
+            if (!File.Exists($"{Path}\\info.oai"))
             {
-                File.Create($"{Path}info.oai");
+                File.Create($"{Path}\\info.oai");
             }
-            FileStream stream = File.Open($"{Path}info.oai", FileMode.Open);
+            FileStream stream = File.Open($"{Path}\\info.oai", FileMode.Open);
             Tag? info = Parser.ParseXML(new StreamReader(stream).ReadToEnd());
             if (info.HasValue == false)
             {
@@ -126,9 +123,13 @@ namespace OrchisEditor.Controller.Editor
 
         public static AssetInfo? GetAssetInfo(Guid assetId)
         {
-            Tag? infoFile = OpenInfoFile();
+            FileStream stream = OpenInfoFile();
+            Tag? infoFile = Parser.ParseXML(new StreamReader(stream).ReadToEnd());
             if (!infoFile.HasValue)
+            {
+                stream.Dispose();
                 return null;
+            }
             AssetInfo info = new();
             foreach (Tag asset in infoFile.Value.Childs)
             {
@@ -138,10 +139,36 @@ namespace OrchisEditor.Controller.Editor
                     info.Path = path;
                     int barIndex = path.LastIndexOf('\\');
                     info.Name = path.Substring(barIndex + 1, path.Length - barIndex - 1);
+                    stream.Dispose();
                     return info;
                 }
             }
+            stream.Dispose();
             return null;
+        }
+
+        public static void UpdateAssetPath(string path, string newPath)
+        {
+            FileStream stream = OpenInfoFile();
+            Tag? tag = Parser.ParseXML(new StreamReader(stream).ReadToEnd());
+            if (!tag.HasValue)
+            {
+                stream.Dispose();
+                return;
+            }
+
+            foreach (Tag asset in tag.Value.Childs)
+            {
+                if (asset.GetAttribute("Path") == path)
+                {
+                    asset.SetAttribute("Path", newPath);
+                    stream.SetLength(0);
+                    stream.Write(new UTF8Encoding().GetBytes(Parser.ToXML(tag.Value)));
+                    stream.Flush();
+                    break;
+                }
+            }
+            stream.Dispose();
         }
 
         public static string GetAssetTagName(string path)
@@ -201,15 +228,12 @@ namespace OrchisEditor.Controller.Editor
                 onChange(args);
         }
 
-        private static Tag? OpenInfoFile()
+        private static FileStream OpenInfoFile()
         {
-            if (!File.Exists($"{Path}info.oai"))
-                return null;
-            s_InfoStream = File.Open($"{Path}info.oai", FileMode.Open);
-            s_InfoStream.Position = 0;
-            Tag? tag = Parser.ParseXML(new StreamReader(s_InfoStream).ReadToEnd());
-            s_InfoStream.Dispose();
-            return tag;
+            if (!File.Exists($"{Path}\\info.oai"))
+                CreateAssetInfoFile();
+            FileStream stream = File.Open($"{Path}\\info.oai", FileMode.Open);
+            return stream;
         }
 
         public static void DeleteSceneInfo(string path)
@@ -224,11 +248,19 @@ namespace OrchisEditor.Controller.Editor
             DeleteSceneInfo(Guid.Parse(scene.Value.GetAttribute("Id")));
         }
 
+        private static void CreateAssetInfoFile()
+        {
+            FileStream stream = File.Create($"{Path}\\info.oai");
+            Tag tag = new("AssetInfo");
+            stream.Write(new UTF8Encoding().GetBytes(Parser.ToXML(tag)));
+            stream.Flush();
+            stream.Dispose();
+        }
         public static void DeleteSceneInfo(Guid sceneId)
         {
-            if (!File.Exists($"{Path}Scenes\\scenes.osi"))
+            if (!File.Exists($"{Path}\\Scenes\\scenes.osi"))
                 return;
-            FileStream stream = File.Open($"{Path}Scenes\\scenes.osi", FileMode.Open);
+            FileStream stream = File.Open($"{Path}\\Scenes\\scenes.osi", FileMode.Open);
             Tag? sceneInfo = Parser.ParseXML(new StreamReader(stream).ReadToEnd());
             if (!sceneInfo.HasValue) 
                 return;

@@ -34,14 +34,16 @@ namespace OrchisEditor.View.Editor.UserControls.ToolsPanelComponents
         {
             InitializeComponent();
             DataContext = this;
+            EditorWindow.OnClick(OnGlobalClick);
+            EditorWindow.OnKeyDown(OnGlobalKeyDown);
             if (Project.IsLoaded)
             {
                 AssetManager.OnChange(OnAssetChange);
                 m_CurrentPath = AssetManager.Path;
                 LoadAssets(m_CurrentPath);
             }
-            Console.WriteLine("AssetManager init!");
         }
+        public int SelectedCount { get { return m_SelectedItems.Count; } }
 
         public void RemoveSelectedAssets()
         {
@@ -77,12 +79,15 @@ namespace OrchisEditor.View.Editor.UserControls.ToolsPanelComponents
 
         private void OnAssetChange(AssetChangeEventArgs args)
         {
+            Console.WriteLine($"Change: {args.Path}, {args.Change}");
             int fileDot = args.Path.LastIndexOf('.');
             int fileBarIndex = args.Path.LastIndexOf('\\');
             bool hasFileInPath = fileDot != -1 && fileDot > fileBarIndex;
-            
-            if ((hasFileInPath && args.Path.Substring(0, fileBarIndex + 1) == m_CurrentPath) 
-                || (!hasFileInPath && args.Path == m_CurrentPath))
+
+            string path = args.Path.Substring(0, fileBarIndex);
+            bool refreshView = (path == m_CurrentPath);
+
+            if (refreshView)
             {
                 Dispatcher.Invoke(() =>
                 {
@@ -99,16 +104,32 @@ namespace OrchisEditor.View.Editor.UserControls.ToolsPanelComponents
                 {
                     foreach (AssetIcon icon in m_SelectedItems)
                         icon.Selected = false;
+                    m_SelectedItems.Clear();
                 }
                 return;
             }
 
-            if (((AssetIcon)e.Source).Type == AssetType.FOLDER && e.ClickCount == 2)
+            if (e.ClickCount == 2)
             {
-                ViewFolder(((AssetIcon)e.Source).Path);
-                return;
+                if (((AssetIcon)e.Source).Type == AssetType.FOLDER)
+                {
+                    ViewFolder(((AssetIcon)e.Source).Path);
+                    foreach (AssetIcon icon in m_SelectedItems)
+                        icon.Selected = false;
+                    m_SelectedItems.Clear();
+                    return;
+                }
+                if (((AssetIcon)e.Source).AssetName.EndsWith(".osn"))
+                {
+                    OrchisDialog dialog = new(OrchisDialogType.YES_NO);
+                    bool? status = dialog.ShowMessage($"Load scene {((AssetIcon)e.Source).AssetName}?");
+                    if (status.HasValue && status.Value)
+                    {
+                        SceneManager.LoadScene(((AssetIcon)e.Source).Path);
+                        Project.RegisterChange();
+                    }
+                }
             }
-
 
             if (!Keyboard.IsKeyDown(Key.LeftCtrl))
             {
@@ -133,33 +154,45 @@ namespace OrchisEditor.View.Editor.UserControls.ToolsPanelComponents
                 }
             }
         }
+        private void OnGlobalClick(object sender, MouseButtonEventArgs e)
+        {
+            if (e.Source is ToolsPanel)
+                return;
+            foreach (AssetIcon icon in m_SelectedItems)
+                icon.Selected = false;
+        }
+
+        private void OnGlobalKeyDown(object sender, KeyEventArgs e)
+        {
+            
+            if (e.Key == Key.F2)
+            {
+                RenameSelectedAsset();
+                e.Handled = true;
+            }
+        }
 
         private void WrapPanel_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
         {
-            if (e.Source is not AssetIcon)
-            {
-                ContextMenu = null;
-                foreach (AssetIcon icon in m_SelectedItems)
-                    icon.Selected = false;
-                m_SelectedItems.Clear();
-                return;
-            }
-            ContextMenu = new AssetIconContextMenu();
-            if (!Keyboard.IsKeyDown(Key.LeftCtrl))
-            {
-                foreach (AssetIcon icon in m_SelectedItems)
-                    icon.Selected = false;
-                m_SelectedItems.Clear();
-                ((AssetIcon)e.Source).Selected = true;
-                m_SelectedItems.Add((AssetIcon)e.Source);
-            }
-            else
+            Console.WriteLine(e.Source);
+            if (e.Source is AssetIcon)
             {
                 if (!((AssetIcon)e.Source).Selected)
                 {
+                    foreach (AssetIcon item in m_SelectedItems)
+                        item.Selected = false;
+                    m_SelectedItems.Clear();
                     ((AssetIcon)e.Source).Selected = true;
                     m_SelectedItems.Add((AssetIcon)e.Source);
                 }
+                ContextMenu = new AssetIconContextMenu();
+            }
+            else
+            {
+                ContextMenu = new AssetManagerViewContextMenu();
+                foreach (AssetIcon icon in m_SelectedItems)
+                    icon.Selected = false;
+                m_SelectedItems.Clear();
             }
         }
 
@@ -178,14 +211,17 @@ namespace OrchisEditor.View.Editor.UserControls.ToolsPanelComponents
                     continue;
 
                 int separator = assetPath.LastIndexOf('\\') + 1;
-                string name = assetPath.Substring(separator, assetPath.Length - separator);
-                if (name.Contains('.'))
+                string fullName = assetPath.Substring(separator, assetPath.Length - separator);
+                if (fullName.Contains('.'))
                 {
-                    AssetView.Children.Add(new AssetIcon(name, assetPath, AssetType.GENERIC));
+                    int point = fullName.IndexOf(".");
+                    string name = fullName.Substring(0, point);
+                    string ext = fullName.Substring(point);
+                    AssetView.Children.Add(new AssetIcon(name, ext, assetPath, AssetType.GENERIC));
                 } 
                 else
                 {
-                    AssetView.Children.Add(new AssetIcon(name, assetPath, AssetType.FOLDER));
+                    AssetView.Children.Add(new AssetIcon(fullName, "", assetPath, AssetType.FOLDER));
                 }
             }
         }
@@ -205,23 +241,114 @@ namespace OrchisEditor.View.Editor.UserControls.ToolsPanelComponents
                 BackButton.IsEnabled = false;
             else
                 BackButton.IsEnabled = true;
+            UpdateNavBar();
         }
 
         private void BackFolder()
         {
-            int count = m_CurrentPath.LastIndexOf('\\') + 1;
+            int count = m_CurrentPath.LastIndexOf('\\');
             string newPath = m_CurrentPath.Substring(0, count);
             ViewFolder(newPath);
             //Should never happen but gonna check just in case.
             if (!m_CurrentPath.StartsWith(AssetManager.Path)) 
             {
-                ViewFolder(m_CurrentPath);
+                ViewFolder(AssetManager.Path);
             }
         }
 
         private void BackButton_Click(object sender, RoutedEventArgs e)
         {
             BackFolder();
+        }
+
+        public void CreateFolder()
+        {
+            string dirName = "NewFolder";
+            int count = 1;
+            while (Directory.Exists($"{m_CurrentPath}\\{dirName}"))
+            {
+                dirName = $"NewFolder({count})";
+                count++;
+            }
+            Directory.CreateDirectory($"{m_CurrentPath}\\{dirName}");
+        }
+
+        public void RenameSelectedAsset()
+        {
+            if (m_SelectedItems.Count != 1)
+                return;
+
+            m_SelectedItems[0].EnterRenameMode();
+        }
+
+        private void Home_Click(object sender, RoutedEventArgs e)
+        {
+            ViewFolder(AssetManager.Path);
+        }
+
+        private void UpdateNavBar()
+        {
+            NavBar.Children.Clear();
+            string path = m_CurrentPath.Substring(AssetManager.Path.Length);
+            if (path.Length == 0)
+                return;
+
+            string[] pathArray = path.Split('\\');
+
+            foreach (string str in pathArray)
+            {
+                if (string.IsNullOrEmpty(str)) 
+                    continue;
+
+                TextBlock barBlock = new()
+                {
+                    Text = "\\",
+                    Background = Brushes.Transparent,
+                    Foreground = Brushes.DarkGray,
+                    FontSize = 18,
+                    Margin = new(2, -5, 0, 0)
+                };
+                TextBlock textBlock = new()
+                {
+                    Text = str,
+                    Name= "PathSection",
+                    Background = Brushes.Transparent,
+                    Foreground = Brushes.DarkGray,
+                    FontSize = 14,
+                    Margin = new(2, -1, 0, 0)
+                };
+                textBlock.MouseEnter += (object sender, MouseEventArgs e) => 
+                {
+                    textBlock.Foreground = Brushes.LightGray;
+                };
+                textBlock.MouseLeave += (object sender, MouseEventArgs e) =>
+                {
+                    textBlock.Foreground = Brushes.DarkGray;
+                };
+                NavBar.Children.Add(barBlock);
+                NavBar.Children.Add(textBlock);
+            }
+        }
+
+        private void NavBar_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            Console.WriteLine("Click");
+
+            if (e.Source is TextBlock textBlock && textBlock.Name == "PathSection")
+            {
+                string path = AssetManager.Path;
+                foreach (UIElement child in NavBar.Children)
+                {
+                    if (child is TextBlock && ((TextBlock)child).Name == "PathSection")
+                        path += $"\\{((TextBlock)child).Text}";
+
+                    if (child == e.Source)
+                        break;
+                }
+                if (path == m_CurrentPath)
+                    return;
+                ViewFolder(path);
+            }
         }
     }
 }
