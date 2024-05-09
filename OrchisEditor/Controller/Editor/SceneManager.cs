@@ -35,7 +35,7 @@ namespace OrchisEditor.Controller.Editor
             }
             else
             {
-                LoadScene(Project.CurrentScene);
+                LoadScene(Project.Settings.SceneManagerCurrentScene);
             }
         }
         public static void CreateScene()

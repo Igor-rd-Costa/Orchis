@@ -28,7 +28,7 @@ namespace OrchisEditor.View.Editor.UserControls.ToolsPanelComponents
     public partial class AssetManagerView : UserControl
     {   
         private List<AssetIcon> m_SelectedItems = [];
-        private string m_CurrentPath = "";
+        private static string m_CurrentPath = "";
 
         public AssetManagerView()
         {
@@ -39,11 +39,13 @@ namespace OrchisEditor.View.Editor.UserControls.ToolsPanelComponents
             if (Project.IsLoaded)
             {
                 AssetManager.OnChange(OnAssetChange);
-                m_CurrentPath = AssetManager.Path;
                 LoadAssets(m_CurrentPath);
+                if (m_CurrentPath != AssetManager.Path)
+                    BackButton.IsEnabled = true;
             }
         }
         public int SelectedCount { get { return m_SelectedItems.Count; } }
+        public static string CurrentPath { get { return m_CurrentPath; } set { m_CurrentPath = value; } }
 
         public void RemoveSelectedAssets()
         {
@@ -226,7 +228,7 @@ namespace OrchisEditor.View.Editor.UserControls.ToolsPanelComponents
             }
         }
 
-        private void ViewFolder(string path)
+        public void ViewFolder(string path)
         {
             if (!Directory.Exists(path))
             {
@@ -236,6 +238,7 @@ namespace OrchisEditor.View.Editor.UserControls.ToolsPanelComponents
             }
 
             m_CurrentPath = path;
+            Project.UpdateAssetManagerCurrentPath();
             LoadAssets(m_CurrentPath);
             if (m_CurrentPath == AssetManager.Path)
                 BackButton.IsEnabled = false;

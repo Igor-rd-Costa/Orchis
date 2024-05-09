@@ -77,19 +77,6 @@ namespace OrchisEditor.Controller.Utils
 
     class Parser
     {
-        public static Tag? ParseFileXML(string filePath)
-        {
-            if (!File.Exists(filePath))
-            {
-                //TODO handle file not found error.
-                return null;
-            }
-
-            FileStream file = File.OpenRead(filePath);
-            string fileContent = new StreamReader(file).ReadToEnd();
-            return ParseXML(fileContent);
-        }
-
         public static Tag? ParseXML(string xml)
         {
             xml = xml.Trim();

@@ -8,11 +8,12 @@ using namespace Orchis;
 Orchis::PerspectiveCamera* Editor::s_EditorCamera = nullptr;
 bool Editor::s_Running = true;
 std::thread Editor::s_EngineThread;
-std::vector<void(*)(EditorEventArgs e)> Editor::s_Callbacks = {};
+void(*Editor::s_MouseMoveCallback)(EditorMouseMoveEventArgs e) = [](EditorMouseMoveEventArgs e){};
+void(*Editor::s_CameraMoveCallback)(EditorCameraMoveEventArgs e) = [](EditorCameraMoveEventArgs e) {};
 
-Editor::Editor()
+Editor::Editor(const EditorCameraData& data)
 {
-	this->s_EditorCamera = new PerspectiveCamera({ 0.0f, -5.0f, 0.0f }, 45.0f, 5.0f);
+	this->s_EditorCamera = new PerspectiveCamera(data.position, data.fieldOfView, data.speed, data.lookAt, data.yaw, data.pitch);
 	Renderer::SetActiveCamera(this->s_EditorCamera);
 
 	EventDispatcher::OnMouseMove(OnMouseMove);
@@ -40,18 +41,23 @@ void Editor::Run()
 	}
 }
 
-static bool clipped = false;
 void Editor::Update()
 {
 	if (Input::IsKeyDown(Key::MOUSE_RBUTTON))
 	{
 		s_EditorCamera->Move();
+		s_CameraMoveCallback({ .data = GetCameraData() });
 	}
 }
 
-void Editor::RegisterEventCallback(void(*callback)(EditorEventArgs e))
+void Editor::RegisterMouseMoveCallback(void(*callback)(EditorMouseMoveEventArgs e))
 {
-	s_Callbacks.push_back(callback);
+	s_MouseMoveCallback = callback;
+}
+
+void Editor::RegisterCameraMoveCallback(void(*callback)(EditorCameraMoveEventArgs e))
+{
+	s_CameraMoveCallback = callback;
 }
 
 void Editor::OnMouseButtonDown(Orchis::MouseButtonDownEvent* event)
@@ -72,11 +78,46 @@ void Editor::OnMouseButtonUp(Orchis::MouseButtonUpEvent* event)
 	}
 }
 
-static EditorEventArgs args = { .type = EditorEventType::MOUSE_MOVE };
 void Editor::OnMouseMove(MouseMoveEvent* event)
 {
-	for (void(*callback)(EditorEventArgs) : s_Callbacks)
-		callback(args);
+	s_MouseMoveCallback({});
+}
+
+EditorCameraData Editor::GetCameraData()
+{
+	if (s_EditorCamera)
+	{
+		return { 
+			.position = s_EditorCamera->GetPosition(), 
+			.lookAt = s_EditorCamera->GetFront(),
+			.speed = s_EditorCamera->GetSpeed(),
+			.fieldOfView = s_EditorCamera->GetFieldOfView(),
+			.yaw = s_EditorCamera->GetYaw(),
+			.pitch = s_EditorCamera->GetPitch()
+		};
+	}
+	return EditorCameraData();
+}
+
+void Editor::SetEditorCameraData(EditorCameraData data)
+{
+	if (!s_EditorCamera)
+		return;
+	s_EditorCamera->SetPosition(data.position);
+	s_EditorCamera->SetFront(data.lookAt);
+	s_EditorCamera->SetSpeed(data.speed);
+	s_EditorCamera->SetFieldOfView(data.fieldOfView);
+	s_EditorCamera->SetYaw(data.yaw);
+	s_EditorCamera->SetPitch(data.pitch);
 }
 
 
+OC_EXPORT EditorCameraData OrchisEditorGetEditorCameraData()
+{
+	return Editor::GetCameraData();
+}
+
+OC_EXPORT void OrchisEditorSetEditorCameraData(EditorCameraData data)
+{
+	Editor::SetEditorCameraData(data);
+}

@@ -20,8 +20,8 @@ namespace OrchisEditor.View.UserControls
     /// </summary>
     public partial class NumberInput : UserControl
     {
-        private decimal m_Value = 0.0M;
-        public event EventHandler<decimal>? Change;
+        private float m_Value = 0.0F;
+        public event EventHandler<float>? Change;
 
         public NumberInput()
         {
@@ -32,7 +32,7 @@ namespace OrchisEditor.View.UserControls
                 Input.TextChanged += OnTextChanged;
             };
         }
-        public decimal Value
+        public float Value
         {
             get { return m_Value; }
             set 
@@ -40,6 +40,12 @@ namespace OrchisEditor.View.UserControls
                 m_Value = value;
                 Input.Text = m_Value.ToString();
             }
+        }
+        public void SetValue(float value)
+        {
+            m_Value = value;
+            Input.Text = m_Value.ToString();
+            Change?.Invoke(this, value);
         }
 
         private void OnKeyDown(object sender, KeyEventArgs e)
@@ -53,20 +59,20 @@ namespace OrchisEditor.View.UserControls
                 if (e.Key == Key.Up)
                 {
                     if (Keyboard.IsKeyDown(Key.LeftCtrl))
-                        Value += 0.1M;
+                        SetValue(Value + 0.1F);
                     else if (Keyboard.IsKeyDown(Key.LeftShift))
-                        Value += 10.0M;
+                        SetValue(Value + 10.0F);
                     else
-                        Value += 1.0M;
+                        SetValue(Value + 1.0F);
                 }
                 else
                 {
                     if (Keyboard.IsKeyDown(Key.LeftCtrl))
-                        Value -= 0.1M;
+                        SetValue(Value - 0.1F);
                     else if (Keyboard.IsKeyDown(Key.LeftShift))
-                        Value -= 10.0M;
+                        SetValue(Value - 10.0F);
                     else
-                        Value -= 1.0M;
+                        SetValue(Value - 1.0F);
                 }
                 e.Handled = true;
             }
@@ -82,9 +88,8 @@ namespace OrchisEditor.View.UserControls
         private void OnTextChanged(object sender, TextChangedEventArgs e)
         {
             string text = Input.Text;
-            decimal val = Convert.ToDecimal(text == String.Empty ? "0" : text);
+            float val = float.Parse(text == String.Empty ? "0" : text);
             m_Value = val;
-            Change?.Invoke(this, val);
         }
         private bool IsTextValid(string text)
         {

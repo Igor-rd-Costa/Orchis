@@ -6,7 +6,8 @@
              xmlns:local="clr-namespace:OrchisEditor.View.Editor.UserControls.OutlinerComponents"
              mc:Ignorable="d" 
              d:DesignHeight="20" d:DesignWidth="450">
-    <Grid>
+    <Grid x:Name="Wrapper" Margin="1 0 1 0"
+          MouseLeftButtonDown="Wrapper_MouseLeftButtonDown" MouseEnter="Wrapper_MouseEnter" MouseLeave="Wrapper_MouseLeave">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="20"/>
             <ColumnDefinition/>

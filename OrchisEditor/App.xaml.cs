@@ -177,6 +177,7 @@ namespace OrchisEditor
 
         protected override void OnExit(ExitEventArgs e)
         {
+            Project.SaveProjectSettings();
             m_MetaDataStream.Flush();
             m_MetaDataStream.Dispose();
             AssetManager.Shudown();

@@ -13,32 +13,38 @@ namespace OrchisEditor.Controller.Orchis
 {
     public enum EditorEventType
     {
-        MOUSE_MOVE
+        MOUSE_MOVE, CAMERA_MOVE
     };
 
-    public struct EditorEventArgs
+    public struct EditorMouseMoveEventArgs
     {
-        public EditorEventType type;
+        
+    }
+    public struct EditorCameraMoveEventArgs
+    {
+        public EditorCameraData Data;
+    }
+    public struct EditorCameraData
+    {
+        public Vector3 Position;
+        public Vector3 LookAt;
+        public float Speed;
+        public float FieldOfView;
+        public float Yaw;
+        public float Pitch;
     };
 
     internal class OrchisInterface
     {
         //Application
         [DllImport("OrchisRuntime.dll")]
-        protected static extern void OrchisInit(IntPtr parentWindow);
+        protected static extern void OrchisInit(IntPtr parentWindow, EditorCameraData data);
 
         [DllImport("OrchisRuntime.dll")]
         protected static extern void OrchisShutdown();
 
         [DllImport("OrchisRuntime.dll")]
         protected static extern IntPtr OrchisGetMainWindowHandle();
-
-        //Renderer
-        [DllImport("OrchisRuntime.dll")]
-        public static extern void OrchisRendererSetActiveCamera(IntPtr camera);
-
-        [DllImport("OrchisRuntime.dll")]
-        public static extern void OrchisRendererSetDefaultShaders(string vertexPath, string fragPath);
 
 
         //SceneManager
@@ -87,10 +93,24 @@ namespace OrchisEditor.Controller.Orchis
         [DllImport("OrchisRuntime.dll")]
         public static extern void OrchisComponentManagerUpdateTextureComponentTextureId(Guid componentId, Guid textureId);
 
-        protected delegate void EditorEventCallback(EditorEventArgs e);
+        
+        //Editor
+        public delegate void EditorMouseMoveEventCallback(EditorMouseMoveEventArgs e);
+        public delegate void EditorCameraMoveEventCallback(EditorCameraMoveEventArgs e);
         [DllImport("OrchisRuntime.dll")]
-        protected static extern void OrchisEditorRegisterEventCallback(EditorEventCallback callback);
-
+        protected static extern void OrchisEditorRegisterMouseMoveEventCallback(EditorMouseMoveEventCallback callback);
+        [DllImport("OrchisRuntime.dll")]
+        protected static extern void OrchisEditorRegisterCameraMoveEventCallback(EditorCameraMoveEventCallback callback);
+        [DllImport("OrchisRuntime.dll")]
+        protected static extern Vector3 OrchisEditorGetEditorCameraPosition();
+        [DllImport("OrchisRuntime.dll")]
+        protected static extern Vector3 OrchisEditorGetEditorCameraLookAt();
+        [DllImport("OrchisRuntime.dll")]
+        protected static extern EditorCameraData OrchisEditorGetEditorCameraData();
+        
+        [DllImport("OrchisRuntime.dll")]
+        protected static extern void OrchisEditorSetEditorCameraData(EditorCameraData data);
+        
 
         //Events
         [DllImport("OrchisRuntime.dll")]

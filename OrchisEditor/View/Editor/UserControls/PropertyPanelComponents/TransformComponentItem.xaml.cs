@@ -29,17 +29,17 @@ namespace OrchisEditor.View.Editor.UserControls.PropertyPanelComponents
             InitializeComponent();
             DataContext = this;
             m_Id = componentId;
-            PosX.Value = 0.0M;
-            PosY.Value = 0.0M;
-            PosZ.Value = 0.0M;
+            PosX.Value = 0.0F;
+            PosY.Value = 0.0F;
+            PosZ.Value = 0.0F;
 
-            RotX.Value = 0.0M;
-            RotY.Value = 0.0M;
-            RotZ.Value = 0.0M;
+            RotX.Value = 0.0F;
+            RotY.Value = 0.0F;
+            RotZ.Value = 0.0F;
 
-            SclX.Value = 0.0M;
-            SclY.Value = 0.0M;
-            SclZ.Value = 0.0M;
+            SclX.Value = 0.0F;
+            SclY.Value = 0.0F;
+            SclZ.Value = 0.0F;
         }
 
         public TransformComponentItem(Guid componentId, Vector3 pos, Vector3 rot, Vector3 scl)
@@ -47,32 +47,32 @@ namespace OrchisEditor.View.Editor.UserControls.PropertyPanelComponents
             InitializeComponent();
             DataContext = this;
             m_Id = componentId;
-            PosX.Value = (decimal)pos.X;
-            PosY.Value = (decimal)pos.Y;
-            PosZ.Value = (decimal)pos.Z;
+            PosX.Value = pos.X;
+            PosY.Value = pos.Y;
+            PosZ.Value = pos.Z;
 
-            RotX.Value = (decimal)rot.X;
-            RotY.Value = (decimal)rot.Y;
-            RotZ.Value = (decimal)rot.Z;
+            RotX.Value = rot.X;
+            RotY.Value = rot.Y;
+            RotZ.Value = rot.Z;
 
-            SclX.Value = (decimal)scl.X;
-            SclY.Value = (decimal)scl.Y;
-            SclZ.Value = (decimal)scl.Z;
+            SclX.Value = scl.X;
+            SclY.Value = scl.Y;
+            SclZ.Value = scl.Z;
         }
 
-        private void OnInputChange(object sender, decimal val)
+        private void OnInputChange(object sender, float val)
         {
             if (sender == PosX || sender == PosY || sender == PosZ)
             {
-                Engine.ComponentManager.TransformComponent.SetPosition(m_Id, new((float)PosX.Value, (float)PosY.Value, (float)PosZ.Value));
+                Engine.ComponentManager.TransformComponent.SetPosition(m_Id, new(PosX.Value, PosY.Value, PosZ.Value));
             }
             if (sender == RotX || sender == RotY || sender == RotZ)
             {
-                Engine.ComponentManager.TransformComponent.SetRotation(m_Id, new((float)RotX.Value, (float)RotY.Value, (float)RotZ.Value));
+                Engine.ComponentManager.TransformComponent.SetRotation(m_Id, new(RotX.Value, RotY.Value, RotZ.Value));
             }
             if (sender == SclX || sender == SclY || sender == SclZ)
             {
-                Engine.ComponentManager.TransformComponent.SetScale(m_Id, new((float)SclX.Value, (float)SclY.Value, (float)SclZ.Value));
+                Engine.ComponentManager.TransformComponent.SetScale(m_Id, new(SclX.Value, SclY.Value, SclZ.Value));
             }
 
             if (!((App)Application.Current).IsScenePlaying)

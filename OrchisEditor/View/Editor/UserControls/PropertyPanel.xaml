@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:OrchisEditor.View.Editor.UserControls"
              xmlns:Components="clr-namespace:OrchisEditor.View.Editor.UserControls.PropertyPanelComponents"
-             mc:Ignorable="d" 
+             mc:Ignorable="d"
              d:DesignHeight="800" d:DesignWidth="225">
     <Grid>
         <Grid.RowDefinitions>

@@ -4,12 +4,11 @@
 #include "Application.h"
 namespace Orchis {
 
-	PerspectiveCamera::PerspectiveCamera(glm::vec3 position, float fieldOfView, float speed)
-		: m_Position(position), m_CameraFront({ 0.0f, 1.0f, 0.0f }), m_FieldOfView(fieldOfView), 
-		m_CameraSpeed(speed), m_CameraUp({ 0.0f, 0.0f, 1.0f }), m_Yaw(0.0f), m_Pitch(0.0f), m_Sensitivity(0.3f), 
+	PerspectiveCamera::PerspectiveCamera(const glm::vec3& position, float fieldOfView, float speed, const glm::vec3& lookAt, float yaw, float pitch)
+		: m_Position(position), m_CameraFront(lookAt), m_FieldOfView(fieldOfView), 
+		m_CameraSpeed(speed), m_CameraUp({ 0.0f, 0.0f, 1.0f }), m_Yaw(yaw), m_Pitch(pitch), m_Sensitivity(0.3f), 
 		m_ViewMatrix(glm::mat4(1.0f)), m_ViewProj(m_ProjMatrix * m_ViewMatrix)
 	{
-		std::cout << "Camera Created!\n";
 		Window* window = Application::GetWindow();
 		float width = 1.0f, height = 1.0f;
 		if (window)
@@ -76,7 +75,7 @@ namespace Orchis {
 
 	void PerspectiveCamera::SetProjMatrix(float width, float height)
 	{
-		m_ProjMatrix = glm::perspective(m_FieldOfView, width / height, 0.1f, 100.0f);
+		m_ProjMatrix = glm::perspective(glm::radians(m_FieldOfView), width / height, 0.1f, 100.0f);
 		m_ProjMatrix[1][1] *= -1;
 	}
 

@@ -2,6 +2,9 @@
 <Project ToolsVersion="Current" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup />
   <ItemGroup>
+    <Compile Update="View\Editor\UserControls\PropertyPanelComponents\EditorCameraComponentItem.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="View\Editor\UserControls\PropertyPanelComponents\MeshComponentItem.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -32,12 +35,18 @@
     <Compile Update="View\UserControls\OrchisSaveDialog.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="View\UserControls\RangedNumberInput.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Page Update="Styles\ComponentsStyles.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Update="Styles\WindowStyles.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="View\Editor\UserControls\PropertyPanelComponents\EditorCameraComponentItem.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Update="View\Editor\UserControls\PropertyPanelComponents\MeshComponentItem.xaml">
@@ -68,6 +77,9 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Update="View\UserControls\OrchisSaveDialog.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="View\UserControls\RangedNumberInput.xaml">
       <SubType>Designer</SubType>
     </Page>
   </ItemGroup>

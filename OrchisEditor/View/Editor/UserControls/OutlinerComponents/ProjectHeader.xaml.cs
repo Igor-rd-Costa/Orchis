@@ -21,11 +21,14 @@ namespace OrchisEditor.View.Editor.UserControls.OutlinerComponents
     /// </summary>
     public partial class ProjectHeader : UserControl, INotifyPropertyChanged
     {
+        private bool m_Selected = false;
+
         public ProjectHeader()
         {
             DataContext = this;
             InitializeComponent();
             m_ProjectName = "";
+            EditorWindow.OnClick(OnGlobalClick);
         }
 
         public ProjectHeader(string projectName)
@@ -33,10 +36,27 @@ namespace OrchisEditor.View.Editor.UserControls.OutlinerComponents
             DataContext = this;
             InitializeComponent();
             m_ProjectName = projectName;
+            EditorWindow.OnClick(OnGlobalClick);
         }
 
         private string m_ProjectName;
 
+        public bool Selected
+        {
+            get { return m_Selected; }
+            set
+            {
+                m_Selected = value;
+                if (m_Selected)
+                {
+                    Wrapper.Background = (SolidColorBrush)FindResource("GrayBrush");
+                }
+                else
+                {
+                    Wrapper.Background = Brushes.Transparent;
+                }
+            }
+        }
         public event PropertyChangedEventHandler? PropertyChanged;
 
         public string ProjectName
@@ -49,5 +69,35 @@ namespace OrchisEditor.View.Editor.UserControls.OutlinerComponents
             }
         }
 
+        private void Wrapper_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            Console.WriteLine("Click!");
+            Selected = true;
+            e.Handled = true;
+        }
+
+        private void OnGlobalClick(object sender, MouseButtonEventArgs e)
+        {
+            if (Selected)
+            {
+                Selected = false;
+                if (EditorWindow.GetPropertyPanel()?.SelectedItem is ProjectHeader)
+                {
+                    EditorWindow.GetPropertyPanel()?.LoadProperties(null);
+                }
+            }
+        }
+
+        private void Wrapper_MouseEnter(object sender, MouseEventArgs e)
+        {
+            if (!m_Selected) { }
+            //Wrapper.Background =
+        }
+
+        private void Wrapper_MouseLeave(object sender, MouseEventArgs e)
+        {
+            if (!m_Selected)
+                Wrapper.Background = Brushes.Transparent;
+        }
     }
 }

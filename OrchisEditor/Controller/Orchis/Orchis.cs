@@ -16,15 +16,20 @@ namespace OrchisEditor.Controller.Orchis
 {
     internal class Engine : OrchisInterface
     {
-        private static bool m_IsHoveringSceneView = false;
+        private static bool m_IsHoveringSceneView = true;
+        private static EditorMouseMoveEventCallback m_MouseMoveCallback = (e) =>
+        {
+            if (!m_IsHoveringSceneView)
+                m_IsHoveringSceneView = true;
+        };
         private Engine() { }
 
         public static bool IsHovering { get { return m_IsHoveringSceneView; } }
 
-        public static void Init(IntPtr parentWindow)
+        public static void Init(IntPtr parentWindow, EditorCameraData data)
         {
-            OrchisInit(parentWindow);
-            RegisterCallbacks();
+            OrchisInit(parentWindow, data);
+            Editor.RegisterMouseMoveEventCallback(m_MouseMoveCallback);
         }
 
         public static void Shutdown()
@@ -35,17 +40,6 @@ namespace OrchisEditor.Controller.Orchis
         public static IntPtr GetMainWindowHandle()
         {
             return OrchisGetMainWindowHandle();
-        }
-
-        private static void RegisterCallbacks()
-        {
-            OrchisEditorRegisterEventCallback((e) => {
-                if (e.type == EditorEventType.MOUSE_MOVE)
-                {
-                    if (!m_IsHoveringSceneView)
-                        m_IsHoveringSceneView = true;
-                }
-            });
         }
 
         public static void RegisterWindowHover()
@@ -93,6 +87,28 @@ namespace OrchisEditor.Controller.Orchis
                 {
                     OrchisComponentManagerTransformComponentSetScale(componentId, scale);
                 }
+            }
+        }
+
+        internal class Editor
+        {
+            public static void SetCameraData(EditorCameraData data)
+            {
+                OrchisEditorSetEditorCameraData(data);
+            }
+
+            public static EditorCameraData GetCameraData()
+            {
+                return OrchisEditorGetEditorCameraData();
+            }
+
+            public static void RegisterMouseMoveEventCallback(EditorMouseMoveEventCallback callback)
+            {
+                OrchisEditorRegisterMouseMoveEventCallback(callback);
+            }
+            public static void RegisterCameraMoveEventCallback(EditorCameraMoveEventCallback callback)
+            {
+                OrchisEditorRegisterCameraMoveEventCallback(callback);
             }
         }
 

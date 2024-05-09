@@ -15,6 +15,12 @@ namespace OrchisEditor.View.Editor
         private ProjectSelectorWindow m_ProjectSelector;
         private static List<Action<object, MouseButtonEventArgs>> s_OnClickCallbacks = [];
         private static List<Action<object, KeyEventArgs>> s_OnKeyDownCallbacks = [];
+
+        private static List<Action<object, MouseButtonEventArgs>> s_OnMouseLeftButtonDownCallbacks = [];
+        private static List<Action<object, MouseButtonEventArgs>> s_OnMouseLeftButtonUpCallbacks = [];
+        private static List<Action<object, MouseEventArgs>> s_OnMouseMoveCallbacks = [];
+
+
         public EditorWindow()
         {
             m_ProjectSelector = new ProjectSelectorWindow();
@@ -59,9 +65,8 @@ namespace OrchisEditor.View.Editor
                 return;
             }
 
-            TriggerOnClickCallback(sender, e);
+            TriggerCallbacks(sender, e, ref s_OnClickCallbacks);
         }
-
         private void Window_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.S && Keyboard.IsKeyDown(Key.LeftCtrl))
@@ -77,8 +82,7 @@ namespace OrchisEditor.View.Editor
                 e.Handled = true;
                 return;
             }
-
-            TriggerOnKeyDownCallback(sender, e);
+            TriggerCallbacks(sender, e, ref s_OnKeyDownCallbacks);
         }
 
         private void Window_KeyUp(object sender, KeyEventArgs e)
@@ -90,14 +94,18 @@ namespace OrchisEditor.View.Editor
             }
         }
 
-        private void Window_Loaded(object sender, RoutedEventArgs e)
+        private void Window_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            
+            TriggerCallbacks(sender, e, ref s_OnMouseLeftButtonDownCallbacks);
         }
-
+        private void Window_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            TriggerCallbacks(sender, e, ref s_OnMouseLeftButtonUpCallbacks);
+        }
         private void Window_MouseMove(object sender, MouseEventArgs e)
         {
             Engine.RegisterWindowHover();
+            TriggerCallbacks(sender,e, ref s_OnMouseMoveCallbacks);
         }
 
         public static void OnClick(Action<object, MouseButtonEventArgs> callback)
@@ -108,23 +116,30 @@ namespace OrchisEditor.View.Editor
         {
             s_OnKeyDownCallbacks.Add(callback);
         }
-        private void TriggerOnClickCallback(object sender, MouseButtonEventArgs e)
+        public static void OnMouseLeftButtonDown(Action<object, MouseButtonEventArgs> callback)
         {
-            foreach (Action<object, MouseButtonEventArgs> callback in s_OnClickCallbacks)
+            s_OnMouseLeftButtonDownCallbacks.Add(callback);
+        }
+        public static void OnMouseLeftButtonUp(Action<object, MouseButtonEventArgs> callback)
+        {
+            s_OnMouseLeftButtonUpCallbacks.Add(callback);
+        }
+        public static void OnMouseMove(Action<object, MouseEventArgs> callback)
+        {
+            s_OnMouseMoveCallbacks.Add(callback);
+        }
+        private void TriggerCallbacks<T>(object sender, T e, ref List<Action<object, T>> callbackList)
+        {
+            if (e == null)
+                return;
+            foreach (Action<object, T> callback in callbackList)
             {
-                if (e.Handled)
+                if (((RoutedEventArgs)(object)e).Handled)
                     break;
                 callback(sender, e);
             }
         }
-        private void TriggerOnKeyDownCallback(object sender, KeyEventArgs e)
-        {
-            foreach (Action<object, KeyEventArgs> callback in s_OnKeyDownCallbacks)
-            {
-                if (e.Handled)
-                    break;
-                callback(sender, e);
-            }
-        }
+
+
     }
 }

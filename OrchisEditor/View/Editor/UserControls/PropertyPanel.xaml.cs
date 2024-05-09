@@ -81,6 +81,7 @@ namespace OrchisEditor.View.Editor.UserControls
             {
                 NameField.Text = scene.Name;
                 TypeField.Text = "Scene";
+                Components.Children.Add(new EditorCameraComponentItem());
             }
             if (m_Item is Entity entity)
             {

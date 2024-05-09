@@ -3,30 +3,54 @@
 #include "PerspectiveCamera.h"
 #include "Events.h"
 
-enum EditorEventType
+struct EditorCameraData
 {
-	MOUSE_MOVE
+	glm::vec3 position;
+	glm::vec3 lookAt;
+	float speed;
+	float fieldOfView;
+	float yaw;
+	float pitch;
 };
 
-struct EditorEventArgs
+enum EditorEventType
 {
-	EditorEventType type;
+	MOUSE_MOVE, CAMERA_MOVE
+};
+
+struct EditorMouseMoveEventArgs
+{
+
+};
+
+struct EditorCameraMoveEventArgs
+{
+	EditorCameraData data;
 };
 
 class Editor
 {
 public:
-	Editor();
+	Editor(const EditorCameraData& data);
 	~Editor();
+
+	
 
 	void static Run();
 	void static Update();
 
-	void static RegisterEventCallback(void (*callback)(EditorEventArgs e));
+	EditorCameraData static GetCameraData();
+	static inline Orchis::PerspectiveCamera* GetCamera() { return s_EditorCamera; }
+	void static SetEditorCameraData(EditorCameraData data);
+
+	void static RegisterMouseMoveCallback(void (*callback)(EditorMouseMoveEventArgs e));
+	void static RegisterCameraMoveCallback(void (*callback)(EditorCameraMoveEventArgs e));
+	
 private:
 	static Orchis::PerspectiveCamera* s_EditorCamera;
 	static std::thread s_EngineThread;
-	static std::vector<void(*)(EditorEventArgs e)> s_Callbacks;
+	static void(*s_MouseMoveCallback)(EditorMouseMoveEventArgs e);
+	static void(*s_CameraMoveCallback)(EditorCameraMoveEventArgs e);
 	static bool s_Running;
 	void static OnMouseMove(Orchis::MouseMoveEvent* event);
 	void static OnMouseButtonDown(Orchis::MouseButtonDownEvent* event);

@@ -1,4 +1,5 @@
 ﻿
+using OrchisEditor.Controller.Editor;
 using OrchisEditor.Controller.Orchis;
 using OrchisEditor.View.Editor;
 using System;
@@ -16,7 +17,7 @@ namespace OrchisEditor.Controller
         private IntPtr m_Hwnd;
         protected override HandleRef BuildWindowCore(HandleRef hwndParent)
         {
-            Engine.Init(hwndParent.Handle);
+            Engine.Init(hwndParent.Handle, Project.Settings.CameraData);
             m_Hwnd = Engine.GetMainWindowHandle();
             return new HandleRef(this, m_Hwnd);
         }

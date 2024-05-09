@@ -1,0 +1,22 @@
+﻿<UserControl x:Class="OrchisEditor.View.UserControls.RangedNumberInput"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:OrchisEditor.View.UserControls"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Grid HorizontalAlignment="Stretch" x:Name="Wrapper" Loaded="Wrapper_Loaded">
+        <Border x:Name="RangeLine" CornerRadius="1" Background="#404040" Height="3"/>
+        <Border x:Name="Selector" Background="#606060" Width="12" Height="12" CornerRadius="6" HorizontalAlignment="Left" Margin="0 0 0 0" 
+                MouseEnter="Selector_MouseEnter" MouseLeave="Selector_MouseLeave"
+                MouseLeftButtonDown="Selector_MouseLeftButtonDown"/>
+        <Grid x:Name="NumberDisplayWrapper" Margin="0 -35 0 0" Visibility="Hidden" HorizontalAlignment="Left">
+            <Border BorderBrush="LightGray" BorderThickness="0.5" Background="{StaticResource GrayBrush}" 
+                     Height="17" CornerRadius="2" HorizontalAlignment="Left">
+                <TextBlock  Margin="5 0 5 0" x:Name="NumberDisplay" Text="{Binding Value}"
+                           Foreground="LightGray" TextAlignment="Center"/>
+            </Border>
+        </Grid>
+    </Grid>
+</UserControl>

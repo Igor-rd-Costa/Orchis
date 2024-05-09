@@ -3,22 +3,27 @@ using OrchisEditor.Controller.Editor.Components;
 using OrchisEditor.Controller.Orchis;
 using OrchisEditor.Controller.Utils;
 using OrchisEditor.View.Editor;
+using OrchisEditor.View.Editor.UserControls.ToolsPanelComponents;
 using OrchisEditor.View.UserControls;
 using System.Diagnostics;
 using System.IO;
+using System.Numerics;
 using System.Text;
 using System.Windows;
-using System.Xml.Linq;
 
 
 namespace OrchisEditor.Controller.Editor
 {
-
+    internal struct ProjectSettings
+    {
+        public string Name;
+        public EditorCameraData CameraData;
+        public Guid SceneManagerCurrentScene;
+    }
     internal class Project
     {
-        private static Guid s_CurrentScene = Guid.Empty;
+        private static ProjectSettings m_ProjectSettings = new();
         public static bool s_HasUnsavedChanges = false;
-        private static string s_Name = "";
         private static bool s_Loaded = false;
         private const string s_ProjExtension = ".orcproj";
         private const string s_ProjVersion = "0.0.1";
@@ -29,18 +34,20 @@ namespace OrchisEditor.Controller.Editor
         {
             BLANK
         }
-
+        public static ProjectSettings Settings
+        {
+            get { return m_ProjectSettings; }
+        }
         public static string Name
         {
-            get { return s_Name; }
-            set { s_Name = value; }
+            get { return m_ProjectSettings.Name; }
+            set { m_ProjectSettings.Name = value; }
         }
 
         public static bool IsLoaded
         {
             get { return s_Loaded; }
         }
-        public static Guid CurrentScene { get {  return s_CurrentScene; } }
         public static string Version { get { return s_ProjVersion; } }
 
         public static string ProjectPath { get { return s_ProjPath; } }
@@ -67,7 +74,9 @@ namespace OrchisEditor.Controller.Editor
                 if (!QueryProjectSave())
                     return false;
 
-            Tag? proj = Parser.ParseFileXML(projectPath);
+            FileStream stream = File.Open(projectPath, FileMode.Open);
+            Tag? proj = Parser.ParseXML(new StreamReader(stream).ReadToEnd());
+            stream.Dispose();
             if (!proj.HasValue)
                 return false;
 
@@ -77,8 +86,8 @@ namespace OrchisEditor.Controller.Editor
                 //TODO handle error. wrong file sintax
                 return false;
             }
-            s_Name = project.GetAttribute("Name");
-            if (s_Name == "")
+            m_ProjectSettings.Name = project.GetAttribute("Name");
+            if (Settings.Name == "")
             {
                 //TODO handle error. wrong file sintax, could not find project name
                 return false;
@@ -92,11 +101,43 @@ namespace OrchisEditor.Controller.Editor
             if (version != s_ProjVersion)
             {
                 //TODO wrong version. handle update.
-                return false;
+                throw new NotImplementedException("Project file updates not implemented");
             }
 
-            Guid sceneId = Guid.Parse(project.GetAttribute("CurrentScene"));
-            s_CurrentScene = sceneId;
+            foreach (Tag tag in project.Childs)
+            {
+                if (tag.Name == "EditorCamera")
+                {
+                    string[] posString = tag.GetAttribute("Position").Split(',');
+                    string[] lookAtString = tag.GetAttribute("LookAt").Split(',');
+                    Vector3 pos = new(float.Parse(posString[0]), float.Parse(posString[1]), float.Parse(posString[2]));
+                    Vector3 lookAt = new(float.Parse(lookAtString[0]), float.Parse(lookAtString[1]), float.Parse(lookAtString[2]));
+                    float speed = float.Parse(tag.GetAttribute("Speed"));
+                    float fielOfView = float.Parse(tag.GetAttribute("FieldOfView"));
+                    float yaw = float.Parse(tag.GetAttribute("Yaw"));
+                    float pitch = float.Parse(tag.GetAttribute("Pitch"));
+                    m_ProjectSettings.CameraData = new()
+                    {
+                        Position = pos,
+                        LookAt = lookAt,
+                        Speed = speed,
+                        FieldOfView = fielOfView,
+                        Yaw = yaw,
+                        Pitch = pitch
+                    };
+                }
+                if (tag.Name == "SceneManager")
+                {
+                    Guid sceneId = Guid.Parse(tag.GetAttribute("CurrentScene"));
+                    m_ProjectSettings.SceneManagerCurrentScene = sceneId;
+                }
+                if (tag.Name == "AssetManager")
+                {
+                    string currentPath = tag.GetAttribute("CurrentPath");
+                    AssetManagerView.CurrentPath = currentPath;
+                }
+            }
+
             ((App)Application.Current).RegisterRecentProject(Name, projectPath);
             s_ProjPath = projectPath.Substring(0, projectPath.LastIndexOf('\\') + 1);
             s_Loaded = true;
@@ -111,21 +152,31 @@ namespace OrchisEditor.Controller.Editor
         }
         private static void CreateBlankProject(string name, string projectPath)
         {
+            string assetsPath = projectPath + name + "\\Assets";
             FileSystem.CreateDirectory(projectPath + name);
-            FileSystem.CreateDirectory(projectPath + name + "\\Assets");
-            projectPath = projectPath + name + "\\" + name + s_ProjExtension;
+            FileSystem.CreateDirectory(assetsPath);
+            projectPath = $"{projectPath}{name}\\{name}{s_ProjExtension}";
             FileStream fileStream = File.Create(projectPath);
             Tag newProject = new()
             {
                 Name = "OrchisProject",
-                Attributes = [new("Name", name), new("Version", s_ProjVersion), new("CurrentScene", Guid.Empty.ToString())],
-                Childs = [new Tag("Assets"),
-                    //new Tag("Scenes", [], [
-                    //    new Tag("Scene", [
-                    //        new TagAttribute("Id", Guid.NewGuid().ToString().ToUpper()),
-                    //        new TagAttribute("Name", "NewScene"),
-                    //        new TagAttribute("Active", "true")], [])
-                    //    ])
+                Attributes = [new("Name", name), new("Version", s_ProjVersion)],
+                Childs = [
+                    new() {
+                        Name = "EditorCamera",
+                        Attributes = [
+                            new("Position", "0,0,0"), new("LookAt", "0,1,0"), new ("Speed", "5"), 
+                            new("FieldOfView", "45"), new("Yaw", "0"), new ("Pitch", "0")
+                        ]
+                    },
+                    new() {
+                        Name = "SceneManager",
+                        Attributes = [ new("CurrentScene", Guid.Empty.ToString()) ]
+                    },
+                    new() {
+                        Name = "AssetManager",
+                        Attributes = [ new("CurrentPath", assetsPath) ]
+                    }
                 ]
             };
             var buffer = new UTF8Encoding(true).GetBytes(Parser.ToXML(newProject));
@@ -136,7 +187,6 @@ namespace OrchisEditor.Controller.Editor
             Load(projectPath);
         }
 
-        //TODO implement saving
         public static bool QueryProjectSave()
         {
             if (!s_HasUnsavedChanges)
@@ -154,34 +204,87 @@ namespace OrchisEditor.Controller.Editor
             }
             return true;
         }
+        public static void UpdateAssetManagerCurrentPath()
+        {
+            FileStream stream = OpenProjectFile();
+            Tag? project = Parser.ParseXML(new StreamReader(stream).ReadToEnd());
+            if (!project.HasValue)
+            {
+                stream.Dispose();
+                return;
+            }
+            foreach (Tag child in project.Value.Childs)
+            {
+                if (child.Name == "AssetManager")
+                {
+                    child.SetAttribute("CurrentPath", AssetManagerView.CurrentPath);
+                    stream.SetLength(0);
+                    stream.Write(new UTF8Encoding().GetBytes(Parser.ToXML(project.Value)));
+                    stream.Flush();
+                    stream.Dispose();
+                    return;
+                }
+            }
+            stream.Dispose();
+        }
+
+        private static FileStream OpenProjectFile()
+        {
+            return File.Open(s_ProjPath + Name + s_ProjExtension, FileMode.Open);
+        }
+
+        public static void SaveProjectSettings()
+        {
+            FileStream stream = OpenProjectFile();
+            Tag? project = Parser.ParseXML(new StreamReader(stream).ReadToEnd());
+            if (!project.HasValue)
+            {
+                stream.Dispose();
+                return;
+            }
+            project.Value.SetAttribute("Name", Settings.Name);
+            project.Value.SetAttribute("Version", s_ProjVersion);
+            foreach (Tag child in project.Value.Childs)
+            {
+                switch (child.Name)
+                {
+                    case "EditorCamera":
+                    {
+                        EditorCameraData data = Engine.Editor.GetCameraData();
+                        child.SetAttribute("Position", $"{data.Position.X},{data.Position.Y},{data.Position.Z}");
+                        child.SetAttribute("LookAt", $"{data.LookAt.X},{data.LookAt.Y},{data.LookAt.Z}");
+                        child.SetAttribute("Speed", data.Speed.ToString());
+                        child.SetAttribute("FieldOfView", data.FieldOfView.ToString());
+                        child.SetAttribute("Yaw", data.Yaw.ToString());
+                        child.SetAttribute("Pitch", data.Pitch.ToString());
+                    }
+                    break;
+                    case "SceneManager":
+                    {
+                        child.SetAttribute("CurrentScene", SceneManager.Scene == null ? Guid.Empty.ToString() : SceneManager.Scene.Id.ToString().ToUpper());
+                    }
+                    break;
+                    case "AssetManager":
+                    {
+                        child.SetAttribute("CurrentPath", AssetManagerView.CurrentPath);
+                    }
+                    break;
+                }
+            }
+            stream.SetLength(0);
+            stream.Write(new UTF8Encoding().GetBytes(Parser.ToXML(project.Value)));
+            stream.Flush();
+            stream.Dispose();
+        }
 
         public static void Save()
         {
+            SaveProjectSettings();
             if (!s_HasUnsavedChanges)
                 return;
 
-            string projFilePath = s_ProjPath + Name + s_ProjExtension;
-            if (!File.Exists(projFilePath))
-            {
-                OrchisDialog dialog = new();
-                dialog.SetDialogType(OrchisDialogType.OK);
-                dialog.ShowMessage($"Unable to find project file at {projFilePath}.", "Error");
-                return;
-            }
-            Tag project = new(
-                "OrchisProject",
-                [
-                    new ("Name", Name), 
-                    new ("Version", s_ProjVersion),
-                    new("CurrentScene", 
-                    SceneManager.Scene == null ? Guid.Empty.ToString().ToUpper() : SceneManager.Scene.Id.ToString().ToUpper())
-                ], []);
             SceneManager.Save();
             AssetManager.Save();
-            FileStream fs = File.Open(projFilePath, FileMode.Open);
-            fs.SetLength(0);
-            fs.Write(new UTF8Encoding().GetBytes(Parser.ToXML(project)));
-            fs.Dispose();
             s_HasUnsavedChanges = false;
             foreach (Action<bool> changeCallback in m_OnChangeCallbacks)
                 changeCallback(s_HasUnsavedChanges);

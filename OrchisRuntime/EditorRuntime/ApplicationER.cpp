@@ -6,10 +6,10 @@ using namespace Orchis;
 
 static Editor* editor = nullptr;
 
-OC_EXPORT void OrchisInit(void* parentWindow)
+OC_EXPORT void OrchisInit(void* parentWindow, const EditorCameraData data)
 {
 	Application::Init(parentWindow);
-	editor = new Editor();
+	editor = new Editor(data);
 }
 
 OC_EXPORT void OrchisShutdown()
@@ -23,9 +23,17 @@ OC_EXPORT void* OrchisGetMainWindowHandle()
 	return Application::GetWindow()->GetHandle();
 }
 
-OC_EXPORT void OrchisEditorRegisterEventCallback(void(*callback)(EditorEventArgs e))
+OC_EXPORT void OrchisEditorRegisterMouseMoveEventCallback(void(*callback)(EditorMouseMoveEventArgs e))
 {
-	editor->RegisterEventCallback(callback);
+	if (editor)
+		editor->RegisterMouseMoveCallback(callback);
+}
+
+
+OC_EXPORT void OrchisEditorRegisterCameraMoveEventCallback(void(*callback)(EditorCameraMoveEventArgs e))
+{
+	if (editor)
+		editor->RegisterCameraMoveCallback(callback);
 }
 
 OC_EXPORT bool OrchisIsMouseHovering()

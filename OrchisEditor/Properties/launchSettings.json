@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "OrchisEditor": {
+      "commandName": "Project",
+      "nativeDebugging": true
+    }
+  }
+}
