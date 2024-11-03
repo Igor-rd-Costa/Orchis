@@ -1,0 +1,110 @@
+cmake_minimum_required(VERSION 3.8)
+project(Orchis)
+
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED True)
+if (MSVC)
+set(CMAKE_CONFIGURATION_TYPES Debug Release Dist HeadlessDebug HeadlessRelease HeadlessDist)
+set_property(GLOBAL PROPERTY USE_FOLDERS ON)
+endif()
+
+function(set_output_path targetName)
+set_target_properties(${targetName} PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin/${targetName}")
+set_target_properties(${targetName} PROPERTIES LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin/${targetName}")
+set_target_properties(${targetName} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin/${targetName}")
+endfunction()
+
+function(get_output_path targetName var)
+  file(TO_NATIVE_PATH "${CMAKE_BINARY_DIR}/bin/${targetName}/${CMAKE_CFG_INTDIR}/" nativeFilePath)
+  set(${var} ${nativeFilePath} PARENT_SCOPE)
+endfunction()
+
+function(add_compile_options_static targetName)
+  if (MSVC)
+  target_compile_options(${targetName} PRIVATE
+    $<$<CONFIG:Debug>:/MTd>
+    $<$<CONFIG:HeadlessDebug>:/MTd>
+    $<$<CONFIG:Release>:/MT>
+    $<$<CONFIG:HeadlessRelease>:/MT>
+    $<$<CONFIG:Dist>:/MT>
+    $<$<CONFIG:HeadlessDist>:/MT>
+  )
+  endif()
+endfunction()
+
+function(add_compile_options_shared targetName)
+  if (MSVC)
+  target_compile_options(${targetName} PRIVATE
+    $<$<CONFIG:Debug>:/MDd>
+    $<$<CONFIG:HeadlessDebug>:/MDd>
+    $<$<CONFIG:Release>:/MD>
+    $<$<CONFIG:HeadlessRelease>:/MD>
+    $<$<CONFIG:Dist>:/MD>
+    $<$<CONFIG:HeadlessDist>:/MD>
+  )
+  endif()
+endfunction()
+
+function(add_shared_bin_copy_command targetName)
+get_output_path(OrchisRuntime runtimeOutput)
+get_output_path(${targetName} dstPath)
+set(dllSrcPath "${runtimeOutput}OrchisRuntime.dll"
+)
+set(pdbSrcPath "${runtimeOutput}OrchisRuntime.pdb"
+)
+set(libSrcPath "${runtimeOutput}OrchisRuntime.lib"
+)
+set(expSrcPath "${runtimeOutput}OrchisRuntime.exp"
+)
+add_custom_command(TARGET ${targetName} POST_BUILD
+COMMAND ${CMAKE_COMMAND} -E copy "${dllSrcPath}" "${dstPath}"
+COMMAND ${CMAKE_COMMAND} -E copy_if_different "${pdbSrcPath}" "${dstPath}"
+COMMAND ${CMAKE_COMMAND} -E copy "${libSrcPath}" "${dstPath}"
+COMMAND ${CMAKE_COMMAND} -E copy "${expSrcPath}" "${dstPath}"
+)
+endfunction()
+
+add_compile_definitions(
+  $<$<CONFIG:Debug>:OC_DEBUG_BUILD>
+  $<$<CONFIG:HeadlessDebug>:OC_DEBUG_BUILD>
+  $<$<CONFIG:HeadlessDebug>:OC_HEADLESS_BUILD>
+  $<$<CONFIG:Release>:OC_RELEASE_BUILD>
+  $<$<CONFIG:HeadlessRelease>:OC_RELEASE_BUILD>
+  $<$<CONFIG:HeadlessRelease>:OC_HEADLESS_BUILD>
+  $<$<CONFIG:Dist>:OC_DIST_BUILD>
+  $<$<CONFIG:HeadlessDist>:OC_DIST_BUILD>
+  $<$<CONFIG:HeadlessDist>:OC_HEADLESS_BUILD>
+  UNICODE
+)
+
+if (WIN32)
+add_compile_definitions(OC_WINDOWS)
+elseif(LINUX)
+add_compile_definitions(OC_LINUX)
+elseif(APPLE)
+add_compile_definitions(OC_APPLE)
+endif()
+
+if(MSVC)
+  if(WIN32)
+      set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /SUBSYSTEM:WINDOWS")
+  endif ()
+  set_property(GLOBAL PROPERTY VS_STARTUP_PROJECT OrchisEditor)
+
+  set(CMAKE_EXE_LINKER_FLAGS_DIST ${CMAKE_EXE_LINKER_FLAGS_RELEASE})
+
+  set(CMAKE_EXE_LINKER_FLAGS_HEADLESSDEBUG ${CMAKE_EXE_LINKER_FLAGS_DEBUG})
+  set(CMAKE_EXE_LINKER_FLAGS_HEADLESSRELEASE ${CMAKE_EXE_LINKER_FLAGS_RELEASE})
+  set(CMAKE_EXE_LINKER_FLAGS_HEADLESSDIST ${CMAKE_EXE_LINKER_FLAGS_DIST})
+
+  set(CMAKE_SHARED_LINKER_FLAGS_DIST ${CMAKE_SHARED_LINKER_FLAGS_RELEASE})
+
+  set(CMAKE_SHARED_LINKER_FLAGS_HEADLESSDEBUG ${CMAKE_SHARED_LINKER_FLAGS_DEBUG})
+  set(CMAKE_SHARED_LINKER_FLAGS_HEADLESSRELEASE ${CMAKE_SHARED_LINKER_FLAGS_RELEASE})
+  set(CMAKE_SHARED_LINKER_FLAGS_HEADLESSDIST ${CMAKE_SHARED_LINKER_FLAGS_DIST})
+endif()
+add_subdirectory(OrchisRuntime/OrchisGraphicsBackends/OrchisVulkanGraphicsBackend)
+add_subdirectory(OrchisRuntime/OrchisGraphicsBackends/OrchisDX12GraphicsBackend)
+
+add_subdirectory(OrchisRuntime)
+add_subdirectory(OrchisEditor)

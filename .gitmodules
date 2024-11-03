@@ -1,0 +1,3 @@
+[submodule "OrchisRuntime/Vendor/glm"]
+	path = OrchisRuntime/Vendor/glm
+	url = https://github.com/g-truc/glm
