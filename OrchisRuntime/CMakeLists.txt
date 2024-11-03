@@ -11,6 +11,7 @@ target_include_directories(OrchisRuntime
   PRIVATE "Src"
   PRIVATE "OrchisGraphicsBackend"
   PRIVATE "Vendor"
+  PRIVATE "Vendor/glm"
 )
 
 target_compile_definitions(OrchisRuntime 
